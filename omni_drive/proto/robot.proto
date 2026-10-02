@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package robot;
+
+message WheelSpeeds {
+  float wheel_1 = 1;
+  float wheel_2 = 2;
+  float wheel_3 = 3;
+}
+
+message SensorReadings {
+  float sensor_1 = 1;
+  float sensor_2 = 2;
+  float sensor_3 = 3;
+}
+
+message Odometry {
+  float x       = 1;
+  float y       = 2;
+  float yaw_rad = 3;
+}
+
+message ImuData {
+  float yaw_rad = 1;
+}
+
+// ---- DIAGNOSTICS ----
+message PowerStatus {
+  float voltage     = 1;
+  float current     = 2;
+  bool  is_critical = 3;
+}
+
+message Diagnostics {
+  PowerStatus power         = 1;
+  WheelSpeeds actual_speeds = 2;
+  WheelSpeeds target_speeds = 3;
+}
+
+// ---- OUTGOING ----
+message VelocityCommand {
+  WheelSpeeds raw_speeds = 1;
+}
+
+// ---- INCOMING ----
+message TelemetryResponse {
+  Odometry    odometry    = 1;
+  ImuData     imu         = 2;
+  Diagnostics diagnostics = 3;
+  // Distances from each sensor face [m]; the firmware does not fill it yet, and the
+  // library falls back to sensors emulated from the LiDAR scan while it is absent.
+  SensorReadings ultrasonic = 4;
+}
