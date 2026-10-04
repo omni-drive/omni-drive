@@ -11,7 +11,7 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-omni-drive = { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.1.0/omni_drive-0.1.0-py3-none-any.whl" }
+omni-drive = { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.1.1/omni_drive-0.1.1-py3-none-any.whl" }
 
 # [project.urls]
 # Documentation = "https://omni-drive.readthedocs.io/"

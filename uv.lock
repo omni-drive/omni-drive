@@ -1241,8 +1241,8 @@ wheels = [
 
 [[package]]
 name = "omni-drive"
-version = "0.1.0"
-source = { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.1.0/omni_drive-0.1.0-py3-none-any.whl" }
+version = "0.1.1"
+source = { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.1.1/omni_drive-0.1.1-py3-none-any.whl" }
 dependencies = [
     { name = "bokeh" },
     { name = "cobs" },
@@ -1257,7 +1257,7 @@ dependencies = [
     { name = "websockets" },
 ]
 wheels = [
-    { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.1.0/omni_drive-0.1.0-py3-none-any.whl", hash = "sha256:f4205ea070cee18a62b309e8f9bcbc2db7295b7be74e54e06c23b6324969f757" },
+    { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.1.1/omni_drive-0.1.1-py3-none-any.whl", hash = "sha256:db3f5b97edb114a891a3619d39a4f5ccd3bd127e8f5316dd0bdb6ddcdb264629" },
 ]
 
 [package.metadata]
@@ -1284,7 +1284,7 @@ dependencies = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "omni-drive", url = "https://github.com/omni-drive/omni-drive/releases/download/v0.1.0/omni_drive-0.1.0-py3-none-any.whl" }]
+requires-dist = [{ name = "omni-drive", url = "https://github.com/omni-drive/omni-drive/releases/download/v0.1.1/omni_drive-0.1.1-py3-none-any.whl" }]
 
 [[package]]
 name = "packaging"
