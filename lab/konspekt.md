@@ -10,15 +10,17 @@ wersja 1.0, 2026.10.04
 
 Przed zajęciami należy zapoznać się z budową robota OmniDrive. Robot porusza się na trzech kołach
 omnikierunkowych rozstawionych co 120°, dzięki czemu może jechać w dowolnym kierunku i obracać się
-w miejscu. Jest wyposażony w skaner laserowy (LiDAR), żyroskop i trzy czujniki ultradźwiękowe.
+w miejscu. Jest wyposażony w skaner laserowy (LiDAR), żyroskop oraz czujniki odległości ToF
+i ultradźwiękowe.
 
 **W sali laboratoryjnej dostępny jest sprzęt komputerowy z potrzebnym oprogramowaniem.**
 
 ## 2. Wstęp
 
 Na zajęciach wyznaczymy model ruchu robota i sprawdzimy, jak dokładnie robot zna swoje położenie.
-Porównamy trzy sposoby jego wyznaczania: zliczanie obrotów kół (odometrię), dopasowanie skanu
-LiDAR-u do mapy otoczenia oraz filtr Kalmana, który łączy pomiary z kilku czujników.
+Porównamy zliczanie obrotów kół (odometrię) z pomiarem odległości do ścian LiDAR-em, a następnie
+zaimplementujemy filtr Kalmana, który łączy odometrię z pomiarem odległości, i sprawdzimy, jak
+działa z LiDAR-em, czujnikiem ToF i czujnikiem ultradźwiękowym.
 
 ## 3. Zasady pracy z robotem
 
