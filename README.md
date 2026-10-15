@@ -1,94 +1,38 @@
 # omni-drive
 
-`omni_drive` is a Python library for OmniDrive, a three-wheel omnidirectional robot used in
-robotics laboratory classes. The robot has three omni wheels, a 2D LiDAR, a gyroscope and three
-ultrasonic sensors.
+Public materials for OmniDrive, a three-wheel omnidirectional robot used in robotics laboratory
+classes. The robot has three omni wheels, a 2D LiDAR, a gyroscope, and ToF and ultrasonic distance
+sensors. It is programmed in Python with the `omni_drive` library.
 
-The library provides:
+This repository contains:
 
-- driving commands with acceleration limiting,
-- access to odometry, gyroscope, LiDAR and ultrasonic readings,
-- localization from wheel odometry, LiDAR scan matching and a Kalman filter,
-- live Bokeh views for Jupyter notebooks,
-- a simulator that replaces the robot, so the same code runs without hardware.
+- `docs/`: documentation of the `omni_drive` library, published at
+  <https://omni-drive.readthedocs.io/>,
+- `lab/notebook.ipynb`: the lab notebook (in Polish): drive kinematics, odometry, positioning with
+  the LiDAR, distance sensors and a Kalman filter,
+- `lab/konspekt.pdf`: the lab outline that students read before the class.
 
-On the robot, services publish telemetry and receive commands over ZeroMQ. The library
-connects to them, or to the simulator, in the same way.
+## Running the notebook
 
-## Installation
-
-The library requires Python 3.12 or later.
+The notebook runs on the robot, which serves Jupyter over its Wi-Fi network. To run it on another
+computer, install the dependencies with [uv](https://docs.astral.sh/uv/) (Python 3.12 or later):
 
 ```bash
-pip install git+https://github.com/omni-drive/omni-drive
+uv sync
+uv run jupyter notebook lab/notebook.ipynb
 ```
 
-With [uv](https://docs.astral.sh/uv/):
-
-```bash
-uv add git+https://github.com/omni-drive/omni-drive
-```
-
-## Quickstart with the simulator
-
-The library and the robot communicate over `ipc://` sockets by default. The environment variable
-`OMNI_DRIVE_IPC` switches both sides to TCP on three consecutive ports starting at the given one.
-This is required on Windows, which does not support `ipc://` sockets.
-
-Start the simulator in a terminal:
-
-```bash
-OMNI_DRIVE_IPC=tcp://127.0.0.1:5650 python -m omni_drive.simulator --world room
-```
-
-In PowerShell:
-
-```powershell
-$env:OMNI_DRIVE_IPC = "tcp://127.0.0.1:5650"
-python -m omni_drive.simulator --world room
-```
-
-Then, in a notebook or script, set the same variable before the first `omni_drive` import:
-
-```python
-import os
-
-os.environ["OMNI_DRIVE_IPC"] = "tcp://127.0.0.1:5650"
-
-from omni_drive import OmniDrive
-
-robot = OmniDrive()
-robot.print_status()
-```
+`pyproject.toml` pins the `omni_drive` release the notebook is written for. The library connects
+to the robot's services over ZeroMQ `ipc://` sockets, so the notebook needs the robot's services or
+a simulator running on the same machine.
 
 ## Documentation
 
-The documentation is available at <https://omni-drive.readthedocs.io/>. To preview it locally:
+To preview the documentation locally:
 
 ```bash
 uv run --group docs mkdocs serve -f docs/mkdocs.yml
 ```
-
-## Development
-
-```bash
-uv sync
-uv run ruff check .
-uv run ruff format --check .
-uv run pytest -q
-```
-
-The unit tests run the library against the simulator.
-
-The message schema is `omni_drive/proto/robot.proto`, and the generated module
-`omni_drive/generated/robot_pb2.py` is kept in the repository. After changing the schema,
-regenerate the module with:
-
-```bash
-uv run python scripts/gen_proto.py
-```
-
-A test checks that the committed module matches the schema.
 
 ## License
 

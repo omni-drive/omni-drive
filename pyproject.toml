@@ -10,8 +10,14 @@ dependencies = [
     "omni-drive",
 ]
 
+[dependency-groups]
+docs = [
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.7.7",
+]
+
 [tool.uv.sources]
-omni-drive = { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.1.1/omni_drive-0.1.1-py3-none-any.whl" }
+omni-drive = { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.1.3/omni_drive-0.1.3-py3-none-any.whl" }
 
 # [project.urls]
 # Documentation = "https://omni-drive.readthedocs.io/"
