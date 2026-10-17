@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" width="100%" height="100%" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+
+    <defs>
+      <!-- Shadow filter -->
+      <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%">
+        <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.08"/>
+      </filter>
+      
+      <!-- Arrow markers -->
+      <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="#10b981"/>
+      </marker>
+      <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="#3b82f6"/>
+      </marker>
+      <marker id="arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="#f59e0b"/>
+      </marker>
+      <marker id="arrow-traj" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+      </marker>
+    </defs>
+    
+<rect width="960" height="500" fill="#f8fafc" rx="16"/>
+
+    <g transform="translate(480, 36)" text-anchor="middle">
+      <text font-size="20" font-weight="700" fill="#0f172a">Wpływ układu odniesienia na ruch złożony (jazda + obrót)</text>
+      <text y="22" font-size="13" font-weight="500" fill="#64748b">DriveVector(velocity=0.4 m/s, heading=0°, omega=0.5 rad/s)</text>
+    </g>
+    
+
+    <!-- Left Card -->
+    <rect x="32" y="78" width="432" height="390" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" filter="url(#shadow)"/>
+    
+    <!-- Header -->
+    <g transform="translate(56, 110)">
+      <rect x="0" y="-18" width="168" height="26" rx="6" fill="#ecfdf5"/>
+      <text x="8" y="0" font-size="12" font-weight="700" fill="#059669">robot.field_centric = True</text>
+      <text x="0" y="24" font-size="15" font-weight="700" fill="#0f172a">Tryb Field-Centric (Układ świata)</text>
+      <text x="0" y="42" font-size="12" fill="#64748b">Wektor prędkości 0° zadany w pokoju (stały kierunek).</text>
+    </g>
+    
+
+    <!-- Subtle Grid -->
+    <g stroke="#f1f5f9" stroke-width="1">
+      <line x1="52" y1="218" x2="444" y2="218"/>
+      <line x1="52" y1="298" x2="444" y2="298"/>
+      <line x1="52" y1="378" x2="444" y2="378"/>
+    </g>
+    
+
+    <!-- Trajectory path -->
+    <line x1="82" y1="298" x2="414" y2="298" stroke="#10b981" stroke-width="3" stroke-dasharray="6 4"/>
+    <line x1="404" y1="298" x2="414" y2="298" stroke="#10b981" stroke-width="3" marker-end="url(#arrow-green)"/>
+    
+<g transform="translate(82.0,298.0)" opacity="0.4"><circle r="26" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/><circle r="24" fill="#10b981" fill-opacity="0.08"/><g transform="translate(24.0, 0.0) rotate(0.0)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><g transform="translate(-12.0, 20.8) rotate(119.99999999999999)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><g transform="translate(-12.0, -20.8) rotate(239.99999999999997)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><circle r="3" fill="#334155"/><line x1="0" y1="0" x2="40.0" y2="0.0" stroke="#10b981" stroke-width="3" marker-end="url(#arrow-green)"/><path d="M 12.3 -10.3 A 16 16 0 0 1 13.9 8.0" fill="none" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-orange)"/><text x="0" y="46" font-size="11" font-weight="600" fill="#64748b" text-anchor="middle">t = 0s</text></g>
+<g transform="translate(186.6,298.0)" opacity="0.65"><circle r="26" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/><circle r="24" fill="#10b981" fill-opacity="0.08"/><g transform="translate(19.7, 13.8) rotate(35.0)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><g transform="translate(-21.8, 10.1) rotate(154.99999999999997)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><g transform="translate(2.1, -23.9) rotate(275.0)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><circle r="3" fill="#334155"/><line x1="0" y1="0" x2="32.8" y2="22.9" stroke="#10b981" stroke-width="3" marker-end="url(#arrow-green)"/><path d="M 15.9 -1.4 A 16 16 0 0 1 6.8 14.5" fill="none" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-orange)"/></g>
+<g transform="translate(291.2,298.0)" opacity="0.8"><circle r="26" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/><circle r="24" fill="#10b981" fill-opacity="0.08"/><g transform="translate(8.2, 22.6) rotate(70.0)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><g transform="translate(-23.6, -4.2) rotate(190.0)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><g transform="translate(15.4, -18.4) rotate(309.99999999999994)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><circle r="3" fill="#334155"/><line x1="0" y1="0" x2="13.7" y2="37.6" stroke="#10b981" stroke-width="3" marker-end="url(#arrow-green)"/><path d="M 13.9 8.0 A 16 16 0 0 1 -2.8 15.8" fill="none" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-orange)"/></g>
+<g transform="translate(399.0,298.0)" opacity="1.0"><circle r="26" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/><circle r="24" fill="#10b981" fill-opacity="0.08"/><g transform="translate(-6.2, 23.2) rotate(105.00000000000001)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><g transform="translate(-17.0, -17.0) rotate(225.0)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><g transform="translate(23.2, -6.2) rotate(345.0)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><circle r="3" fill="#334155"/><line x1="0" y1="0" x2="-10.4" y2="38.6" stroke="#10b981" stroke-width="3" marker-end="url(#arrow-green)"/><path d="M 6.8 14.5 A 16 16 0 0 1 -11.3 11.3" fill="none" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-orange)"/><text x="0" y="46" font-size="11" font-weight="600" fill="#64748b" text-anchor="middle">t = 1s</text></g>
+
+    <g transform="translate(56, 430)">
+      <rect width="384" height="26" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+      <text x="192" y="17" font-size="12" font-weight="600" fill="#047857" text-anchor="middle">
+        Tor ruchu: Linia prosta  (robot obraca się podczas jazdy)
+      </text>
+    </g>
+    
+
+    <!-- Right Card -->
+    <rect x="496" y="78" width="432" height="390" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" filter="url(#shadow)"/>
+    
+    <!-- Header -->
+    <g transform="translate(520, 110)">
+      <rect x="0" y="-18" width="168" height="26" rx="6" fill="#eff6ff"/>
+      <text x="8" y="0" font-size="12" font-weight="700" fill="#1d4ed8">robot.field_centric = False</text>
+      <text x="0" y="24" font-size="15" font-weight="700" fill="#0f172a">Tryb Robot-Centric (Układ robota)</text>
+      <text x="0" y="42" font-size="12" fill="#64748b">Wektor prędkości 0° zadany względem nosa (skręca wraz z nim).</text>
+    </g>
+    
+
+    <!-- Subtle Grid -->
+    <g stroke="#f1f5f9" stroke-width="1">
+      <line x1="516" y1="220" x2="908" y2="220"/>
+      <line x1="516" y1="290" x2="908" y2="290"/>
+      <line x1="516" y1="360" x2="908" y2="360"/>
+    </g>
+    
+
+    <!-- Circular Arc Path -->
+    <path d="M 546.0,360.0 L 553.0,359.9 L 560.1,359.5 L 567.1,358.9 L 574.0,358.0 L 581.0,356.8 L 587.9,355.5 L 594.7,353.8 L 601.5,351.9 L 608.2,349.8 L 614.8,347.5 L 621.4,344.9 L 627.8,342.0 L 634.1,339.0 L 640.3,335.7 L 646.4,332.1 L 652.4,328.4 L 658.2,324.5 L 663.9,320.3 L 669.4,316.0 L 674.8,311.4 L 680.0,306.7 L 685.0,301.8 L 689.8,296.7 L 694.5,291.4 L 699.0,285.9 L 703.2,280.4 L 707.3,274.6 L 711.1,268.7 L 714.8,262.7 L 718.2,256.5" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="6 4"/>
+    
+<g transform="translate(546.0,360.0)" opacity="0.4"><circle r="26" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/><circle r="24" fill="#3b82f6" fill-opacity="0.08"/><g transform="translate(24.0, 0.0) rotate(0.0)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><g transform="translate(-12.0, 20.8) rotate(119.99999999999999)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><g transform="translate(-12.0, -20.8) rotate(239.99999999999997)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><circle r="3" fill="#334155"/><line x1="0" y1="0" x2="40.0" y2="-0.0" stroke="#3b82f6" stroke-width="3" marker-end="url(#arrow-blue)"/><path d="M 12.3 -10.3 A 16 16 0 0 1 13.9 8.0" fill="none" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-orange)"/><text x="0" y="46" font-size="11" font-weight="600" fill="#64748b" text-anchor="middle">t = 0s</text></g>
+<g transform="translate(614.2,347.7)" opacity="0.65"><circle r="26" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/><circle r="24" fill="#3b82f6" fill-opacity="0.08"/><g transform="translate(22.5, -8.4) rotate(-20.46)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><g transform="translate(-4.0, 23.7) rotate(99.53999999999999)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><g transform="translate(-18.5, -15.3) rotate(219.54)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><circle r="3" fill="#334155"/><line x1="0" y1="0" x2="37.5" y2="-14.0" stroke="#3b82f6" stroke-width="3" marker-end="url(#arrow-blue)"/><path d="M 7.9 -13.9 A 16 16 0 0 1 15.8 2.7" fill="none" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-orange)"/></g>
+<g transform="translate(673.7,312.3)" opacity="0.8"><circle r="26" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/><circle r="24" fill="#3b82f6" fill-opacity="0.08"/><g transform="translate(18.1, -15.7) rotate(-40.92)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><g transform="translate(4.5, 23.6) rotate(79.08)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><g transform="translate(-22.7, -7.8) rotate(199.07999999999998)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><circle r="3" fill="#334155"/><line x1="0" y1="0" x2="30.2" y2="-26.2" stroke="#3b82f6" stroke-width="3" marker-end="url(#arrow-blue)"/><path d="M 2.5 -15.8 A 16 16 0 0 1 15.7 -3.0" fill="none" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-orange)"/></g>
+<g transform="translate(718.2,256.5)" opacity="1.0"><circle r="26" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/><circle r="24" fill="#3b82f6" fill-opacity="0.08"/><g transform="translate(11.3, -21.2) rotate(-62.0)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><g transform="translate(12.7, 20.4) rotate(57.99999999999999)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><g transform="translate(-24.0, 0.8) rotate(177.99999999999997)"><rect x="-3" y="-8" width="6" height="16" rx="2" fill="#334155"/></g><circle r="3" fill="#334155"/><line x1="0" y1="0" x2="18.8" y2="-35.3" stroke="#3b82f6" stroke-width="3" marker-end="url(#arrow-blue)"/><path d="M -3.3 -15.7 A 16 16 0 0 1 13.6 -8.5" fill="none" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-orange)"/><text x="0" y="46" font-size="11" font-weight="600" fill="#64748b" text-anchor="middle">t = 1s</text></g>
+
+    <g transform="translate(520, 430)">
+      <rect width="384" height="26" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+      <text x="192" y="17" font-size="12" font-weight="600" fill="#1d4ed8" text-anchor="middle">
+        Tor ruchu: Łuk okręgu  (nos robota stale wyznacza kierunek)
+      </text>
+    </g>
+    
+</svg>

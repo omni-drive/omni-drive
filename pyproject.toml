@@ -7,7 +7,11 @@ requires-python = ">=3.12"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
 dependencies = [
+    "bokeh==3.9.0",
+    "jupyter-bokeh==4.0.5",
+    "notebook==7.5.7",
     "omni-drive",
+    "pandas>=2.2.0",
 ]
 
 [dependency-groups]
