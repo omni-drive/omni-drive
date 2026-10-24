@@ -8,7 +8,8 @@ license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
 dependencies = [
     "bokeh==3.9.0",
-    "jupyter-bokeh==4.0.5",
+    "ipykernel==7.2.0",
+    "jupyter-bokeh==4.1.0",
     "notebook==7.5.7",
     "omni-drive",
     "pandas>=2.2.0",
@@ -21,7 +22,7 @@ docs = [
 ]
 
 [tool.uv.sources]
-omni-drive = { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.2.0/omni_drive-0.2.0-py3-none-any.whl" }
+omni-drive = { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.3.0/omni_drive-0.3.0-py3-none-any.whl" }
 
 # [project.urls]
 # Documentation = "https://omni-drive.readthedocs.io/"

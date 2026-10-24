@@ -8,7 +8,7 @@ This repository contains:
 
 - `docs/`: documentation of the `omni_drive` library, published at
   <https://omni-drive.readthedocs.io/>,
-- `lab/notebook.ipynb`: the lab notebook (in Polish): drive kinematics, odometry, positioning with
+- `notebook.ipynb`: the lab notebook (in Polish): drive kinematics, odometry, positioning with
   the LiDAR, distance sensors and a Kalman filter,
 - `lab/konspekt.pdf`: the lab outline that students read before the class.
 
@@ -19,7 +19,7 @@ computer, install the dependencies with [uv](https://docs.astral.sh/uv/) (Python
 
 ```bash
 uv sync
-uv run jupyter notebook lab/notebook.ipynb
+uv run jupyter notebook notebook.ipynb
 ```
 
 `pyproject.toml` pins the `omni_drive` release the notebook is written for. The library connects
