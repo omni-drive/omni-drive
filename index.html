@@ -3,7 +3,7 @@
 <html lang="en">
 <head><meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>notebook_solution</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>Notebook</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <style type="text/css">
     pre { line-height: 125%; }
 td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
@@ -7836,9 +7836,9 @@ a.anchor-link {
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="b4061291-168a-41d3-89f8-f367e988978b" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="250ca9bd-86a1-4522-879e-3d118bf3a2ab" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('b4061291-168a-41d3-89f8-f367e988978b');
+var element = document.getElementById('250ca9bd-86a1-4522-879e-3d118bf3a2ab');
 'use strict';
 (function(root) {
   function now() {
@@ -8226,20 +8226,16 @@ Sensors (Left / Center / Right):
 <div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">drive_square</span><span class="p">():</span>
-    <span class="n">side_time</span> <span class="o">=</span> <span class="n">Time</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mf">1.2</span><span class="p">)</span>
-    <span class="n">pause_time</span> <span class="o">=</span> <span class="n">Time</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mf">0.4</span><span class="p">)</span>
-    <span class="n">speed</span> <span class="o">=</span> <span class="mf">0.5</span>
-
-    <span class="k">for</span> <span class="n">heading</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">270</span><span class="p">):</span>
-        <span class="k">await</span> <span class="n">robot</span><span class="o">.</span><span class="n">drive_for</span><span class="p">(</span><span class="n">side_time</span><span class="p">,</span> <span class="n">DriveVector</span><span class="p">(</span><span class="n">velocity</span><span class="o">=</span><span class="n">speed</span><span class="p">,</span> <span class="n">heading</span><span class="o">=</span><span class="n">Angle</span><span class="o">.</span><span class="n">deg</span><span class="p">(</span><span class="n">heading</span><span class="p">)))</span>
-        <span class="k">await</span> <span class="n">robot</span><span class="o">.</span><span class="n">pause_for</span><span class="p">(</span><span class="n">pause_time</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">drive_square</span><span class="p">():</span>
+    <span class="n">robot</span><span class="o">.</span><span class="n">drive_for</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">robot</span><span class="o">.</span><span class="n">pause_for</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="o">...</span>
 
 <span class="n">robot</span><span class="o">.</span><span class="n">reset_pose</span><span class="p">()</span>
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>  <span class="c1"># zwiększ liczbę przejść gdy uzupełnisz definicję drive_square</span>
-    <span class="k">await</span> <span class="n">drive_square</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Przejście nr </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">: Odometria: </span><span class="si">{</span><span class="n">robot</span><span class="o">.</span><span class="n">pose</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>  <span class="c1"># zwiększ liczbę przejść gdy uzupełnisz definicję drive_square</span>
+    <span class="n">drive_square</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Przejście nr </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: Odometria: </span><span class="si">{</span><span class="n">robot</span><span class="o">.</span><span class="n">pose</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8283,18 +8279,18 @@ Przejście nr 3: Odometria: Pose(x=-0.032m, y=0.037m, yaw=350.7°)
 <h3 id="Po%C5%82o%C5%BCenie-na-podstawie-LiDARu">Położenie na podstawie LiDARu<a class="anchor-link" href="#Po%C5%82o%C5%BCenie-na-podstawie-LiDARu">¶</a></h3><p><small>Jak już wiesz, oprócz trzech par czujników odległości zamontowanych co 90°, robot posiada również skaner laserowy LiDAR, który mierzy odległość do 680 punktów w polu widzenia 240°.</small></p>
 <p><small>Będziemy korzystać z pomiarów LiDAR-u dokładnie w tych samych kierunkach, w które skierowane są pozostałe sensory. Biblioteka udostępnia w tym celu gotowe właściwości API, które wyznaczają średnią arytmetyczną z 5 punktów lasera w osi każdego z czujników:</small></p>
 <ul>
-<li><small><code>robot.lidar.beam_1</code> – wiązka w lewo (+90°),</small></li>
-<li><small><code>robot.lidar.beam_2</code> – wiązka na wprost (0°),</small></li>
-<li><small><code>robot.lidar.beam_3</code> – wiązka w prawo (-90°).</small></li>
+<li><small><code>robot.lidar.beam_left</code> – wiązka w lewo (+90°),</small></li>
+<li><small><code>robot.lidar.beam_front</code> – wiązka na wprost (0°),</small></li>
+<li><small><code>robot.lidar.beam_right</code> – wiązka w prawo (-90°).</small></li>
 </ul>
 <p><small>Uśrednienie kilku sąsiednich punktów skutecznie redukuje szum pojedynczego pomiaru lasera.</small></p>
 <p><small>Znając przesunięcie robota względem trzech punktów pomiarowych (ścian: lewej, przedniej i prawej) potrafimy z dużą dokładnością określić jego pozycję w osi Y oraz trochę mniej dokładnie w osi X:</small></p>
 <div style="display: flex; gap: 20px; justify-content: center; align-items: flex-start; margin: 20px 0;">
 <div style="flex: 1; text-align: center; max-width: 380px;">
-<img alt="Pozycja startowa" src="lab/img/lidar_walls_start.svg" style="width: 100%; height: auto;"/>
+<img alt="Pozycja startowa" src="lab/data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MjAgNDIwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDwhLS0gQXJyb3cgbWFya2VyIGZvciBsYXNlciBiZWFtcyAtLT4KICAgIDxtYXJrZXIgaWQ9ImFycm93LWJlYW0iIG1hcmtlcldpZHRoPSI2IiBtYXJrZXJIZWlnaHQ9IjYiIHJlZlg9IjUiIHJlZlk9IjMiIG9yaWVudD0iYXV0byI+CiAgICAgIDxwYXRoIGQ9Ik0wLDAgTDYsMyBMMCw2IFoiIGZpbGw9IiNlMTFkNDgiIC8+CiAgICA8L21hcmtlcj4KICAgIDwhLS0gRHJvcCBzaGFkb3cgZm9yIHJvYm90IGFuZCBiYWRnZXMgLS0+CiAgICA8ZmlsdGVyIGlkPSJzaGFkb3ciIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNTAlIiBoZWlnaHQ9IjE1MCUiPgogICAgICA8ZmVEcm9wU2hhZG93IGR4PSIwIiBkeT0iMyIgc3RkRGV2aWF0aW9uPSIzIiBmbG9vZC1jb2xvcj0iIzAwMDAwMCIgZmxvb2Qtb3BhY2l0eT0iMC4xNSIvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIEJhY2tncm91bmQgLyBGbG9vciAtLT4KICA8cmVjdCB3aWR0aD0iNDIwIiBoZWlnaHQ9IjQyMCIgZmlsbD0iI2Y4ZmFmYyIgcng9IjgiIC8+CgogIDwhLS0gR3JpZCBsaW5lcyBpbnNpZGUgYXJlbmEgLS0+CiAgPGcgc3Ryb2tlPSIjZTJlOGYwIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1kYXNoYXJyYXk9IjQsNCI+CiAgICA8bGluZSB4MT0iMTI1IiB5MT0iNTAiIHgyPSIxMjUiIHkyPSIzNTAiIC8+CiAgICA8bGluZSB4MT0iMjAwIiB5MT0iNTAiIHgyPSIyMDAiIHkyPSIzNTAiIC8+CiAgICA8bGluZSB4MT0iMjc1IiB5MT0iNTAiIHgyPSIyNzUiIHkyPSIzNTAiIC8+CiAgICA8bGluZSB4MT0iNTAiIHkxPSIxMjUiIHgyPSIzNTAiIHkyPSIxMjUiIC8+CiAgICA8bGluZSB4MT0iNTAiIHkxPSIyMDAiIHgyPSIzNTAiIHkyPSIyMDAiIC8+CiAgICA8bGluZSB4MT0iNTAiIHkxPSIyNzUiIHgyPSIzNTAiIHkyPSIyNzUiIC8+CiAgPC9nPgoKICA8IS0tIEFyZW5hIFdhbGxzIChQdWTFgm8gMW0geCAxbSkgLS0+CiAgPHJlY3QgeD0iNDQiIHk9IjQ0IiB3aWR0aD0iMzEyIiBoZWlnaHQ9IjMxMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjEyIiByeD0iNCIgLz4KCiAgPCEtLSBGcm9udCBCZWFtIC0tPgogIDxsaW5lIHgxPSIyMDAiIHkxPSIyMDAiIHgyPSIyMDAiIHkyPSI1NiIgc3Ryb2tlPSIjZTExZDQ4IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjQsMyIgbWFya2VyLWVuZD0idXJsKCNhcnJvdy1iZWFtKSIgLz4KICA8IS0tIExlZnQgQmVhbSAtLT4KICA8bGluZSB4MT0iMjAwIiB5MT0iMjAwIiB4Mj0iNTYiIHkyPSIyMDAiIHN0cm9rZT0iI2UxMWQ0OCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtZGFzaGFycmF5PSI0LDMiIG1hcmtlci1lbmQ9InVybCgjYXJyb3ctYmVhbSkiIC8+CiAgPCEtLSBSaWdodCBCZWFtIC0tPgogIDxsaW5lIHgxPSIyMDAiIHkxPSIyMDAiIHgyPSIzNDQiIHkyPSIyMDAiIHN0cm9rZT0iI2UxMWQ0OCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtZGFzaGFycmF5PSI0LDMiIG1hcmtlci1lbmQ9InVybCgjYXJyb3ctYmVhbSkiIC8+CgogIDwhLS0gRnJvbnQgYmFkZ2UgLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjA4LCAxMTMuMCkiPgogICAgPHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjI0IiByeD0iNCIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjZTExZDQ4IiBzdHJva2Utd2lkdGg9IjEuNSIgZmlsdGVyPSJ1cmwoI3NoYWRvdykiIC8+CiAgICA8dGV4dCB4PSIxOCIgeT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc3R5bGU9Iml0YWxpYyIgZmlsbD0iI2UxMWQ0OCI+ZuKCgDwvdGV4dD4KICA8L2c+CgogIDwhLS0gTGVmdCBiYWRnZSAtLT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMDcuMCwgMTcwKSI+CiAgICA8cmVjdCB3aWR0aD0iMzYiIGhlaWdodD0iMjQiIHJ4PSI0IiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNlMTFkNDgiIHN0cm9rZS13aWR0aD0iMS41IiBmaWx0ZXI9InVybCgjc2hhZG93KSIgLz4KICAgIDx0ZXh0IHg9IjE4IiB5PSIxNiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgZm9udC1zdHlsZT0iaXRhbGljIiBmaWxsPSIjZTExZDQ4Ij5s4oKAPC90ZXh0PgogIDwvZz4KCiAgPCEtLSBSaWdodCBiYWRnZSAtLT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyNTcuMCwgMTcwKSI+CiAgICA8cmVjdCB3aWR0aD0iMzYiIGhlaWdodD0iMjQiIHJ4PSI0IiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNlMTFkNDgiIHN0cm9rZS13aWR0aD0iMS41IiBmaWx0ZXI9InVybCgjc2hhZG93KSIgLz4KICAgIDx0ZXh0IHg9IjE4IiB5PSIxNiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgZm9udC1zdHlsZT0iaXRhbGljIiBmaWxsPSIjZTExZDQ4Ij5y4oKAPC90ZXh0PgogIDwvZz4KCiAgPCEtLSBSb2JvdCBCb2R5IC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIwMCwgMjAwKSIgZmlsdGVyPSJ1cmwoI3NoYWRvdykiPgogICAgPGNpcmNsZSBjeD0iMCIgY3k9IjAiIHI9IjI4IiBmaWxsPSIjZjFmNWY5IiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMi41IiAvPgogICAgCiAgICA8IS0tIDMgT21uaSBXaGVlbHMgLS0+CiAgICA8cmVjdCB4PSItMTAiIHk9IjIyIiB3aWR0aD0iMjAiIGhlaWdodD0iNyIgcng9IjIiIGZpbGw9IiMwZjE3MmEiIC8+CiAgICA8ZyB0cmFuc2Zvcm09InJvdGF0ZSgtNjApIj4KICAgICAgPHJlY3QgeD0iLTEwIiB5PSItMjkiIHdpZHRoPSIyMCIgaGVpZ2h0PSI3IiByeD0iMiIgZmlsbD0iIzBmMTcyYSIgLz4KICAgIDwvZz4KICAgIDxnIHRyYW5zZm9ybT0icm90YXRlKDYwKSI+CiAgICAgIDxyZWN0IHg9Ii0xMCIgeT0iLTI5IiB3aWR0aD0iMjAiIGhlaWdodD0iNyIgcng9IjIiIGZpbGw9IiMwZjE3MmEiIC8+CiAgICA8L2c+CgogICAgPCEtLSBGcm9udCBoZWFkaW5nIGluZGljYXRvciAtLT4KICAgIDxwb2x5Z29uIHBvaW50cz0iMCwtMjQgLTYsLTE0IDYsLTE0IiBmaWxsPSIjMDI4NGM3IiAvPgoKICAgIDwhLS0gTGlEQVIgbW9kdWxlIC0tPgogICAgPGNpcmNsZSBjeD0iMCIgY3k9IjAiIHI9IjExIiBmaWxsPSIjMDI4NGM3IiBzdHJva2U9IiMwMzY5YTEiIHN0cm9rZS13aWR0aD0iMiIgLz4KICAgIDxjaXJjbGUgY3g9IjAiIGN5PSIwIiByPSI0IiBmaWxsPSIjZmZmZmZmIiAvPgogIDwvZz4KCiAgPCEtLSBUaXRsZSAvIExlZ2VuZCBhdCBib3R0b20gLS0+CiAgPHRleHQgeD0iMjAwIiB5PSIzOTUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTMiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiMxZTI5M2IiPgogICAgUG96eWNqYSBzdGFydG93YQogIDwvdGV4dD4KPC9zdmc+Cg==" style="width: 100%; height: auto;"/>
 </div>
 <div style="flex: 1; text-align: center; max-width: 380px;">
-<img alt="Po przesunięciu" src="lab/img/lidar_walls_moved.svg" style="width: 100%; height: auto;"/>
+<img alt="Po przesunięciu" src="lab/data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MjAgNDIwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDwhLS0gQXJyb3cgbWFya2VyIGZvciBsYXNlciBiZWFtcyAtLT4KICAgIDxtYXJrZXIgaWQ9ImFycm93LWJlYW0iIG1hcmtlcldpZHRoPSI2IiBtYXJrZXJIZWlnaHQ9IjYiIHJlZlg9IjUiIHJlZlk9IjMiIG9yaWVudD0iYXV0byI+CiAgICAgIDxwYXRoIGQ9Ik0wLDAgTDYsMyBMMCw2IFoiIGZpbGw9IiNlMTFkNDgiIC8+CiAgICA8L21hcmtlcj4KICAgIDwhLS0gQXJyb3cgbWFya2VyIGZvciBkaXNwbGFjZW1lbnQgdmVjdG9ycyAob3JhbmdlKSAtLT4KICAgIDxtYXJrZXIgaWQ9ImFycm93LWRpc3Atb3JhbmdlIiBtYXJrZXJXaWR0aD0iNyIgbWFya2VySGVpZ2h0PSI3IiByZWZYPSI2IiByZWZZPSIzLjUiIG9yaWVudD0iYXV0byI+CiAgICAgIDxwYXRoIGQ9Ik0wLDAgTDcsMy41IEwwLDcgWiIgZmlsbD0iI2VhNTgwYyIgLz4KICAgIDwvbWFya2VyPgogICAgPCEtLSBEcm9wIHNoYWRvdyAtLT4KICAgIDxmaWx0ZXIgaWQ9InNoYWRvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE1MCUiIGhlaWdodD0iMTUwJSI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSIzIiBzdGREZXZpYXRpb249IjMiIGZsb29kLWNvbG9yPSIjMDAwMDAwIiBmbG9vZC1vcGFjaXR5PSIwLjE1Ii8+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CgogIDwhLS0gQmFja2dyb3VuZCAvIEZsb29yIC0tPgogIDxyZWN0IHdpZHRoPSI0MjAiIGhlaWdodD0iNDIwIiBmaWxsPSIjZjhmYWZjIiByeD0iOCIgLz4KCiAgPCEtLSBHcmlkIGxpbmVzIGluc2lkZSBhcmVuYSAtLT4KICA8ZyBzdHJva2U9IiNlMmU4ZjAiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWRhc2hhcnJheT0iNCw0Ij4KICAgIDxsaW5lIHgxPSIxMjUiIHkxPSI1MCIgeDI9IjEyNSIgeTI9IjM1MCIgLz4KICAgIDxsaW5lIHgxPSIyMDAiIHkxPSI1MCIgeDI9IjIwMCIgeTI9IjM1MCIgLz4KICAgIDxsaW5lIHgxPSIyNzUiIHkxPSI1MCIgeDI9IjI3NSIgeTI9IjM1MCIgLz4KICAgIDxsaW5lIHgxPSI1MCIgeTE9IjEyNSIgeDI9IjM1MCIgeTI9IjEyNSIgLz4KICAgIDxsaW5lIHgxPSI1MCIgeTE9IjIwMCIgeDI9IjM1MCIgeTI9IjIwMCIgLz4KICAgIDxsaW5lIHgxPSI1MCIgeTE9IjI3NSIgeDI9IjM1MCIgeTI9IjI3NSIgLz4KICA8L2c+CgogIDwhLS0gQXJlbmEgV2FsbHMgKFB1ZMWCbyAxbSB4IDFtKSAtLT4KICA8cmVjdCB4PSI0NCIgeT0iNDQiIHdpZHRoPSIzMTIiIGhlaWdodD0iMzEyIiBmaWxsPSJub25lIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMTIiIHJ4PSI0IiAvPgoKICA8IS0tIEdob3N0IG9mIHN0YXJ0IHBvc2l0aW9uIC0tPgogIDxnIG9wYWNpdHk9IjAuMzUiPgogICAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMjAwIiByPSIyOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOTRhM2I4IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWRhc2hhcnJheT0iMywzIiAvPgogICAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMjAwIiByPSIzIiBmaWxsPSIjOTRhM2I4IiAvPgogICAgPHRleHQgeD0iMjE2IiB5PSIyMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzk0YTNiOCI+c3RhcnQ8L3RleHQ+CiAgPC9nPgoKICA8IS0tIExhc2VyIEJlYW1zIGZyb20gY3VycmVudCByb2JvdCBwb3NlIC0tPgogIDwhLS0gRnJvbnQgQmVhbSAtLT4KICA8bGluZSB4MT0iMTQ1IiB5MT0iMTM1IiB4Mj0iMTQ1IiB5Mj0iNTYiIHN0cm9rZT0iI2UxMWQ0OCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtZGFzaGFycmF5PSI0LDMiIG1hcmtlci1lbmQ9InVybCgjYXJyb3ctYmVhbSkiIC8+CiAgPCEtLSBMZWZ0IEJlYW0gLS0+CiAgPGxpbmUgeDE9IjE0NSIgeTE9IjEzNSIgeDI9IjU2IiB5Mj0iMTM1IiBzdHJva2U9IiNlMTFkNDgiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWRhc2hhcnJheT0iNCwzIiBtYXJrZXItZW5kPSJ1cmwoI2Fycm93LWJlYW0pIiAvPgogIDwhLS0gUmlnaHQgQmVhbSAtLT4KICA8bGluZSB4MT0iMTQ1IiB5MT0iMTM1IiB4Mj0iMzQ0IiB5Mj0iMTM1IiBzdHJva2U9IiNlMTFkNDgiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWRhc2hhcnJheT0iNCwzIiBtYXJrZXItZW5kPSJ1cmwoI2Fycm93LWJlYW0pIiAvPgoKICA8IS0tIExhc2VyIEJlYW0gQmFkZ2VzIChmLCBsLCByKSAtLT4KICA8IS0tIEZyb250IGJhZGdlIC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE1MywgODAuNSkiPgogICAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjI0IiByeD0iNCIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjZTExZDQ4IiBzdHJva2Utd2lkdGg9IjEuNSIgZmlsdGVyPSJ1cmwoI3NoYWRvdykiIC8+CiAgICA8dGV4dCB4PSIxNiIgeT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc3R5bGU9Iml0YWxpYyIgZmlsbD0iI2UxMWQ0OCI+ZjwvdGV4dD4KICA8L2c+CiAgPCEtLSBMZWZ0IGJhZGdlIC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDgxLjUsIDEwNSkiPgogICAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjI0IiByeD0iNCIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjZTExZDQ4IiBzdHJva2Utd2lkdGg9IjEuNSIgZmlsdGVyPSJ1cmwoI3NoYWRvdykiIC8+CiAgICA8dGV4dCB4PSIxNiIgeT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc3R5bGU9Iml0YWxpYyIgZmlsbD0iI2UxMWQ0OCI+bDwvdGV4dD4KICA8L2c+CiAgPCEtLSBSaWdodCBiYWRnZSAtLT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMzEuNSwgMTA1KSI+CiAgICA8cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMjQiIHJ4PSI0IiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNlMTFkNDgiIHN0cm9rZS13aWR0aD0iMS41IiBmaWx0ZXI9InVybCgjc2hhZG93KSIgLz4KICAgIDx0ZXh0IHg9IjE2IiB5PSIxNiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgZm9udC1zdHlsZT0iaXRhbGljIiBmaWxsPSIjZTExZDQ4Ij5yPC90ZXh0PgogIDwvZz4KCiAgPCEtLSBSb2JvdCBCb2R5IC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NSwgMTM1KSIgZmlsdGVyPSJ1cmwoI3NoYWRvdykiPgogICAgPGNpcmNsZSBjeD0iMCIgY3k9IjAiIHI9IjI4IiBmaWxsPSIjZjFmNWY5IiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMi41IiAvPgogICAgCiAgICA8IS0tIDMgT21uaSBXaGVlbHMgLS0+CiAgICA8cmVjdCB4PSItMTAiIHk9IjIyIiB3aWR0aD0iMjAiIGhlaWdodD0iNyIgcng9IjIiIGZpbGw9IiMwZjE3MmEiIC8+CiAgICA8ZyB0cmFuc2Zvcm09InJvdGF0ZSgtNjApIj4KICAgICAgPHJlY3QgeD0iLTEwIiB5PSItMjkiIHdpZHRoPSIyMCIgaGVpZ2h0PSI3IiByeD0iMiIgZmlsbD0iIzBmMTcyYSIgLz4KICAgIDwvZz4KICAgIDxnIHRyYW5zZm9ybT0icm90YXRlKDYwKSI+CiAgICAgIDxyZWN0IHg9Ii0xMCIgeT0iLTI5IiB3aWR0aD0iMjAiIGhlaWdodD0iNyIgcng9IjIiIGZpbGw9IiMwZjE3MmEiIC8+CiAgICA8L2c+CgogICAgPCEtLSBGcm9udCBoZWFkaW5nIGluZGljYXRvciAtLT4KICAgIDxwb2x5Z29uIHBvaW50cz0iMCwtMjQgLTYsLTE0IDYsLTE0IiBmaWxsPSIjMDI4NGM3IiAvPgoKICAgIDwhLS0gTGlEQVIgbW9kdWxlIC0tPgogICAgPGNpcmNsZSBjeD0iMCIgY3k9IjAiIHI9IjExIiBmaWxsPSIjMDI4NGM3IiBzdHJva2U9IiMwMzY5YTEiIHN0cm9rZS13aWR0aD0iMiIgLz4KICAgIDxjaXJjbGUgY3g9IjAiIGN5PSIwIiByPSI0IiBmaWxsPSIjZmZmZmZmIiAvPgogIDwvZz4KCiAgPCEtLSBEaXNwbGFjZW1lbnQgdmVjdG9yczogT1JBTkdFIGFuZCBMQVlFUkVEIE9OIFRPUCBPRiBST0JPVCAtLT4KICA8IS0tIFZlY3RvciB5OiBmcm9tIHN0YXJ0X3ggbGVmdCB0byByb2JvdF94IGF0IHN0YXJ0X3kgLS0+CiAgPGxpbmUgeDE9IjIwMCIgeTE9IjIwMCIgeDI9IjE1MCIgeTI9IjIwMCIgc3Ryb2tlPSIjZWE1ODBjIiBzdHJva2Utd2lkdGg9IjIuNSIgbWFya2VyLWVuZD0idXJsKCNhcnJvdy1kaXNwLW9yYW5nZSkiIC8+CgogIDwhLS0gVmVjdG9yIHg6IGZyb20gc3RhcnRfeSBVUCB0byB0aGUgY2VudGVyIG9mIHJvYm90IChyb2JvdF95KSAtLT4KICA8bGluZSB4MT0iMTQ1IiB5MT0iMjAwIiB4Mj0iMTQ1IiB5Mj0iMTM5IiBzdHJva2U9IiNlYTU4MGMiIHN0cm9rZS13aWR0aD0iMi41IiBtYXJrZXItZW5kPSJ1cmwoI2Fycm93LWRpc3Atb3JhbmdlKSIgLz4KCiAgPCEtLSBDb3JuZXIgcHJvamVjdGlvbiBkb3QgYXQgKHJvYm90X3gsIHN0YXJ0X3kpIC0tPgogIDxjaXJjbGUgY3g9IjE0NSIgY3k9IjIwMCIgcj0iMi41IiBmaWxsPSIjZWE1ODBjIiAvPgoKICA8IS0tIERpc3BsYWNlbWVudCBiYWRnZXMgKHksIHgpIGluIE9SQU5HRSAtLT4KICA8IS0tIHkgYmFkZ2UgKGhvcml6b250YWwgdmVjdG9yKSAtLT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNjAuNSwgMjA4KSI+CiAgICA8cmVjdCB3aWR0aD0iMjQiIGhlaWdodD0iMjIiIHJ4PSI0IiBmaWxsPSIjZmZmN2VkIiBzdHJva2U9IiNlYTU4MGMiIHN0cm9rZS13aWR0aD0iMS41IiBmaWx0ZXI9InVybCgjc2hhZG93KSIgLz4KICAgIDx0ZXh0IHg9IjEyIiB5PSIxNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgZm9udC1zdHlsZT0iaXRhbGljIiBmaWxsPSIjZWE1ODBjIj55PC90ZXh0PgogIDwvZz4KCiAgPCEtLSB4IGJhZGdlICh2ZXJ0aWNhbCB2ZWN0b3IpIC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDExMywgMTU2LjUpIj4KICAgIDxyZWN0IHdpZHRoPSIyNCIgaGVpZ2h0PSIyMiIgcng9IjQiIGZpbGw9IiNmZmY3ZWQiIHN0cm9rZT0iI2VhNTgwYyIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbHRlcj0idXJsKCNzaGFkb3cpIiAvPgogICAgPHRleHQgeD0iMTIiIHk9IjE1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmb250LXN0eWxlPSJpdGFsaWMiIGZpbGw9IiNlYTU4MGMiPng8L3RleHQ+CiAgPC9nPgoKICA8IS0tIFRpdGxlIC8gTGVnZW5kIGF0IGJvdHRvbSAtLT4KICA8dGV4dCB4PSIyMDAiIHk9IjM5NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgZm9udC13ZWlnaHQ9IjYwMCIgZmlsbD0iIzFlMjkzYiI+CiAgICBQbyBwcnplc3VuacSZY2l1CiAgPC90ZXh0Pgo8L3N2Zz4K" style="width: 100%; height: auto;"/>
 </div>
 </div>
 <p><em>Gdy robot przesunie się o $x$ do przodu, odległość do przedniej ściany zmaleje o $x$, a gdy przesunie się o $y$ w lewo, odległość do lewej ściany zmaleje o $y$, a do prawej wzrośnie o $y$. Położenie względem startu to zatem:</em></p>
@@ -8304,7 +8300,7 @@ $$</p>
 <p><small>gdzie:</small></p>
 <ul>
 <li>$f_0$, $l_0$, $r_0$ <small>to odległości do przedniej, lewej i prawej ściany zmierzone na starcie (przed ruszeniem robota),</small></li>
-<li>$f$, $l$, $r$ <small>to aktualne odległości odczytywane w trakcie jazdy z wiązek LiDAR-u (odpowiednio: <code>beam_2</code>, <code>beam_1</code>, <code>beam_3</code>).</small></li>
+<li>$f$, $l$, $r$ <small>to aktualne odległości odczytywane w trakcie jazdy z wiązek LiDAR-u (odpowiednio: <code>beam_front</code>, <code>beam_left</code>, <code>beam_right</code>).</small></li>
 </ul>
 <div class="alert alert-block alert-warning">
 <small>
@@ -8340,19 +8336,18 @@ $$</p>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">lidar_reset</span><span class="p">():</span>
     <span class="k">global</span> <span class="n">f0</span><span class="p">,</span> <span class="n">l0</span><span class="p">,</span> <span class="n">r0</span>
-    <span class="n">f0</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_2</span>
-    <span class="n">l0</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_1</span>
-    <span class="n">r0</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_3</span>
+    <span class="n">f0</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_front</span>
+    <span class="n">l0</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_left</span>
+    <span class="n">r0</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_right</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">lidar_get_x</span><span class="p">():</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_2</span>
-    <span class="n">dx</span> <span class="o">=</span> <span class="n">f0</span><span class="o">.</span><span class="n">meters</span> <span class="o">-</span> <span class="n">f</span><span class="o">.</span><span class="n">meters</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_front</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="o">...</span>
     <span class="k">return</span> <span class="n">Distance</span><span class="o">.</span><span class="n">m</span><span class="p">(</span><span class="n">dx</span><span class="p">)</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">lidar_get_y</span><span class="p">():</span>
-    <span class="n">left</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_1</span>
-    <span class="n">right</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_3</span>
-    <span class="n">dy</span> <span class="o">=</span> <span class="p">((</span><span class="n">l0</span><span class="o">.</span><span class="n">meters</span> <span class="o">-</span> <span class="n">left</span><span class="o">.</span><span class="n">meters</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">r0</span><span class="o">.</span><span class="n">meters</span> <span class="o">-</span> <span class="n">right</span><span class="o">.</span><span class="n">meters</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="o">...</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="o">...</span>
     <span class="k">return</span> <span class="n">Distance</span><span class="o">.</span><span class="n">m</span><span class="p">(</span><span class="n">dy</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -8376,8 +8371,6 @@ $$</p>
     <span class="n">title</span><span class="o">=</span><span class="s2">"Odometria vs LiDAR"</span>
 <span class="p">)</span>
 
-<span class="n">live</span> <span class="o">=</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-
 <span class="k">def</span><span class="w"> </span><span class="nf">print_pos</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="n">pose</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">pose</span>
     <span class="n">px</span><span class="p">,</span> <span class="n">py</span> <span class="o">=</span> <span class="n">pose</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span> <span class="n">pose</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">meters</span>
@@ -8390,13 +8383,12 @@ $$</p>
 <span class="n">print_pos</span><span class="p">(</span><span class="s2">"Pozycja startowa"</span><span class="p">)</span>
 
 <span class="n">final_drift</span> <span class="o">=</span> <span class="mf">0.0</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-    <span class="k">await</span> <span class="n">drive_square</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">rec</span><span class="p">),</span> <span class="n">robot</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">drive_square</span><span class="p">()</span>
 
-    <span class="c1"># Sprawdzamy wartości oraz różnicę po każdym przejściu pętli</span>
-    <span class="n">final_drift</span> <span class="o">=</span> <span class="n">print_pos</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Przejście nr </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-
-<span class="n">live</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="c1"># Sprawdzamy wartości oraz różnicę po każdym przejściu pętli</span>
+        <span class="n">final_drift</span> <span class="o">=</span> <span class="n">print_pos</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Przejście nr </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8525,7 +8517,7 @@ Przejście nr 3: Odometria: (-0.024, -0.002), LiDAR: (0.001, -0.066), Różnica:
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">N_steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rec</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"odometry"</span><span class="p">])</span>
 
-<span class="n">Q</span> <span class="o">=</span> <span class="p">(</span><span class="n">final_drift</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">N_steps</span>
+<span class="n">Q</span> <span class="o">=</span> <span class="o">...</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Liczba próbek z rec:            N = </span><span class="si">{</span><span class="n">N_steps</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Zmierzony dryf na mecie:       Δ = </span><span class="si">{</span><span class="n">final_drift</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> mm"</span><span class="p">)</span>
@@ -8561,7 +8553,7 @@ Wariancja szumu procesu:       Q = 0.000024 m²  (24.08 mm²)
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h2 id="Cz%C4%99%C5%9B%C4%87-2:-Czujniki-odleg%C5%82o%C5%9Bci-i-Filtr-Kalmana">Część 2: Czujniki odległości i Filtr Kalmana<a class="anchor-link" href="#Cz%C4%99%C5%9B%C4%87-2:-Czujniki-odleg%C5%82o%C5%9Bci-i-Filtr-Kalmana">¶</a></h2><p><strong>Zadanie 3 – Ruch wahadłowy</strong></p>
 <p><small>Skupimy się teraz na pozostałych czujnikach, aby zobaczyć, jak radzą sobie w porównaniu do LiDARu.</small></p>
-<p><small>Zaimplementuj płynny ruch wahadłowy robota w kierunku ściany i z powrotem przez 10 sekund, tak aby wykonał dwa pełne okresy oscylacji. Do sterowania prędkością wykorzystaj funkcję okresową:</small></p>
+<p><small>Zaimplementuj płynny ruch wahadłowy robota pod kątem 15° w kierunku ściany i z powrotem, tak aby wykonał dwa pełne okresy oscylacji. Do sterowania prędkością wykorzystaj funkcję okresową:</small></p>
 <p>$$v(t) = A \cdot \sin\left(\frac{2\pi}{T} \cdot t\right), \qquad T = \frac{t_{\text{całk}}}{n}$$</p>
 </div>
 </div>
@@ -8576,33 +8568,24 @@ Wariancja szumu procesu:       Q = 0.000024 m²  (24.08 mm²)
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">robot</span><span class="o">.</span><span class="n">reset_pose</span><span class="p">()</span>
 
-<span class="n">clock</span> <span class="o">=</span> <span class="n">Clock</span><span class="p">()</span>
+<span class="n">clock</span> <span class="o">=</span> <span class="n">Clock</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">Time</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
 
 <span class="n">rec</span> <span class="o">=</span> <span class="n">SensorRecorder</span><span class="p">(</span>
     <span class="n">clock</span><span class="p">,</span>
     <span class="n">title</span><span class="o">=</span><span class="s2">"Ruch wahadłowy: LiDAR vs US vs IR"</span><span class="p">,</span>
     <span class="n">styles</span><span class="o">=</span><span class="p">{</span><span class="s2">"ultrasonic"</span><span class="p">:</span> <span class="s2">"scatter"</span><span class="p">,</span> <span class="s2">"ir"</span><span class="p">:</span> <span class="s2">"scatter"</span><span class="p">,</span> <span class="s2">"lidar"</span><span class="p">:</span> <span class="s2">"dashed"</span><span class="p">},</span>
-    <span class="n">lidar</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_2</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>
-    <span class="n">ultrasonic</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">robot</span><span class="o">.</span><span class="n">us_2</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>
-    <span class="n">ir</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_2</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>
+    <span class="n">lidar</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_front</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>
+    <span class="n">ultrasonic</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">robot</span><span class="o">.</span><span class="n">us_front</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>
+    <span class="n">ir</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_front</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">live</span> <span class="o">=</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">SPEED</span> <span class="o">=</span> <span class="o">...</span>   <span class="c1"># A</span>
+<span class="n">PERIOD</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># T</span>
 
-<span class="n">speed</span> <span class="o">=</span> <span class="mf">0.6</span>
-<span class="n">period</span> <span class="o">=</span> <span class="mi">5</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="k">async</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">clock</span><span class="p">:</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">speed</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">seconds</span> <span class="o">/</span> <span class="n">period</span><span class="p">)</span>
-        <span class="n">robot</span><span class="o">.</span><span class="n">set_vector</span><span class="p">(</span><span class="n">DriveVector</span><span class="p">(</span><span class="n">velocity</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">heading</span><span class="o">=</span><span class="n">Angle</span><span class="o">.</span><span class="n">deg</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
-
-        <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">Time</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mf">10.0</span><span class="p">):</span>
-            <span class="k">break</span>
-<span class="k">finally</span><span class="p">:</span>
-    <span class="n">robot</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-
-<span class="n">live</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">rec</span><span class="p">),</span> <span class="n">robot</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">clock</span><span class="p">:</span>
+        <span class="o">...</span>
+        <span class="n">robot</span><span class="o">.</span><span class="n">set_vector</span><span class="p">(</span><span class="n">DriveVector</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -8807,8 +8790,8 @@ Bokeh.set_log_level(&quot;info&quot;);
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calc_R</span><span class="p">(</span><span class="n">series</span><span class="p">):</span>
-    <span class="n">clean</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
-    <span class="n">mad</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">clean</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">clean</span><span class="p">))))</span>
+    <span class="n">clean</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>  <span class="c1"># odrzucenie braków pomiaru (np. brak echa, poza zakresem)</span>
+    <span class="n">mad</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># użyj np.abs, np.median</span>
     <span class="k">return</span> <span class="nb">max</span><span class="p">((</span><span class="mf">1.4826</span> <span class="o">*</span> <span class="n">mad</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -8823,12 +8806,13 @@ Bokeh.set_log_level(&quot;info&quot;);
 <div class="jp-InputPrompt jp-InputArea-prompt">In [17]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">R_ir</span> <span class="o">=</span> <span class="n">calc_R</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"ir"</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span><span class="s2">"lidar"</span><span class="p">])</span>
-<span class="n">R_us</span> <span class="o">=</span> <span class="n">calc_R</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"ultrasonic"</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span><span class="s2">"lidar"</span><span class="p">])</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Wyznacz szum pomiarowy R dla czujników IR i Ultrasonic względem referencyjnego LiDAR-u:</span>
+<span class="n">R_ir</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">R_us</span> <span class="o">=</span> <span class="o">...</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">--- Odporna estymacja szumu losowego R (MAD) ---"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"IR:         √R = </span><span class="si">{</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">R_ir</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2"> mm"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Ultrasonic:  √R = </span><span class="si">{</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">R_us</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2"> mm"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Ultrasonic: √R = </span><span class="si">{</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">R_us</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2"> mm"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8869,22 +8853,22 @@ Ultrasonic:  √R =  21.6 mm
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><small>Odometria jest płynna, lecz <b>dryfuje</b> (błąd akumuluje się w czasie). Czujniki odległości (ultradźwiękowy, IR) nie dryfują, ale są <b>zaszumione</b>.</small></p>
-<p><small><b>Filtr Kalmana</b> łączy oba źródła, wyznaczając optymalny <b>stan robota</b> </small>$x$<small>, wykonując naprzemiennie dwa kroki:</small></p>
+<p><small><b>Filtr Kalmana</b> łączy oba źródła, wyznaczając najbardziej prawdopodobny <b>stan robota</b> </small>$x$<small>, wykonując naprzemiennie dwa kroki:</small></p>
 <hr/>
 <h4 id="1.-Krok-predykcji-(ruch-robota-z-odometrii)">1. Krok predykcji (ruch robota z odometrii)<a class="anchor-link" href="#1.-Krok-predykcji-(ruch-robota-z-odometrii)">¶</a></h4><p><small>Przesuwamy stan robota o przemieszczenie z kół </small>$\Delta x$<small>. Niepewność stanu (wariancja </small>$P$<small>) rośnie o szum procesu </small>$Q$<small>:</small>
-$$x^- = x + \Delta x, \qquad P^- = P + Q$$</p>
+$$x_{\text{pred}} = x + \Delta x, \qquad P_{\text{pred}} = P + Q$$</p>
 <h4 id="2.-Krok-korekty-(pomiar-pozycji-$z$)">2. Krok korekty (pomiar pozycji $z$)<a class="anchor-link" href="#2.-Krok-korekty-(pomiar-pozycji-$z$)">¶</a></h4><p><small>Pomiar </small>$z$<small> musi opisywać tę samą wielkość co stan </small>$x$<small>. Ze zmierzonego dystansu do ściany </small>$d$<small> wyznaczamy położenie robota jako zbliżenie względem startu (</small>$d_0$<small>):</small>
 $$z = d_0 - d$$</p>
 <p><small>Obliczamy innowację (błąd prognozy) </small>$y$<small> oraz <b>wzmocnienie Kalmana</b> </small>$K \in [0, 1]$<small>, które określa stopień zaufania do pomiaru:</small>
-$$y = z - x^-, \qquad K = \frac{P^-}{P^- + R}$$
+$$y = z - x_{\text{pred}}, \qquad K = \frac{P_{\text{pred}}}{P_{\text{pred}} + R}$$
 <small>Korygujemy stan robota oraz redukujemy jego niepewność:</small>
-$$x = x^- + K \cdot y, \qquad P = (1 - K) \cdot P^-$$</p>
+$$x = x_{\text{pred}} + K \cdot y, \qquad P = (1 - K) \cdot P_{\text{pred}}$$</p>
 <hr/>
 <p><small><b>Intuicja wzmocnienia</b> </small>($K$):<br/></p>
 <ul>
-<li><small>Gdy sensor mocno szumi </small>$(R \gg P^-) \implies K \to 0$<small>: ignorujemy pomiar, polegamy na odometrii </small>$(x \approx x^-)$<small>.</small></li>
-<li><small>Gdy sensor jest bardzo precyzyjny </small>$(R \ll P^-) \implies K \to 1$<small>: ufamy pomiarowi </small>$(x \approx z)$<small>.</small></li>
-<li><small>Każda poprawna korekta zmniejsza niepewność stanu: </small>$(1 - K) \le 1 \implies P &lt; P^-$<small>.</small></li>
+<li><small>Gdy sensor mocno szumi </small>$(R \gg P_{\text{pred}}) \implies K \to 0$<small>: ignorujemy pomiar, polegamy na odometrii </small>$(x \approx x_{\text{pred}})$<small>.</small></li>
+<li><small>Gdy sensor jest bardzo precyzyjny </small>$(R \ll P_{\text{pred}}) \implies K \to 1$<small>: ufamy pomiarowi </small>$(x \approx z)$<small>.</small></li>
+<li><small>Każda poprawna korekta zmniejsza niepewność stanu: </small>$(1 - K) \le 1 \implies P &lt; P_{\text{pred}}$<small>.</small></li>
 </ul>
 </div>
 </div>
@@ -8896,8 +8880,8 @@ $$x = x^- + K \cdot y, \qquad P = (1 - K) \cdot P^-$$</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p><strong>Zadanie 4.1 – Krok korekty Filtru Kalmana (1D)</strong></p>
-<p><small>Uzupełnij implementację kroku korekty Filtru Kalmana dla pozycji robota </small>$x$<small> na podstawie wzorów powyżej:</small></p>
+<p><strong>Zadanie 4.1 – Krok predykcji i korekty Filtru Kalmana (1D)</strong></p>
+<p><small>Uzupełnij implementację kroku predykcji oraz korekty Filtru Kalmana dla pozycji robota </small>$x$<small> na podstawie wzorów powyżej:</small></p>
 </div>
 </div>
 </div>
@@ -8909,18 +8893,31 @@ $$x = x^- + K \cdot y, \qquad P = (1 - K) \cdot P^-$$</p>
 <div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">kalman_update</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">kalman_predict</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">Q</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Krok predykcji (predict) Filtru Kalmana 1D dla pozycji robota.</span>
+<span class="sd">    x: aktualna szacowana pozycja robota</span>
+<span class="sd">    P: wariancja niepewności pozycji</span>
+<span class="sd">    dx: przemieszczenie robota z odometrii</span>
+<span class="sd">    Q: wariancja szumu procesu (ruchu)</span>
+<span class="sd">    """</span>
+    <span class="n">x_new</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="n">P_new</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="k">return</span> <span class="n">x_new</span><span class="p">,</span> <span class="n">P_new</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">kalman_update</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Krok korekty (update) Filtru Kalmana 1D dla pozycji robota.</span>
-<span class="sd">    x: stan a priori robota</span>
-<span class="sd">    P: wariancja niepewności stanu a priori</span>
+<span class="sd">    x: szacowana pozycja robota (przed korektą, z kroku predykcji)</span>
+<span class="sd">    P: wariancja niepewności pozycji (przed korektą)</span>
 <span class="sd">    z: pomiar pozycji z czujnika</span>
 <span class="sd">    R: wariancja szumu pomiarowego</span>
 <span class="sd">    """</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">z</span> <span class="o">-</span> <span class="n">x</span>
-    <span class="n">K</span> <span class="o">=</span> <span class="n">P</span> <span class="o">/</span> <span class="p">(</span><span class="n">P</span> <span class="o">+</span> <span class="n">R</span><span class="p">)</span>
-    <span class="n">x_new</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">K</span> <span class="o">*</span> <span class="n">y</span>
-    <span class="n">P_new</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">K</span><span class="p">)</span> <span class="o">*</span> <span class="n">P</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="n">x_new</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="n">P_new</span> <span class="o">=</span> <span class="o">...</span>
     <span class="k">return</span> <span class="n">x_new</span><span class="p">,</span> <span class="n">P_new</span>
 </pre></div>
 </div>
@@ -8935,7 +8932,7 @@ $$x = x^- + K \cdot y, \qquad P = (1 - K) \cdot P^-$$</p>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><strong>Zadanie 4.2 – Filtr Kalmana w ruchu wahadłowym (1D)</strong></p>
-<p><small>Połącz ruch wahadłowy z Zadania 3 z funkcją <code>kalman_update</code>: w każdym kroku pętli wykonaj predykcję z odometrii oraz korektę stanu czujnikiem podczerwieni (IR).</small></p>
+<p><small>Wykorzystaj zaimplementowane w Zadaniu 4.1 funkcje <code>kalman_predict</code> i <code>kalman_update</code> w pętli sterowania. Użyj ruchu wahadłowego z Zadania 3: w każdym kroku pętli wykonaj predykcję z odometrii oraz korektę stanu czujnikiem podczerwieni (IR).</small></p>
 </div>
 </div>
 </div>
@@ -8948,56 +8945,43 @@ $$x = x^- + K \cdot y, \qquad P = (1 - K) \cdot P^-$$</p>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">robot</span><span class="o">.</span><span class="n">reset_pose</span><span class="p">()</span>
-<span class="n">clock</span> <span class="o">=</span> <span class="n">Clock</span><span class="p">()</span>
+<span class="n">clock</span> <span class="o">=</span> <span class="n">Clock</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">Time</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
 
 <span class="c1"># --- ZMIENNE FILTRU KALMANA ---</span>
 <span class="n">x</span> <span class="o">=</span> <span class="mf">0.0</span>
 <span class="n">P</span> <span class="o">=</span> <span class="n">Q</span>
-<span class="n">d0_ir</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_2</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span>
+<span class="n">d0_ir</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_front</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span>
 <span class="n">last_odom_x</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">meters</span>
 
 <span class="c1"># --- WIZUALIZACJA ---</span>
-<span class="n">d0_lidar</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_2</span><span class="o">.</span><span class="n">meters</span>
+<span class="n">d0_lidar</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_front</span><span class="o">.</span><span class="n">meters</span>
 <span class="n">rec</span> <span class="o">=</span> <span class="n">SensorRecorder</span><span class="p">(</span>
     <span class="n">clock</span><span class="p">,</span>
     <span class="n">title</span><span class="o">=</span><span class="s2">"Filtr Kalmana 1D (IR) vs Odometria"</span><span class="p">,</span>
     <span class="n">y_label</span><span class="o">=</span><span class="s2">"Pozycja x [m]"</span><span class="p">,</span>
     <span class="n">styles</span><span class="o">=</span><span class="p">{</span><span class="s2">"ir"</span><span class="p">:</span> <span class="s2">"scatter"</span><span class="p">,</span> <span class="s2">"kalman"</span><span class="p">:</span> <span class="s2">"line"</span><span class="p">,</span> <span class="s2">"odometry"</span><span class="p">:</span> <span class="s2">"line"</span><span class="p">,</span> <span class="s2">"lidar"</span><span class="p">:</span> <span class="s2">"dashed"</span><span class="p">},</span>
     <span class="n">odometry</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">robot</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>
-    <span class="n">ir</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">d0_ir</span> <span class="o">-</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_2</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>
+    <span class="n">ir</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">d0_ir</span> <span class="o">-</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_front</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>
     <span class="n">kalman</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
-    <span class="n">lidar</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">d0_lidar</span> <span class="o">-</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_2</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>
+    <span class="n">lidar</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">d0_lidar</span> <span class="o">-</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_front</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">live</span> <span class="o">=</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-<span class="n">speed</span> <span class="o">=</span> <span class="mf">0.6</span>
-<span class="n">period</span> <span class="o">=</span> <span class="mi">5</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="k">async</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">clock</span><span class="p">:</span>
-        <span class="c1"># Ruch wahadłowy z Zadania 3:</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">speed</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">seconds</span> <span class="o">/</span> <span class="n">period</span><span class="p">)</span>
-        <span class="n">robot</span><span class="o">.</span><span class="n">set_vector</span><span class="p">(</span><span class="n">DriveVector</span><span class="p">(</span><span class="n">velocity</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">heading</span><span class="o">=</span><span class="n">Angle</span><span class="o">.</span><span class="n">deg</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+<span class="k">with</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">rec</span><span class="p">),</span> <span class="n">robot</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">clock</span><span class="p">:</span>
+        <span class="c1"># Wklej tutaj ruch wahadłowy z Zadania 3:</span>
+        <span class="o">...</span>
 
         <span class="c1"># Predykcja:</span>
         <span class="n">curr_odom_x</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">meters</span>
-        <span class="n">dx</span> <span class="o">=</span> <span class="n">curr_odom_x</span> <span class="o">-</span> <span class="n">last_odom_x</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="o">...</span>
         <span class="n">last_odom_x</span> <span class="o">=</span> <span class="n">curr_odom_x</span>
-        <span class="n">x</span> <span class="o">+=</span> <span class="n">dx</span>
-        <span class="n">P</span> <span class="o">+=</span> <span class="n">Q</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">kalman_predict</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
 
         <span class="c1"># Pomiar:</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="n">d0_ir</span> <span class="o">-</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_2</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="o">...</span>
 
         <span class="c1"># Korekta:</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">kalman_update</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">R_ir</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">Time</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mf">10.0</span><span class="p">):</span>
-            <span class="k">break</span>
-<span class="k">finally</span><span class="p">:</span>
-    <span class="n">robot</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-
-<span class="n">live</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -9084,7 +9068,8 @@ Bokeh.set_log_level(&quot;info&quot;);
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h3 id="Fuzja-wielu-czujnik%C3%B3w-%E2%80%93-w-uproszczeniu">Fuzja wielu czujników – w uproszczeniu<a class="anchor-link" href="#Fuzja-wielu-czujnik%C3%B3w-%E2%80%93-w-uproszczeniu">¶</a></h3><p><small>Napisany przez nas algorytm Filtru Kalmana pozwala uwzględnić tylko jedno źródło. Z reguły tych źródeł będziemy posiadać wiele – w końcu nasz robot posiada aż sześć czujników oraz skaner laserowy.</small></p>
 <p><small>Natomiast funkcja w takiej postaci bardzo dobrze nadaje się do nauki, a dołożenie kolejnego czujnika jest tak proste, jak wykonanie sekwencyjnie kolejnych aktualizacji Filtrem Kalmana:</small></p>
-<div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">kalman_update</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">z_ir</span><span class="p">,</span> <span class="n">R_ir</span><span class="p">)</span> <span class="c1"># Filtr Kalmana z wejściem IR</span>
+<div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">kalman_predict</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>     <span class="c1"># Krok predykcji (ruch z odometrii)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">kalman_update</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">z_ir</span><span class="p">,</span> <span class="n">R_ir</span><span class="p">)</span> <span class="c1"># Filtr Kalmana z wejściem IR</span>
 <span class="n">x</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">kalman_update</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">z_us</span><span class="p">,</span> <span class="n">R_us</span><span class="p">)</span> <span class="c1"># Filtr Kalmana z wejściem IR oraz US</span>
 </pre></div>
 <p>$$\text{Predykcja}(Q) \;\longrightarrow\; \text{Korekta}(z_{\text{IR}}, R_{\text{IR}}) \;\longrightarrow\; \text{Korekta}(z_{\text{US}}, R_{\text{US}})$$</p>
@@ -9113,19 +9098,19 @@ Bokeh.set_log_level(&quot;info&quot;);
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">robot</span><span class="o">.</span><span class="n">reset_pose</span><span class="p">()</span>
-<span class="n">clock</span> <span class="o">=</span> <span class="n">Clock</span><span class="p">()</span>
+<span class="n">clock</span> <span class="o">=</span> <span class="n">Clock</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">Time</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
 
 <span class="c1"># --- ZMIENNE FILTRU KALMANA ---</span>
 <span class="n">x</span> <span class="o">=</span> <span class="mf">0.0</span>
 <span class="n">P</span> <span class="o">=</span> <span class="n">Q</span>
-<span class="n">d0_ir</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_2</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span>
-<span class="n">d0_us</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">us_2</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span>
+<span class="n">d0_ir</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_front</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span>
+<span class="n">d0_us</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">us_front</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span>
 <span class="n">last_odom_x</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">meters</span>
 
 <span class="c1"># --- WIZUALIZACJA ---</span>
 <span class="n">x_ir</span> <span class="o">=</span> <span class="mf">0.0</span>
 <span class="n">x_fusion</span> <span class="o">=</span> <span class="mf">0.0</span>
-<span class="n">d0_lidar</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_2</span><span class="o">.</span><span class="n">meters</span>
+<span class="n">d0_lidar</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_front</span><span class="o">.</span><span class="n">meters</span>
 <span class="n">rec</span> <span class="o">=</span> <span class="n">SensorRecorder</span><span class="p">(</span>
     <span class="n">clock</span><span class="p">,</span>
     <span class="n">title</span><span class="o">=</span><span class="s2">"Sekwencyjna fuzja (IR + US) vs Odometria"</span><span class="p">,</span>
@@ -9134,42 +9119,12 @@ Bokeh.set_log_level(&quot;info&quot;);
     <span class="n">odometry</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">robot</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>
     <span class="n">kalman_ir</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">x_ir</span><span class="p">,</span>
     <span class="n">kalman_fusion</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">x_fusion</span><span class="p">,</span>
-    <span class="n">lidar</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">d0_lidar</span> <span class="o">-</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_2</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>
+    <span class="n">lidar</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">d0_lidar</span> <span class="o">-</span> <span class="n">robot</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">beam_front</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">live</span> <span class="o">=</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-<span class="n">speed</span> <span class="o">=</span> <span class="mf">0.6</span>
-<span class="n">period</span> <span class="o">=</span> <span class="mi">5</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="k">async</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">clock</span><span class="p">:</span>
-        <span class="c1"># Ruch wahadłowy i predykcja z Zadania 4.2:</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">speed</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">seconds</span> <span class="o">/</span> <span class="n">period</span><span class="p">)</span>
-        <span class="n">robot</span><span class="o">.</span><span class="n">set_vector</span><span class="p">(</span><span class="n">DriveVector</span><span class="p">(</span><span class="n">velocity</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">heading</span><span class="o">=</span><span class="n">Angle</span><span class="o">.</span><span class="n">deg</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
-
-        <span class="n">curr_odom_x</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">meters</span>
-        <span class="n">dx</span> <span class="o">=</span> <span class="n">curr_odom_x</span> <span class="o">-</span> <span class="n">last_odom_x</span>
-        <span class="n">last_odom_x</span> <span class="o">=</span> <span class="n">curr_odom_x</span>
-        <span class="n">x</span> <span class="o">+=</span> <span class="n">dx</span>
-        <span class="n">P</span> <span class="o">+=</span> <span class="n">Q</span>
-
-        <span class="c1"># Pomiary:</span>
-        <span class="n">z_ir</span> <span class="o">=</span> <span class="n">d0_ir</span> <span class="o">-</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_2</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span>
-        <span class="n">z_us</span> <span class="o">=</span> <span class="n">d0_us</span> <span class="o">-</span> <span class="n">robot</span><span class="o">.</span><span class="n">us_2</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span>
-
-        <span class="c1"># Sekwencyjna korekta:</span>
-        <span class="n">x</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">kalman_update</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">z_ir</span><span class="p">,</span> <span class="n">R_ir</span><span class="p">)</span>
-        <span class="n">x_ir</span> <span class="o">=</span> <span class="n">x</span>
-
-        <span class="n">x</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">kalman_update</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">z_us</span><span class="p">,</span> <span class="n">R_us</span><span class="p">)</span>
-        <span class="n">x_fusion</span> <span class="o">=</span> <span class="n">x</span>
-
-        <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">Time</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mf">10.0</span><span class="p">):</span>
-            <span class="k">break</span>
-<span class="k">finally</span><span class="p">:</span>
-    <span class="n">robot</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-
-<span class="n">live</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">rec</span><span class="p">),</span> <span class="n">robot</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">clock</span><span class="p">:</span>
+        <span class="o">...</span>  <span class="c1"># rozpocznij od skopiowania zawartości zadania 4.2</span>
 </pre></div>
 </div>
 </div>
@@ -9313,32 +9268,32 @@ Bokeh.set_log_level(&quot;info&quot;);
 
 <span class="k">def</span><span class="w"> </span><span class="nf">sensors_reset</span><span class="p">():</span>
     <span class="k">global</span> <span class="n">d0_ir_f</span><span class="p">,</span> <span class="n">d0_ir_l</span><span class="p">,</span> <span class="n">d0_ir_r</span><span class="p">,</span> <span class="n">d0_us_f</span><span class="p">,</span> <span class="n">d0_us_l</span><span class="p">,</span> <span class="n">d0_us_r</span>
-    <span class="n">d0_ir_f</span><span class="p">,</span> <span class="n">d0_ir_l</span><span class="p">,</span> <span class="n">d0_ir_r</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_2</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_1</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_3</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span>
-    <span class="n">d0_us_f</span><span class="p">,</span> <span class="n">d0_us_l</span><span class="p">,</span> <span class="n">d0_us_r</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">us_2</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span> <span class="n">robot</span><span class="o">.</span><span class="n">us_1</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span> <span class="n">robot</span><span class="o">.</span><span class="n">us_3</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span>
+    <span class="n">d0_ir_f</span><span class="p">,</span> <span class="n">d0_ir_l</span><span class="p">,</span> <span class="n">d0_ir_r</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_front</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_left</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_right</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span>
+    <span class="n">d0_us_f</span><span class="p">,</span> <span class="n">d0_us_l</span><span class="p">,</span> <span class="n">d0_us_r</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">us_front</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span> <span class="n">robot</span><span class="o">.</span><span class="n">us_left</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span> <span class="n">robot</span><span class="o">.</span><span class="n">us_right</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span>
 
 <span class="n">robot</span><span class="o">.</span><span class="n">reset_pose</span><span class="p">()</span>
 <span class="n">sensors_reset</span><span class="p">()</span>
 
 <span class="n">z</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="k">lambda</span><span class="p">:</span> <span class="n">d0_ir_f</span> <span class="o">-</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_2</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>  <span class="c1"># IR przód</span>
-    <span class="k">lambda</span><span class="p">:</span> <span class="n">d0_ir_l</span> <span class="o">-</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_1</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>  <span class="c1"># IR lewy</span>
-    <span class="k">lambda</span><span class="p">:</span> <span class="n">d0_ir_r</span> <span class="o">-</span> <span class="n">robot</span><span class="o">.</span><span class="n">ir_3</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>  <span class="c1"># IR prawy</span>
-    <span class="k">lambda</span><span class="p">:</span> <span class="n">d0_us_f</span> <span class="o">-</span> <span class="n">robot</span><span class="o">.</span><span class="n">us_2</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>  <span class="c1"># US przód</span>
-    <span class="k">lambda</span><span class="p">:</span> <span class="n">d0_us_l</span> <span class="o">-</span> <span class="n">robot</span><span class="o">.</span><span class="n">us_1</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>  <span class="c1"># US lewy</span>
-    <span class="k">lambda</span><span class="p">:</span> <span class="n">d0_us_r</span> <span class="o">-</span> <span class="n">robot</span><span class="o">.</span><span class="n">us_3</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span>  <span class="c1"># US prawy</span>
+    <span class="k">lambda</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span>  <span class="c1"># IR przód</span>
+    <span class="k">lambda</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span>  <span class="c1"># IR lewy</span>
+    <span class="k">lambda</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span>  <span class="c1"># IR prawy</span>
+    <span class="k">lambda</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span>  <span class="c1"># US przód</span>
+    <span class="k">lambda</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span>  <span class="c1"># US lewy</span>
+    <span class="k">lambda</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span>  <span class="c1"># US prawy</span>
 <span class="p">]</span>
 
-<span class="n">Q_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="n">Q</span><span class="p">,</span> <span class="n">Q</span><span class="p">])</span>
+<span class="n">Q_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
 
-<span class="n">R_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="n">R_ir</span><span class="p">,</span> <span class="n">R_ir</span><span class="p">,</span> <span class="n">R_ir</span><span class="p">,</span> <span class="n">R_us</span><span class="p">,</span> <span class="n">R_us</span><span class="p">,</span> <span class="n">R_us</span><span class="p">])</span>
+<span class="n">R_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
 
 <span class="n">H</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>   <span class="c1"># IR przód</span>
-    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>   <span class="c1"># IR lewy</span>
-    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># IR prawy</span>
-    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>   <span class="c1"># US przód</span>
-    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>   <span class="c1"># US lewy</span>
-    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># US prawy</span>
+    <span class="o">...</span><span class="p">,</span>  <span class="c1"># IR przód</span>
+    <span class="o">...</span><span class="p">,</span>  <span class="c1"># IR lewy</span>
+    <span class="o">...</span><span class="p">,</span>  <span class="c1"># IR prawy</span>
+    <span class="o">...</span><span class="p">,</span>  <span class="c1"># US przód</span>
+    <span class="o">...</span><span class="p">,</span>  <span class="c1"># US lewy</span>
+    <span class="o">...</span><span class="p">,</span>  <span class="c1"># US prawy</span>
 <span class="p">])</span>
 </pre></div>
 </div>
@@ -9374,10 +9329,9 @@ Bokeh.set_log_level(&quot;info&quot;);
     <span class="n">lidar</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">(</span><span class="n">lidar_get_x</span><span class="p">()</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span> <span class="n">lidar_get_y</span><span class="p">()</span><span class="o">.</span><span class="n">meters</span><span class="p">),</span>
     <span class="n">title</span><span class="o">=</span><span class="s2">"Odometria, Filtr Kalmana, LiDAR"</span>
 <span class="p">)</span>
-<span class="n">live</span> <span class="o">=</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-    <span class="k">await</span> <span class="n">drive_square</span><span class="p">()</span>
-<span class="n">live</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">rec</span><span class="p">),</span> <span class="n">robot</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">drive_square</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -9498,12 +9452,9 @@ Bokeh.set_log_level(&quot;info&quot;);
     <span class="n">title</span><span class="o">=</span><span class="s2">"Wpływ strojenia Q i R w 2D"</span>
 <span class="p">)</span>
 
-<span class="n">live</span> <span class="o">=</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">rec_tuning_2d</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-
-<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-    <span class="k">await</span> <span class="n">drive_square</span><span class="p">()</span>
-
-<span class="n">live</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">rec_tuning_2d</span><span class="p">),</span> <span class="n">robot</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">drive_square</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
