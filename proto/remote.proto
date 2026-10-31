@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package remote;
+
+message SetSpeedRequest {
+  float x = 1;
+  float y = 2;
+  float omega = 3;
+  bool reset_pose = 4;
+}
+
+message DistanceSensors {
+  float left_m = 1;
+  float front_m = 2;
+  float right_m = 3;
+}
+
+message RobotTelemetry {
+  float battery_voltage = 1;
+  float battery_percentage = 2;
+  bool is_battery_critical = 3;
+
+  float x = 4;
+  float y = 5;
+  float yaw_rad = 6;
+  float yaw_deg = 7;
+
+  DistanceSensors tof_sensors = 8;
+  DistanceSensors ultrasonic_sensors = 9;
+}

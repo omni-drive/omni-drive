@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+LAB_WORKSPACE="/home/guest/lab"
+MASTER_TEMPLATE="{{PROJECT_ROOT}}/lab/notebook.ipynb"
+
+echo "=================================================="
+echo "   OmniDrive Lab - Inicjalizacja stanowiska"
+echo "=================================================="
+
+if [ ! -f "$MASTER_TEMPLATE" ]; then
+  echo "Błąd: Nie znaleziono wzorcowego szablonu w $MASTER_TEMPLATE"
+  exit 1
+fi
+
+mkdir -p "$LAB_WORKSPACE"
+
+# Jeśli notebook już istnieje, twórz bezpieczną kopię zapasową
+if [ -f "$LAB_WORKSPACE/notebook.ipynb" ]; then
+  TIMESTAMP="$(date +'%Y%m%d_%H%M%S')"
+  BACKUP_NAME="notebook_backup_${TIMESTAMP}.ipynb"
+  cp "$LAB_WORKSPACE/notebook.ipynb" "$LAB_WORKSPACE/$BACKUP_NAME"
+  echo "Utworzono kopię zapasową poprzedniego pliku:"
+  echo "  -> $BACKUP_NAME"
+fi
+
+echo "Kopiowanie czystego szablonu notebook.ipynb..."
+cp "$MASTER_TEMPLATE" "$LAB_WORKSPACE/notebook.ipynb"
+chmod 664 "$LAB_WORKSPACE/notebook.ipynb"
+
+# Automatyczne otwarcie w edytorze VS Code / code-server
+if command -v code-server >/dev/null 2>&1; then
+  code-server -r "$LAB_WORKSPACE/notebook.ipynb" >/dev/null 2>&1 || true
+fi
+
+echo ""
+echo "Gotowe! Otwarto czysty plik notebook.ipynb."
+echo "Powodzenia w realizacji zadań laboratoryjnych!"
+echo "=================================================="
+

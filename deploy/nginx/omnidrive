@@ -1,0 +1,42 @@
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    "" close;
+}
+
+server {
+    listen 80 default_server;
+    server_name omnidrive.local localhost;
+
+    client_max_body_size 50M;
+
+    # Remote control / joystick UI (Flutter Web)
+    location /joystick/ {
+        alias {{PROJECT_ROOT}}/remote_control/build/web/;
+        index index.html;
+        try_files $uri $uri/ /joystick/index.html;
+    }
+
+    # WebSocket proxy for robot telemetry and joystick commands
+    location /ws {
+        proxy_pass http://127.0.0.1:8765;
+        proxy_http_version 1.1;
+
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+
+        proxy_read_timeout 86400s;
+    }
+
+    # Code-server (VS Code web IDE) as the root application
+    location / {
+        proxy_pass http://127.0.0.1:8080/;
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $http_host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Accept-Encoding gzip;
+
+        proxy_read_timeout 86400s;
+    }
+}

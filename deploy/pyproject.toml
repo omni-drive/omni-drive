@@ -1,0 +1,15 @@
+[project]
+name = "omni-drive-services"
+version = "0.1.0"
+description = "OmniDrive robot backend services"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "cobs==1.2.2",
+    "omni-drive",
+    "pyserial-asyncio>=0.6",
+    "websockets>=17.0.1",
+]
+
+[tool.uv.sources]
+omni-drive = { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.4.0/omni_drive-0.4.0-py3-none-any.whl" }
