@@ -1,0 +1,84 @@
+site_name: omni_drive
+site_description: Python library for the OmniDrive three-wheel omnidirectional robot.
+site_url: !ENV [READTHEDOCS_CANONICAL_URL, "https://omni-drive.readthedocs.io/"]
+repo_url: https://github.com/omni-drive/omni-drive
+repo_name: omni-drive/omni-drive
+edit_uri: edit/main/docs/src/
+docs_dir: src
+site_dir: site
+strict: true
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.footer
+    - content.code.copy
+    - search.highlight
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Light mode
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - On the robot: getting-started/robot.md
+      - Without a robot: getting-started/simulator.md
+  - Guides:
+      - Driving: guides/driving.md
+      - Reading sensors: guides/sensors.md
+      - Localization: guides/localization.md
+      - Visualizing: guides/visualizing.md
+      - Stopping safely: guides/safety.md
+  - Concepts:
+      - Frames and units: concepts/frames.md
+      - Odometry and drift: concepts/odometry.md
+      - The Kalman filter: concepts/kalman.md
+      - Expected ultrasonic ranges: concepts/ultrasonic.md
+  - API reference:
+      - omni_drive: reference/omni_drive.md
+      - omni_drive.models: reference/models.md
+      - omni_drive.hardware: reference/hardware.md
+      - omni_drive.kinematics: reference/kinematics.md
+      - omni_drive.sensors: reference/sensors.md
+      - omni_drive.localization: reference/localization.md
+      - omni_drive.kalman: reference/kalman.md
+      - omni_drive.lidar_slam: reference/lidar_slam.md
+      - omni_drive.ui: reference/ui.md
+      - omni_drive.simulator: reference/simulator.md
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn

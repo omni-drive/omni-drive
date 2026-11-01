@@ -1,0 +1,21 @@
+[project]
+name = "omni-drive-lab"
+version = "0.1.0"
+description = "Laboratory exercises and notebooks for OmniDrive"
+requires-python = ">=3.12"
+dependencies = [
+    "omni-drive[jupyter-fix]",
+]
+
+[dependency-groups]
+dev = [
+    "jupyterlab>=4.6.5",
+]
+docs = [
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.7.7",
+]
+
+[tool.uv.sources]
+omni-drive = { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.5.0/omni_drive-0.5.0-py3-none-any.whl" }
+
