@@ -7955,7 +7955,7 @@ $$w_1 = -\sin(60^\circ)\,v_x + \cos(60^\circ)\,v_y + \omega$$</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p><small><b>b)</b> Sprawdźmy teraz, jak działa nasza kinematyka na robocie. Do tego celu musimy przygotować funkcję <code>drive_raw</code>, która przyjmuje wektor (<code>DriveVector</code>) oraz czas trwania, a następnie przekazuje obliczone prędkości na koła.</small></p>
+<p><small><b>b)</b> Sprawdźmy teraz, jak działa nasza kinematyka na robocie. Do tego celu musimy przygotować funkcję <code>drive_raw</code>, która przyjmuje wektor (<code>DriveVector</code> zadany we współrzędnych biegunowych: prędkość i kąt) oraz czas trwania, przelicza go na kartezjańskie składowe prędkości ($v_x, v_y$), a następnie przekazuje obliczone prędkości na koła.</small></p>
 <p><small>Dalej znajduje się przygotowany przejazd testowy – przeanalizuj wywołania: jakie ruchy po kolei wykona robot? Odpowiedz na to pytanie przed uruchomieniem kolejnej komórki.</small></p>
 </div>
 </div>
@@ -7980,6 +7980,7 @@ $$w_1 = -\sin(60^\circ)\,v_x + \cos(60^\circ)\,v_y + \omega$$</p>
     <span class="n">velocity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">vector</span><span class="o">.</span><span class="n">velocity</span>
     <span class="n">omega</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">vector</span><span class="o">.</span><span class="n">omega</span>
     <span class="k">async</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">Clock</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">):</span>
+        <span class="c1"># Przelicz wektor ze współrzędnych biegunowych (polar) na kartezjańskie (vx, vy):</span>
         <span class="n">theta</span> <span class="o">=</span> <span class="o">...</span>
         <span class="n">vx</span> <span class="o">=</span> <span class="o">...</span>
         <span class="n">vy</span> <span class="o">=</span> <span class="o">...</span>
@@ -8038,6 +8039,7 @@ $$w_1 = -\sin(60^\circ)\,v_x + \cos(60^\circ)\,v_y + \omega$$</p>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><strong>Zadanie 2 – Test dryfu odometrii</strong></p>
+<p><small>W kolejnych zadaniach będziemy korzystać z wbudowanego w bibliotekę odpowiednika napisanej przez nas w Zadaniu 1b funkcji <code>drive_raw</code> – metody <code>await robot.drive_for(...)</code> oraz pomocniczej <code>await robot.pause_for(...)</code>.</small></p>
 <p><small>Sprawdźmy, jak odometria zachowuje się w praktyce. Wykonaj test dryfu kół, realizując przejazd po zamkniętej trasie kwadratu – wyłącznie ruchem postępowym, bez obrotu (<code>omega = 0</code>). Klatka ma wymiary 78 × 78 cm, dlatego bok kwadratu ogranicz do ok. 20 cm (przy <code>velocity = 0.5</code> to ok. 1 s jazdy), a robota ustaw ok. 10 cm za środkiem klatki i 10 cm na prawo od niego. Uzupełnij funkcję <code>drive_square</code>:</small></p>
 </div>
 </div>
