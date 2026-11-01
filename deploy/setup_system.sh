@@ -109,11 +109,13 @@ EOF
   echo "Pre-installing Python and Jupyter extensions for code-server..."
   sudo -H -u guest code-server --install-extension ms-python.python --install-extension ms-toolsai.jupyter >/dev/null 2>&1 || true
 
-  # Configure default Python interpreter for code-server (user and workspace settings)
+  # Configure default Python interpreter, dark theme, and disable workspace trust prompt for students
   GUEST_VSCODE_SETTINGS="$GUEST_HOME/.local/share/code-server/User/settings.json"
   mkdir -p "$(dirname "$GUEST_VSCODE_SETTINGS")"
   cat <<EOF > "$GUEST_VSCODE_SETTINGS"
 {
+  "workbench.colorTheme": "Default Dark Modern",
+  "security.workspace.trust.enabled": false,
   "python.defaultInterpreterPath": "${PROJECT_ROOT}/lab/.venv/bin/python"
 }
 EOF
@@ -124,10 +126,19 @@ EOF
 
   chown -R guest:guest "$GUEST_HOME"
 
+  # Configure code-server to open /home/guest/lab by default via systemd override
+  echo "Configuring code-server to open $GUEST_LAB by default..."
+  mkdir -p /etc/systemd/system/code-server@guest.service.d
+  cat <<EOF > /etc/systemd/system/code-server@guest.service.d/workspace.conf
+[Service]
+ExecStart=
+ExecStart=/usr/bin/code-server /home/guest/lab
+EOF
+
   # Enable and start code-server service for guest
   echo "Enabling code-server service on boot for user 'guest'..."
   systemctl daemon-reload
-  systemctl enable --now code-server@guest 2>/dev/null || true
+  systemctl restart code-server@guest 2>/dev/null || systemctl enable --now code-server@guest 2>/dev/null || true
 fi
 
 # ==========================================
@@ -136,7 +147,13 @@ fi
 LAB_DIR="$PROJECT_ROOT/lab"
 LAB_PYTHON="$LAB_DIR/.venv/bin/python"
 
-if [ ! -f "$LAB_PYTHON" ] && command -v uv >/dev/null 2>&1; then
+# Clean up broken virtualenv if directory exists but python executable is missing
+if [ -d "$LAB_DIR/.venv" ] && [ ! -f "$LAB_PYTHON" ]; then
+  echo "Cleaning up broken virtual environment at $LAB_DIR/.venv..."
+  rm -rf "$LAB_DIR/.venv"
+fi
+
+if command -v uv >/dev/null 2>&1; then
   echo "Synchronizing lab environment with uv..."
   if [ -n "${SUDO_USER:-}" ]; then
     sudo -u "$SUDO_USER" env PATH="$PATH" uv sync --directory "$LAB_DIR"
@@ -151,7 +168,7 @@ if [ -f "$LAB_PYTHON" ]; then
   "$LAB_PYTHON" -m ipykernel install \
     --prefix /usr/local \
     --name omnidrive \
-    --display-name "Python (OmniDrive)" >/dev/null
+    --display-name "Python (OmniDrive)" >/dev/null 2>&1 || true
   echo "Jupyter kernel registered: Python (OmniDrive) -> $LAB_PYTHON"
 else
   echo "Warning: Python executable not found at $LAB_PYTHON. Jupyter kernel not registered."

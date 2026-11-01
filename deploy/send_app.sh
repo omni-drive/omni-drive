@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 ROBOT_HOST="${1:-omni@omnidrive.local}"
-ROBOT_PATH="${2:-/home/omni/omni-drive}"
+ROBOT_PATH="${2:-/home/omni/omni-drive-public}"
 
 echo "=================================================="
 echo "   OmniDrive - Build & Deploy Remote Control"
