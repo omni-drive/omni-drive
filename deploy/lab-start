@@ -29,13 +29,8 @@ echo "Kopiowanie czystego szablonu notebook.ipynb..."
 cp "$MASTER_TEMPLATE" "$LAB_WORKSPACE/notebook.ipynb"
 chmod 664 "$LAB_WORKSPACE/notebook.ipynb"
 
-# Automatyczne otwarcie w edytorze VS Code / code-server
-if command -v code-server >/dev/null 2>&1; then
-  code-server -r "$LAB_WORKSPACE/notebook.ipynb" >/dev/null 2>&1 || true
-fi
-
 echo ""
-echo "Gotowe! Otwarto czysty plik notebook.ipynb."
+echo "Gotowe! Zresetowano plik notebook.ipynb do stanu początkowego."
 echo "Powodzenia w realizacji zadań laboratoryjnych!"
 echo "=================================================="
 

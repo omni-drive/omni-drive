@@ -7,6 +7,8 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 DEPLOY_DIR="$SCRIPT_DIR"
 VENV_DIR="$DEPLOY_DIR/.venv"
 PYTHON_BIN="$VENV_DIR/bin/python"
+LAB_DIR="$PROJECT_ROOT/lab"
+LAB_PYTHON="$LAB_DIR/.venv/bin/python"
 ROBOT_USER="${SUDO_USER:-$USER}"
 
 # Ensure local and system bin are in PATH for uv
@@ -16,6 +18,7 @@ SERVICES=(
   esp-proxy.service
   lidar-proxy.service
   joystick-server.service
+  jupyter-lab.service
 )
 
 echo "=== OmniDrive Robot Installation ==="
@@ -35,7 +38,7 @@ if ! command -v uv >/dev/null 2>&1; then
   exit 1
 fi
 
-echo "Synchronizing dependencies with 'uv sync'..."
+echo "Synchronizing backend dependencies with 'uv sync'..."
 if [ -n "${SUDO_USER:-}" ]; then
   sudo -u "$SUDO_USER" env PATH="$PATH" uv sync --directory "$DEPLOY_DIR"
 else
@@ -46,6 +49,27 @@ if [ ! -f "$PYTHON_BIN" ]; then
   echo "Error: Python executable not found at $PYTHON_BIN."
   exit 1
 fi
+
+echo "Synchronizing lab dependencies with 'uv sync'..."
+if [ -n "${SUDO_USER:-}" ]; then
+  sudo -u "$SUDO_USER" env PATH="$PATH" uv sync --directory "$LAB_DIR"
+else
+  uv sync --directory "$LAB_DIR"
+fi
+chmod -R go=rX "$LAB_DIR/.venv" 2>/dev/null || true
+
+if [ ! -f "$LAB_PYTHON" ]; then
+  echo "Error: Lab Python executable not found at $LAB_PYTHON."
+  exit 1
+fi
+
+# Register single 'python3' kernel pointing to lab virtualenv
+echo "Registering 'python3' Jupyter kernel..."
+rm -rf /usr/local/share/jupyter/kernels/omnidrive
+"$LAB_PYTHON" -m ipykernel install \
+  --prefix "$LAB_DIR/.venv" \
+  --name python3 \
+  --display-name "Python 3 (OmniDrive)" >/dev/null 2>&1 || true
 
 if [ ! -f "$PROJECT_ROOT/remote_control/build/web/index.html" ]; then
   echo "Warning: Built web client not found at $PROJECT_ROOT/remote_control/build/web/index.html"
@@ -58,7 +82,9 @@ fi
 create_service() {
   local service_name="$1"
   local description="$2"
-  local python_module="$3"
+  local exec_start="$3"
+  local user="${4:-$ROBOT_USER}"
+  local work_dir="${5:-$DEPLOY_DIR}"
 
   tee "/etc/systemd/system/${service_name}.service" > /dev/null <<EOF
 [Unit]
@@ -67,11 +93,11 @@ After=network.target
 
 [Service]
 Type=simple
-User=${ROBOT_USER}
-WorkingDirectory=${DEPLOY_DIR}
+User=${user}
+WorkingDirectory=${work_dir}
 Environment="PYTHONUNBUFFERED=1"
 UMask=0000
-ExecStart=${PYTHON_BIN} -m services.${python_module}
+ExecStart=${exec_start}
 Restart=always
 RestartSec=2
 StandardOutput=journal
@@ -83,10 +109,14 @@ WantedBy=multi-user.target
 EOF
 }
 
-echo "Generating and installing systemd services for user '$ROBOT_USER'..."
-create_service "esp-proxy" "OmniDrive ESP32 Proxy" "esp_proxy"
-create_service "lidar-proxy" "OmniDrive LiDAR Proxy" "lidar_proxy"
-create_service "joystick-server" "OmniDrive Joystick WebSocket Server" "joystick_server"
+echo "Generating and installing systemd services..."
+create_service "esp-proxy" "OmniDrive ESP32 Proxy" "${PYTHON_BIN} -m services.esp_proxy"
+create_service "lidar-proxy" "OmniDrive LiDAR Proxy" "${PYTHON_BIN} -m services.lidar_proxy"
+create_service "joystick-server" "OmniDrive Joystick WebSocket Server" "${PYTHON_BIN} -m services.joystick_server"
+create_service "jupyter-lab" "OmniDrive JupyterLab Server for Students" \
+  "${LAB_PYTHON} -m jupyterlab --ip=127.0.0.1 --port=8888 --no-browser --ServerApp.token='' --ServerApp.password='' --ServerApp.allow_remote_access=True --ServerApp.root_dir=/home/guest/lab --LabApp.default_url=/lab/tree/notebook.ipynb" \
+  "guest" \
+  "/home/guest/lab"
 
 systemctl daemon-reload
 systemctl enable "${SERVICES[@]}"
@@ -117,24 +147,13 @@ fi
 # ==========================================
 # 4. Display service status summary
 # ==========================================
-CODE_SERVER_USER="guest"
-if ! id guest >/dev/null 2>&1; then
-  CODE_SERVER_USER="$ROBOT_USER"
-fi
-
 CHECK_SERVICES=(
   esp-proxy.service
   lidar-proxy.service
   joystick-server.service
+  jupyter-lab.service
   nginx.service
 )
-
-# Include code-server service in summary if present in systemd
-if systemctl list-unit-files "code-server@${CODE_SERVER_USER}.service" 2>/dev/null | grep -q "code-server"; then
-  CHECK_SERVICES+=("code-server@${CODE_SERVER_USER}.service")
-elif systemctl list-unit-files "code-server.service" 2>/dev/null | grep -q "code-server"; then
-  CHECK_SERVICES+=("code-server.service")
-fi
 
 # ANSI colors
 GREEN="\e[32m"
@@ -164,7 +183,7 @@ echo "=================================================="
 echo -e "${BOLD}OmniDrive robot installation completed!${RESET}"
 echo ""
 echo "Access URLs:"
-echo "  • Web IDE (code-server):  http://omnidrive.local/"
+echo "  • Web IDE (JupyterLab):   http://omnidrive.local/"
 echo "  • Remote Control:        http://omnidrive.local/joystick/"
 echo "  • WebSocket Telemetry:   ws://omnidrive.local/ws"
 echo "=================================================="

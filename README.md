@@ -32,20 +32,20 @@ The robot features:
 ```text
                +-----------------------------------------------------------+
                |                  Client (Laptop / Phone)                  |
-               |   [ VS Code Web IDE ]      [ Flutter Web Joystick App ]   |
+               |   [ JupyterLab Web IDE ]   [ Flutter Web Joystick App ]   |
                +-----------------------------------------------------------+
                         | (HTTP & WebSockets)           | (WebSocket /ws)
                         v                               v
        +-------------------------------------------------------------------+
        |                       Nginx Reverse Proxy (Port 80)               |
-       |  • /         -> proxy to code-server:8080                         |
+       |  • /         -> proxy to jupyter-lab:8888                         |
        |  • /joystick -> static files (remote_control/build/web/)          |
        |  • /ws       -> proxy to joystick-server:8765                     |
        +-------------------------------------------------------------------+
                  |                                              |
-                 v (:8080)                                      v (:8765)
+                 v (:8888)                                      v (:8765)
        +-------------------+                          +--------------------+
-       |    code-server    |                          |  joystick-server   |
+       |    jupyter-lab    |                          |  joystick-server   |
        |   (user: guest)   |                          |    (user: omni)    |
        +-------------------+                          +--------------------+
                  | (runs Jupyter kernel)                        |
@@ -78,7 +78,7 @@ The robot features:
 ```
 
 * **Reverse Proxy (Nginx):** Unified entrypoint on port 80:
-  * `/` &rarr; Reverse-proxies to `code-server` (`127.0.0.1:8080`).
+  * `/` &rarr; Reverse-proxies to `jupyter-lab` (`127.0.0.1:8888`).
   * `/joystick/` &rarr; Serves pre-built static Flutter Web assets directly from `remote_control/build/web/`.
   * `/ws` &rarr; Proxies WebSocket traffic to `joystick-server` (`127.0.0.1:8765`).
 * **Decoupled IPC Bus (`/tmp/*.ipc`):**
@@ -97,9 +97,10 @@ Run once when configuring a fresh Raspberry Pi or Ubuntu/Debian OS image:
 cd deploy
 sudo ./setup_system.sh
 ```
-* Installs required system packages (`nginx`, `curl`, `uv`, and `code-server`).
+* Installs required system packages (`nginx`, `curl`, and `uv`).
 * Creates the unprivileged `guest` user (no sudo) and locks down repository access to read-only.
 * Prepares `/home/guest/lab/` with the self-contained `notebook.ipynb` and installs `/usr/local/bin/lab-start`.
+* Configures JupyterLab dark theme by default for students.
 * Registers the global `Python (OmniDrive)` Jupyter kernel pointing to the master `.venv`.
 
 ### 2. Service Deployment & Updates (`install.sh`)

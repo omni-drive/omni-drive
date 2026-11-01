@@ -6,7 +6,7 @@ Backend hardware services, Nginx reverse proxy, and systemd configurations for t
 * `esp-proxy`: Serial/UART communication with ESP32 microcontroller over ZeroMQ IPC (`/tmp/esp_*.ipc`).
 * `lidar-proxy`: Serial driver for Hokuyo LiDAR publishing scans over ZeroMQ IPC (`/tmp/lidar_*.ipc`).
 * `joystick-server`: WebSocket server bridging remote control web client with robot control.
-* `code-server`: Browser-accessible VS Code IDE running under the unprivileged `guest` user.
+* `jupyter-lab`: Browser-accessible JupyterLab notebook server running under the unprivileged `guest` user.
 * `nginx`: Reverse proxy serving the Web IDE (`/`), Joystick web app (`/joystick/`), and WebSocket telemetry (`/ws`).
 
 ## Provisioning & Deployment
@@ -20,14 +20,11 @@ sudo ./setup_system.sh
 This script:
 * Installs required OS packages (`nginx`, `curl`).
 * Installs `uv` package manager system-wide (`/usr/local/bin`) if not already present.
-* Installs `code-server` if not already present.
 * Creates the unprivileged student account (`guest`) with no sudo privileges.
 * Adds the developer user to the `dialout` group for serial port access.
 * Sets permissions on `/home/<user>` to read-only for students (`r-x`).
 * Prepares `/home/guest/lab` with the self-contained `notebook.ipynb`.
 * Installs the global `lab-start` system command in `/usr/local/bin` to allow students to initialize or restore a clean notebook with automatic backup.
-* Configures and enables `code-server@guest` with passwordless local access (`auth: none`) and pre-installs Python/Jupyter extensions.
-* Registers the global `omnidrive` Jupyter kernel pointing to the read-only developer `.venv`.
 
 ### 2. Service Deployment & Updates (`install.sh`)
 Run to deploy or update services whenever repository code changes:
@@ -36,8 +33,9 @@ cd deploy
 sudo ./install.sh
 ```
 This script:
-* Synchronizes Python dependencies via `uv sync`.
-* Automatically installs and starts systemd units (`esp-proxy`, `lidar-proxy`, `joystick-server`) with `UMask=0000` so ZeroMQ IPC sockets are accessible to `guest`.
+* Synchronizes backend and lab Python dependencies via `uv sync`.
+* Registers the single `python3` Jupyter kernel pointing to the lab virtual environment.
+* Automatically installs and starts systemd units (`esp-proxy`, `lidar-proxy`, `joystick-server`, `jupyter-lab`) with `UMask=0000` so ZeroMQ IPC sockets are accessible to `guest`.
 * Deploys and reloads the Nginx configuration.
 * Displays a live status table of all services and access URLs.
 
