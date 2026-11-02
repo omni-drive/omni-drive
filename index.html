@@ -7999,20 +7999,13 @@ $$w_1 = -\sin(60^\circ)\,v_x + \cos(60^\circ)\,v_y + \omega$$</p>
 <div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">OMEGA_MAX</span> <span class="o">=</span> <span class="mf">3.89</span>  <span class="c1"># prędkość obrotu [rad/s] przy omega = 1.0</span>
-
-<span class="n">VELOCITY</span> <span class="o">=</span> <span class="mf">0.6</span>
-<span class="n">DURATION</span> <span class="o">=</span> <span class="n">Time</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mf">2.5</span><span class="p">)</span>
-
-<span class="n">robot</span><span class="o">.</span><span class="n">reset_pose</span><span class="p">()</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">robot</span><span class="o">.</span><span class="n">reset_pose</span><span class="p">()</span>
 
 <span class="k">async</span> <span class="k">with</span> <span class="n">robot</span><span class="p">:</span>
-    <span class="k">await</span> <span class="n">drive_raw</span><span class="p">(</span><span class="n">DURATION</span><span class="p">,</span> <span class="n">DriveVector</span><span class="p">(</span><span class="n">velocity</span><span class="o">=</span><span class="n">VELOCITY</span><span class="p">,</span> <span class="n">heading</span><span class="o">=</span><span class="n">Angle</span><span class="o">.</span><span class="n">deg</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
-    <span class="k">await</span> <span class="n">robot</span><span class="o">.</span><span class="n">pause_for</span><span class="p">(</span><span class="n">Time</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+    <span class="k">await</span> <span class="n">drive_raw</span><span class="p">(</span><span class="n">Time</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">DriveVector</span><span class="p">(</span><span class="n">velocity</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">heading</span><span class="o">=</span><span class="n">Angle</span><span class="o">.</span><span class="n">deg</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
 
-    <span class="n">omega</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="p">(</span><span class="n">DURATION</span><span class="o">.</span><span class="n">seconds</span> <span class="o">*</span> <span class="n">OMEGA_MAX</span><span class="p">)</span>
-    <span class="k">await</span> <span class="n">drive_raw</span><span class="p">(</span><span class="n">DURATION</span><span class="p">,</span> <span class="n">DriveVector</span><span class="p">(</span><span class="n">velocity</span><span class="o">=</span><span class="n">VELOCITY</span><span class="p">,</span> <span class="n">heading</span><span class="o">=</span><span class="n">Angle</span><span class="o">.</span><span class="n">deg</span><span class="p">(</span><span class="mi">180</span><span class="p">),</span> <span class="n">omega</span><span class="o">=</span><span class="n">omega</span><span class="p">))</span>
-    <span class="k">await</span> <span class="n">robot</span><span class="o">.</span><span class="n">pause_for</span><span class="p">(</span><span class="n">Time</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+    <span class="c1"># Zakomentuj polecenie powyżej, następnie odkomentuj polecenie niżej i uruchom komórkę ponownie:</span>
+    <span class="c1"># await drive_raw(Time.s(12), DriveVector(velocity=0.3, heading=Angle.deg(180), omega=0.2))</span>
 </pre></div>
 </div>
 </div>
@@ -8040,7 +8033,7 @@ $$w_1 = -\sin(60^\circ)\,v_x + \cos(60^\circ)\,v_y + \omega$$</p>
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><strong>Zadanie 2 – Test dryfu odometrii</strong></p>
 <p><small>W kolejnych zadaniach będziemy korzystać z wbudowanego w bibliotekę odpowiednika napisanej przez nas w Zadaniu 1b funkcji <code>drive_raw</code> – metody <code>await robot.drive_for(...)</code> oraz pomocniczej <code>await robot.pause_for(...)</code>.</small></p>
-<p><small>Sprawdźmy, jak odometria zachowuje się w praktyce. Wykonaj test dryfu kół, realizując przejazd po zamkniętej trasie kwadratu – wyłącznie ruchem postępowym, bez obrotu (<code>omega = 0</code>). Klatka ma wymiary 78 × 78 cm, dlatego bok kwadratu ogranicz do ok. 20 cm (przy <code>velocity = 0.5</code> to ok. 1 s jazdy), a robota ustaw ok. 10 cm za środkiem klatki i 10 cm na prawo od niego. Uzupełnij funkcję <code>drive_square</code>:</small></p>
+<p><small>Sprawdźmy, jak odometria zachowuje się w praktyce. Wykonaj test dryfu kół, realizując przejazd po zamkniętej trasie kwadratu – wyłącznie ruchem postępowym, bez obrotu (<code>omega = 0</code>). Klatka ma wymiary 78 × 78 cm, dlatego bok kwadratu ogranicz do ok. 20 cm, a robota ustaw ok. 10 cm za środkiem klatki i 10 cm na prawo od niego. Uzupełnij funkcję <code>drive_square</code>:</small></p>
 </div>
 </div>
 </div>
@@ -8052,9 +8045,9 @@ $$w_1 = -\sin(60^\circ)\,v_x + \cos(60^\circ)\,v_y + \omega$$</p>
 <div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">drive_square</span><span class="p">():</span>
-    <span class="k">await</span> <span class="n">robot</span><span class="o">.</span><span class="n">drive_for</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-    <span class="k">await</span> <span class="n">robot</span><span class="o">.</span><span class="n">pause_for</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">drive_square</span><span class="p">(</span><span class="n">duration_s</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="k">await</span> <span class="n">robot</span><span class="o">.</span><span class="n">drive_for</span><span class="p">(</span><span class="n">Time</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">duration_s</span><span class="p">),</span> <span class="n">DriveVector</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+    <span class="k">await</span> <span class="n">robot</span><span class="o">.</span><span class="n">pause_for</span><span class="p">(</span><span class="n">Time</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
     <span class="o">...</span>
 
 <span class="n">robot</span><span class="o">.</span><span class="n">reset_pose</span><span class="p">()</span>
