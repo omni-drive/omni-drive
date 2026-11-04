@@ -1,8 +1,13 @@
 \documentclass[10pt,a4paper]{article}
 
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\else
+  \usepackage{fontspec} % XeLaTeX/LuaLaTeX (e.g. Tectonic): Latin Modern via fontspec
+\fi
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage[polish]{babel}
 \usepackage{graphicx}
@@ -37,34 +42,6 @@
 
 \maketitle
 \thispagestyle{empty}
-
-\vspace{-0.1cm}
-\noindent
-\setlength{\fboxsep}{7pt}%
-\fcolorbox{blue!50!black}{blue!3}{%
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
-    \textbf{Przed zajęciami:}\par\vspace{2pt}
-    Zapoznaj się z~notebookiem \href{https://github.com/omni-drive/omni-drive/blob/main/lab/api_cookbook.ipynb}{\texttt{api\_cookbook.ipynb}}. Zawiera on dokumentację platformy OmniDrive, opis metod sterowania i~odczytu sensorów oraz przykłady użycia API.
-
-    \vspace{4.5pt}
-    \textbf{W trakcie zajęć:}\par\vspace{2pt}
-    \begin{enumerate}[leftmargin=1.5em, itemsep=2.5pt, topsep=2pt, parsep=0pt]
-        \item Włącz robota głównym przełącznikiem kołyskowym (\textbf{ON/OFF}) na obudowie.
-        \item Pod spodem robota wciśnij przycisk zasilania -- powinien się podświetlić, a~robot zacznie się uruchamiać.
-        \item Na komputerze wyszukaj sieć Wi-Fi \textbf{OmniDrive} i~połącz się z~nią (hasło: \texttt{omnidrive}).
-        \item W~przeglądarce otwórz adres: \url{http://omnidrive.local} (lub alternatywnie: \url{http://10.42.0.1}).
-        \item W~menu wybierz \emph{File} $\to$ \emph{New} $\to$ \emph{Terminal} i~wpisz polecenie \texttt{lab-start}. W~eksploratorze plików po lewej stronie pojawi się czysty, świeży szablon \texttt{notebook.ipynb} (jeśli plik nie jest widoczny, kliknij ikonę odświeżenia). Otwórz go i~rozpocznij wykonywanie zadań.
-    \end{enumerate}
-
-    \vspace{4.5pt}
-    \textbf{Po skończonej pracy:}\par\vspace{2pt}
-    \begin{enumerate}[leftmargin=1.5em, itemsep=2.5pt, topsep=2pt, parsep=0pt]
-        \item W~terminalu wydaj polecenie \texttt{sudo poweroff}, aby bezpiecznie wyłączyć system.
-        \item Przełącz przełącznik kołyskowy z~powrotem do pozycji \textbf{OFF}.
-    \end{enumerate}
-\end{minipage}%
-}
-\vspace{0.45cm}
 
 \section{Platforma mobilna OmniDrive}
 
@@ -180,6 +157,34 @@ W~każdym kroku dyskretnym filtr wykonuje naprzemiennie dwa etapy:
     \item \textbf{Gdy sensor jest bardzo precyzyjny ($R \ll \bar{P}$)}: wówczas $K \to 1$. Filtr natychmiast koryguje stan do pomiaru ($x \approx z$).
     \item \textbf{Redukcja niepewności}: każda poprawnie wykonana korekta zmniejsza wariancję stanu ($P < \bar{P}$).
 \end{itemize}
+
+\vspace{0.3cm}
+\noindent
+\setlength{\fboxsep}{7pt}%
+\fcolorbox{blue!50!black}{blue!3}{%
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+    \textbf{Przed zajęciami:}\par\vspace{2pt}
+    Zapoznaj się z~dokumentacją \href{https://omni-drive.readthedocs.io/en/latest/}{\texttt{omni-drive.readthedocs.io}} (w~szczególności z~sekcją \emph{Getting started}). Zawiera ona dokumentację platformy OmniDrive, opis metod sterowania i~odczytu sensorów oraz przykłady użycia API.
+
+    \vspace{4.5pt}
+    \textbf{W trakcie zajęć:}\par\vspace{2pt}
+    \begin{enumerate}[leftmargin=1.5em, itemsep=2.5pt, topsep=2pt, parsep=0pt]
+        \item Włącz robota głównym przełącznikiem kołyskowym (\textbf{ON/OFF}) na obudowie.
+        \item Pod spodem robota wciśnij przycisk zasilania -- powinien się podświetlić, a~robot zacznie się uruchamiać.
+        \item Na komputerze wyszukaj sieć Wi-Fi \textbf{OmniDrive} i~połącz się z~nią (hasło: \texttt{omnidrive}).
+        \item W~przeglądarce otwórz adres: \url{http://omnidrive.local} (lub alternatywnie: \url{http://10.42.0.1}).
+        \item W~menu wybierz \emph{File} $\to$ \emph{New} $\to$ \emph{Terminal} i~wpisz polecenie \texttt{lab-start}. W~eksploratorze plików po lewej stronie pojawi się czysty, świeży szablon \texttt{notebook.ipynb} (jeśli plik nie jest widoczny, kliknij ikonę odświeżenia). Otwórz go i~rozpocznij wykonywanie zadań.
+    \end{enumerate}
+
+    \vspace{4.5pt}
+    \textbf{Po skończonej pracy:}\par\vspace{2pt}
+    \begin{enumerate}[leftmargin=1.5em, itemsep=2.5pt, topsep=2pt, parsep=0pt]
+        \item W~terminalu wydaj polecenie \texttt{sudo poweroff}, aby bezpiecznie wyłączyć system.
+        \item Przełącz przełącznik kołyskowy z~powrotem do pozycji \textbf{OFF}.
+    \end{enumerate}
+\end{minipage}%
+}
+\vspace{0.45cm}
 
 \vspace{0.2cm}
 \paragraph{Literatura i materiały źródłowe:}
