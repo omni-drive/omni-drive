@@ -1,121 +1,189 @@
 # Reading sensors
 
-Every reading on this page returns the latest value sent by the robot and does not wait for
-new data. Most readings are `None` until the first message arrives. Lengths are in meters and
-angles in radians, unless the name says otherwise. Directions follow
-[Frames and units](../concepts/frames.md).
+Every reading on this page returns the latest value the robot sent and does not wait for new
+data. The ESP32 sends telemetry 50 times a second. Before the first message arrives, each
+reading returns a default value (listed below) instead of `None`.
 
-## Odometry
+The library does not notice when telemetry stops. If the robot disconnects, every reading keeps
+returning the last value it received.
 
-```python
-pose = robot.odometry  # Pose(x, y, yaw) or None
-if pose is not None:
-    print(pose.x, pose.y, pose.yaw)
-```
+Directions follow [Frames and units](../concepts/frames.md). `robot.print_status()` prints
+all readings at once.
 
-The ESP32 integrates the wheel encoders into a pose. It starts at `(0, 0, 0)` when the ESP32
-powers on, not when the notebook starts. To measure displacement from a starting point, store
-the first pose and use `Pose.relative_to`:
+## Pose
 
 ```python
-start = robot.odometry
-...
-moved = robot.odometry.relative_to(start)  # in the frame of the start pose
-print(f"{moved.x:.3f} m forward, {moved.y:.3f} m left")
+robot.pose            # Pose(x=0.152m, y=-0.004m, yaw=2.3°)
+x, y, yaw = robot.pose
+print(x.meters, y.meters, yaw.degrees)
 ```
 
-`robot.yaw` is the odometry heading relative to the last `robot.reset_yaw()`.
+`robot.pose` is a `Pose` with `x` and `y` as `Distance` and `yaw` as `Angle`. The ESP32
+computes it from the wheel encoders (see [Odometry and drift](../concepts/odometry.md)).
 
-Odometry drifts. [Odometry and drift](../concepts/odometry.md) explains why.
+The pose is relative to an origin that the library keeps:
+
+- `robot.reset_pose()` sets the origin to the current pose, so `robot.pose` reads
+  `(0, 0, 0)` right after it. Call it once telemetry is arriving: before the first message it
+  only clears the origin, which is then set at the next read of `robot.pose`.
+- If you never call `reset_pose()`, the origin is the pose at the first read of `robot.pose`.
+  `print_status()` and a running `Localizer` also read it.
+
+`x` points along the robot's front at the origin and `y` to its left. `reset_pose()` also
+resets `robot.imu_yaw` and the field-centric direction. Before the first telemetry message,
+`robot.pose` is `Pose()`, all zeros.
 
 ## Gyroscope
 
 ```python
-robot.imu_yaw  # float or None
+robot.imu_yaw.degrees  # e.g. 87.5
 ```
 
-This is the heading integrated from the gyroscope since the ESP32 powered on. It is not
-wrapped to ±π, so two full counter-clockwise turns read about `4 * math.pi`. Unlike the wheels,
-the gyroscope is not affected by slip, but its reading slowly drifts over time. If the gyroscope failed to start, it reads
-`0.0`.
+`robot.imu_yaw` is an `Angle`: the heading integrated from the gyroscope, relative to the
+heading at the last `robot.reset_pose()`, or at the first telemetry message after `OmniDrive()`
+was created (the motion controller reads it 50 times a second). `.radians` is wrapped to −π … π,
+but `.degrees` is always 0–360, so a small turn to the right reads about 355°. For a signed
+value in degrees use `math.degrees(robot.imu_yaw.radians)`.
 
-## LiDAR
+The gyroscope is not affected by wheel slip, but its reading slowly drifts over time. The
+ESP32 measures the gyroscope bias once, during the first second after it powers on. Keep the
+robot still while it starts. If the gyroscope failed to start, `imu_yaw` stays at 0.
+
+`robot.pose.yaw` comes from the wheels, `robot.imu_yaw` from the gyroscope. The two drift apart
+as the robot moves.
+
+## Distance sensors
+
+The robot has three pairs of distance sensors, at the left, front and right:
+
+| Left | Front | Right | Type |
+| --- | --- | --- | --- |
+| `robot.ir_left` | `robot.ir_front` | `robot.ir_right` | laser time-of-flight (VL53L1X) |
+| `robot.us_left` | `robot.us_front` | `robot.us_right` | ultrasonic |
+
+The `ir_*` sensors are time-of-flight laser sensors. `print_status()` lists them as "ToF".
+`robot.ultrasonic_sensors` is the tuple `(us_left, us_front, us_right)`.
 
 ```python
-scan = robot.lidar_scan
-if scan is not None:
-    points = scan.points_in_meters()  # (N, 2) NumPy array in meters
+d = robot.us_front.distance  # Distance
+print(d.meters, d.as_cm)
 ```
 
-`robot.lidar_scan` is the latest scan, or `None` before the first one. `points_in_meters()`
-returns its points as an `(N, 2)` array in meters, in the robot frame. `scan.points` is the same data as
-a list of `(x, y)` tuples in **millimeters**, and `scan.timestamp` is the Pi's
-`time.monotonic()` when the scan arrived.
-
-The LiDAR covers a field of view of about 240°, centered on the robot's front, with a range of
-up to 5.6 m, and sends a scan about 10 times a second. Directions without an echo are omitted,
-so the number of points varies from scan to scan. Points within 0.18 m of the center are
-reflections from the robot itself.
-
-To process each scan only once, use `robot.lidar()`. It returns the scan together with the
-number of scans received so far; the number changes when a new scan arrives:
+`.distance` returns a `Distance`. It returns `Distance.inf` when the sensor has no valid
+reading: before the first telemetry message, when the sensor gave no echo, or when it timed
+out. Compare readings with other `Distance` values, not with plain numbers:
 
 ```python
-import asyncio
+from omni_drive import Distance
 
-last = -1
-for _ in range(500):  # about 10 seconds
-    scan, count = robot.lidar()
-    if scan is not None and count != last:
-        last = count
-        ...  # handle the new scan
-    await asyncio.sleep(0.02)
+if robot.ir_front.distance < Distance.cm(30):
+    print("obstacle ahead")
 ```
 
-`robot.telemetry()` provides the same for the raw telemetry message.
+| | Time-of-flight (`ir_*`) | Ultrasonic (`us_*`) |
+| --- | --- | --- |
+| New reading | every 25 ms | each sensor about every 100 ms (the three are polled in turn) |
+| No reading | `Distance.inf` | `Distance.inf`, also beyond 2 m |
+| Correction in Python | multiplied by `cos(robot.imu_yaw)` | 0.0132 m subtracted |
 
-## Ultrasonic sensors
+The firmware adds Gaussian noise to every finite reading: a standard deviation of 15 mm for the
+time-of-flight sensors and 8 mm for the ultrasonic sensors.
 
-| Sensor | Faces |
-| --- | --- |
-| `robot.us_1` | front |
-| `robot.us_2` | left |
-| `robot.us_3` | right |
-
-```python
-d = robot.us_1.read()  # Distance or None
-if d is not None:
-    print(d.meters, d.as_cm)
-```
-
-A reading is the distance from the sensor face (0.15 m from the robot center) to the nearest
-object inside a 25° cone. With no echo, the sensor reports its maximum range, 4 m.
-
-`robot.ultrasonic_sensors` is the tuple `(us_1, us_2, us_3)`.
-
-### Emulated readings
-
-The firmware does not currently read the ultrasonic sensors. Until it does, `read()` computes a
-reading from the latest LiDAR scan instead: the nearest LiDAR point in the sensor's cone,
-measured from the sensor face, plus noise modeled on an HC-SR04 sensor (1 cm standard
-deviation, and about 3 % false echoes). One new value is produced per LiDAR scan.
-
-`robot.us_1.emulated` indicates the kind of the last reading and is updated on every `read()`:
-`True` when the value came from the LiDAR, `False` when it came from the sensor. Once the
-firmware sends real readings, the library uses them without any change to user code.
+!!! note "Time-of-flight readings depend on `imu_yaw`"
+    `ir_*.distance` multiplies the measured range by the cosine of `robot.imu_yaw`. This turns
+    the slanted range to a wall into the distance along the sensor's direction in the frame of
+    the last `reset_pose()`. Call `robot.reset_pose()` to make the current heading the reference.
 
 ### Wait for a reading
 
 ```python
-from omni_drive import Angle, DriveVector
+from omni_drive import Angle, Distance, DriveVector
 
-try:
-    robot.set_vector(DriveVector(0.2, Angle.deg(0)))
-    d = await robot.us_1.wait_for(lambda d: d.meters < 0.3)
-finally:
-    robot.stop()
+async with robot:
+    robot.set_vector(DriveVector(velocity=0.2, heading=Angle.deg(0)))
+    d = await robot.us_front.wait_for(lambda d: d < Distance.cm(30))
 print(f"wall at {d.as_cm:.0f} cm")
 ```
 
-`wait_for` checks the sensor every 20 ms and returns the first reading that makes the condition
-true.
+`sensor.wait_for(condition, polling_interval=Time.ms(20))` reads `.distance` every
+`polling_interval` and returns the first reading for which `condition` is true. It has no
+timeout. Because readings freeze when telemetry stops, add one yourself if the condition may
+never become true:
+
+```python
+import asyncio
+
+async with robot:
+    robot.set_vector(DriveVector(velocity=0.2, heading=Angle.deg(0)))
+    d = await asyncio.wait_for(robot.us_front.wait_for(lambda d: d < Distance.cm(30)), timeout=5)
+```
+
+`asyncio.wait_for` raises `TimeoutError` after 5 s, and `async with robot:` stops the robot.
+
+## LiDAR
+
+```python
+scan = robot.lidar          # LidarScan
+pts = scan.point_cloud      # (N, 2) NumPy array, meters
+print(len(scan.points), scan.timestamp)
+```
+
+`robot.lidar` returns the latest scan as a `LidarScan`. Before the first scan it returns an
+empty `LidarScan()`, with no points and `timestamp` 0.0.
+
+| Attribute | Content |
+| --- | --- |
+| `points` | list of `Point2D(x, y)` in **millimeters**, in the robot frame |
+| `point_cloud` | the same points as an `(N, 2)` NumPy array in meters |
+| `polar` | `(N, 2)` array of `[r, theta]`: `theta` in radians, `r` in meters minus a fixed 0.1242 m offset (clipped at 0) |
+| `timestamp` | `time.monotonic()` on the robot when the scan arrived |
+| `beam_left`, `beam_front`, `beam_right` | `Distance` in one direction, see below |
+
+The scanner covers about 240°, centered on the robot's front. The robot's service keeps
+ranges from 20 mm to 5.6 m and drops the rest, so the number of points changes from scan to
+scan. Points within about 0.18 m of the center are reflections from the robot itself; the
+[`Localizer`](localization.md) ignores them.
+
+Each access to `robot.lidar` builds a new `LidarScan` object, even when no new scan has
+arrived. To process each scan once, compare `timestamp`:
+
+```python
+from omni_drive import Clock, Time
+
+last = None
+async for _ in Clock(period=Time.ms(20), duration=Time.s(10)):
+    scan = robot.lidar
+    if scan.points and scan.timestamp != last:
+        last = scan.timestamp
+        ...  # handle the new scan
+```
+
+### Beams
+
+`beam_left`, `beam_front` and `beam_right` give one distance each, at +90°, 0° and −90°.
+Each one:
+
+1. takes the 51 points closest in angle to the beam direction;
+2. returns `Distance.inf` if the scan has fewer than 51 points, or if any of them is more than
+   16° from the direction;
+3. projects each point onto the beam direction and subtracts 0.1242 m;
+4. drops the 7 lowest and 7 highest of the 51 projections and returns the mean of the other 37.
+
+The beam directions are **not** fixed to the robot. They are measured in the frame of the last
+`robot.reset_pose()`: the library subtracts `robot.imu_yaw` from each direction. When the robot
+has turned by 30°, `beam_front` still looks towards the wall that was ahead at the reset. A beam
+returns `Distance.inf` once its direction leaves the scanner's field of view.
+
+## Power
+
+```python
+voltage, current, percentage, is_critical = robot.power
+print(f"{robot.power.percentage:.0f} % ({robot.power.voltage:.2f} V)")
+```
+
+`robot.power` is a `PowerStatus` with `voltage` (V), `current` (A), `percentage` (estimated
+charge, 0–100) and `is_critical`. `is_critical` is `True` when the battery voltage is below
+13.0 V. Before the first telemetry message all fields are 0 and `is_critical` is `False`.
+
+See [`omni_drive`](../reference/omni_drive.md), [`models`](../reference/models.md) and
+[`sensors`](../reference/sensors.md) in the API reference.

@@ -1,5 +1,5 @@
 site_name: omni_drive
-site_description: Python library for the OmniDrive three-wheel omnidirectional robot.
+site_description: Python library for the OmniDrive three-wheel omnidirectional robot (v0.6.1).
 site_url: !ENV [READTHEDOCS_CANONICAL_URL, "https://omni-drive.readthedocs.io/"]
 repo_url: https://github.com/omni-drive/omni-drive
 repo_name: omni-drive/omni-drive
@@ -50,10 +50,8 @@ plugins:
   - search
 
 nav:
-  - Home: index.md
-  - Getting started:
-      - On the robot: getting-started/robot.md
-      - Without a robot: getting-started/simulator.md
+  - Getting started: index.md
+  - On the robot: getting-started/robot.md
   - Guides:
       - Driving: guides/driving.md
       - Reading sensors: guides/sensors.md
@@ -68,14 +66,14 @@ nav:
   - API reference:
       - omni_drive: reference/omni_drive.md
       - omni_drive.models: reference/models.md
-      - omni_drive.hardware: reference/hardware.md
-      - omni_drive.kinematics: reference/kinematics.md
       - omni_drive.sensors: reference/sensors.md
-      - omni_drive.localization: reference/localization.md
+      - omni_drive.clock: reference/clock.md
+      - omni_drive.recorder: reference/recorder.md
+      - omni_drive.live: reference/live.md
       - omni_drive.kalman: reference/kalman.md
-      - omni_drive.lidar_slam: reference/lidar_slam.md
+      - omni_drive.processing.localization: reference/localization.md
+      - omni_drive.processing.lidar_slam: reference/lidar_slam.md
       - omni_drive.ui: reference/ui.md
-      - omni_drive.simulator: reference/simulator.md
 
 validation:
   omitted_files: warn

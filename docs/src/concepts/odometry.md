@@ -2,13 +2,13 @@
 
 ## How the robot computes odometry
 
-Each wheel has an encoder that measures the wheel's rotation. 100 times a second the ESP32
+Each wheel has an encoder that counts the wheel's rotation. 100 times a second the ESP32
 firmware:
 
 1. converts the encoder counts since the last step into the distance each wheel rolled;
 2. turns the three distances into a small motion of the robot in its own frame: \(\Delta x\)
-   forward, \(\Delta y\) left and \(\Delta\psi\) turned (the wheel geometry fixes this
-   conversion; working it out is one of the lab exercises);
+   forward, \(\Delta y\) left and \(\Delta\psi\) turned. This is the inverse of the wheel
+   kinematics you derive in the lab;
 3. adds that motion to the pose, rotated by the heading halfway through the step:
 
 \[
@@ -20,8 +20,13 @@ y &\leftarrow y + \Delta x\sin\bar\psi + \Delta y\cos\bar\psi \\
 \end{aligned}
 \]
 
-`Pose.advanced(dx, dy, dyaw)` does the same step in Python, and `Pose.increment_to(target)`
-recovers \((\Delta x, \Delta y, \Delta\psi)\) from two poses. The result is `robot.odometry`.
+The firmware sends this pose with every telemetry message. `robot.pose` is the same pose,
+expressed relative to the origin that `robot.reset_pose()` stores (see
+[Frames and units](frames.md)).
+
+In Python, `RawPose.advanced(dx, dy, dyaw)` from `omni_drive.processing.models` does the same
+step, and `RawPose.increment_to(target)` recovers \((\Delta x, \Delta y, \Delta\psi)\) from two
+poses.
 
 Each step only adds to the previous pose. The pose is never checked against the room.
 
@@ -43,32 +48,19 @@ calibration errors grow in proportion to the distance. Neither depends on time: 
 robot does not drift.
 
 The gyroscope (`robot.imu_yaw`) measures rotation without contact with the floor, so slip does
-not affect it. Instead, its reading drifts slowly over time.
+not affect it. Instead, its reading drifts slowly over time, also when the robot stands still.
+`robot.pose.yaw` does not use the gyroscope; it comes from the wheels only.
 
 ## See it
 
-With the [simulator running in the notebook](../getting-started/simulator.md#run-the-simulator-inside-the-notebook),
-drive three laps of a square and compare odometry with the true pose:
-
-```python
-import asyncio
-
-from omni_drive import Angle, DriveVector, Time
-
-for lap in range(3):
-    for heading in (0, 90, 180, 270):
-        await robot.drive_for(DriveVector(0.3, Angle.deg(heading)), Time.s(2))
-await asyncio.sleep(0.5)
-
-print("odometry:", sim.odometry)
-print("true:    ", sim.true_pose)
-```
-
-The simulator adds wheel calibration errors and random slip. Odometry reports that the robot
-has returned to near `(0, 0)`, while the true pose is a few centimeters away.
+Mark the robot's position on the floor, for example with tape next to the wheels, call
+`robot.reset_pose()`, and drive a closed path that ends where it started. Then compare
+`robot.pose` with the real displacement from the tape mark, measured with a tape measure. The
+lab's drift test (task 2) does exactly this.
 
 ## What corrects it
 
 Correcting the drift requires a sensor that measures the pose relative to the room. On this
-robot that sensor is the LiDAR. The [Kalman filter](kalman.md) combines odometry, which is
-smooth, with LiDAR poses, which do not drift.
+robot that sensor is the LiDAR. The [`Localizer`](../guides/localization.md) uses the gyroscope
+for heading changes (unless you pass `use_imu=False`) and the [Kalman filter](kalman.md) to
+combine odometry, which is smooth, with LiDAR poses, which do not drift.

@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.3.1
         with:
           python-version: "3.12"
           enable-cache: true
-      - run: uv sync --locked --only-group docs
-      - run: uv run --no-sync mkdocs build --strict -f docs/mkdocs.yml
+      - run: uv sync --project lab --locked --only-group docs
+      - run: uv run --project lab --no-sync mkdocs build --strict -f docs/mkdocs.yml

@@ -1397,8 +1397,8 @@ wheels = [
 
 [[package]]
 name = "omni-drive"
-version = "0.6.0"
-source = { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.6.0/omni_drive-0.6.0-py3-none-any.whl" }
+version = "0.6.1"
+source = { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.6.1/omni_drive-0.6.1-py3-none-any.whl" }
 dependencies = [
     { name = "bokeh" },
     { name = "jupyter-bokeh" },
@@ -1409,7 +1409,7 @@ dependencies = [
     { name = "scipy" },
 ]
 wheels = [
-    { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.6.0/omni_drive-0.6.0-py3-none-any.whl", hash = "sha256:99138f0f8f591f4a1169c035b14c6ccf29a1782bccdb2e2f55330ba2fcdaeff9" },
+    { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.6.1/omni_drive-0.6.1-py3-none-any.whl", hash = "sha256:1f6c20105a164dc6c6fed83dcf2716fbf77fb913b3abea1c101660ab593c976a" },
 ]
 
 [package.optional-dependencies]
@@ -1448,7 +1448,7 @@ docs = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "omni-drive", extras = ["jupyter-fix"], url = "https://github.com/omni-drive/omni-drive/releases/download/v0.6.0/omni_drive-0.6.0-py3-none-any.whl" }]
+requires-dist = [{ name = "omni-drive", extras = ["jupyter-fix"], url = "https://github.com/omni-drive/omni-drive/releases/download/v0.6.1/omni_drive-0.6.1-py3-none-any.whl" }]
 
 [package.metadata.requires-dev]
 dev = [{ name = "jupyterlab", specifier = ">=4.6.5" }]
@@ -1569,7 +1569,7 @@ name = "pexpect"
 version = "4.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "ptyprocess", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
+    { name = "ptyprocess" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/42/92/cc564bf6381ff43ce1f4d06852fc19a2f11d180f23dc32d9588bee2f149d/pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f", size = 166450, upload-time = "2023-11-25T09:07:26.339Z" }
 wheels = [

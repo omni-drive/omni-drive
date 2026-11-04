@@ -1,98 +1,87 @@
 # omni_drive.sensors
 
-The ultrasonic sensors. They are not created directly but obtained from the robot
-(`robot.us_1` to `robot.us_3`). See [Reading sensors](../guides/sensors.md).
+The time-of-flight (IR) and ultrasonic distance sensors. They are not created directly but
+obtained from the robot: `robot.ir_left`, `robot.ir_front`, `robot.ir_right`, `robot.us_left`,
+`robot.us_front`, `robot.us_right`.
 
-## UltrasonicSensor
+## Sensor
 
 ```python
-UltrasonicSensor(
-    sensor_id: UltrasonicSensorId,
-    config: UltrasonicConfig,
-    read_hardware: Callable[[], float | None],
-    latest_scan: Callable[[], tuple[LidarScan | None, int]],
-    seed: int | None = None,
+Sensor[SensorIdT: (IrSensorId, UltrasonicSensorId)](
+    index: SensorIdT,
+    esp_sub: ZmqSubscriber[TelemetryResponse] | None = None,
+    config: SensorConfig | None = None,
+    get_yaw: Callable[[], float] | None = None,
 )
 ```
 
-An HC-SR04 ultrasonic sensor. It returns the sensor's reading when the robot transmits one and
-otherwise emulates the reading from the latest LiDAR scan. The firmware does not currently
-transmit ultrasonic readings, so on the physical robot they are always emulated. `read_hardware` returns the sensor's
-reading in meters or `None`; `latest_scan` returns the latest scan and the scan count, like
-`robot.lidar()`. `seed` seeds the emulation noise.
+One distance sensor that reads the latest ESP32 telemetry message. `esp_sub` is the telemetry
+subscriber; a sensor without one always reads `Distance.inf`. `config` defaults to
+`SensorConfig.IR(...)` for an `IrSensorId` and `SensorConfig.US(...)` for an
+`UltrasonicSensorId`, with the angle from `SENSOR_ANGLES`. `get_yaw`, if given, returns a
+heading in radians used to correct the reading.
 
 | Member | Description |
 | --- | --- |
-| `read() -> Distance | None` | distance from the sensor face to the nearest object in the beam. `None` before any data has arrived, or when the sensor reported 0 or less |
-| `await wait_for(condition: Callable[[Distance], bool], polling_interval: Time = Time.ms(20)) -> Distance` | waits until a reading is not `None` and `condition(reading)` is true, then returns it |
-| `emulated: bool` | `True` if the last `read()` came from the LiDAR, `False` if it came from the sensor |
-| `sensor_id: UltrasonicSensorId` | `US_1`, `US_2` or `US_3` |
-| `config: UltrasonicConfig` | mounting and noise model, described below |
-| `ideal_range(points: np.ndarray) -> float` | noise-free emulated reading for a scan given as an `(N, 2)` array in meters, robot frame. Ignores points closer than 0.18 m to the robot center (`hardware.LIDAR_SELF_RETURN_RANGE_M`); `config.max_range` when the cone is empty |
+| `distance: Distance` | the current reading (below) |
+| `await wait_for(condition: Callable[[Distance], bool], polling_interval: Time = Time.ms(20)) -> Distance` | reads `distance` every `polling_interval` until `condition(reading)` is true, then returns that reading |
+| `index: SensorIdT` | the sensor's `IrSensorId` or `UltrasonicSensorId` |
+| `config: SensorConfig` | mounting and range, described below |
+
+`distance` is computed as follows:
+
+1. If there is no telemetry yet, or the raw reading is 0 or less, it returns `Distance.inf`.
+2. If `get_yaw` was given, the raw reading in meters is multiplied by `cos(get_yaw())`. The robot
+   passes `imu_yaw` to the three IR (ToF) sensors, so their readings are multiplied by
+   `cos(robot.imu_yaw.radians)`; ultrasonic readings are not.
+3. `config.offset` is subtracted and the result is clamped at 0.
+
+`min_range` and `max_range` from the config are not applied to the reading.
 
 ```python
-d = await robot.us_1.wait_for(lambda d: d.meters < 0.5)
+d = await robot.ir_front.wait_for(lambda d: d.meters < 0.5)
 ```
 
-An emulated sensor computes one new value per LiDAR scan and returns the same value until the
-next scan. See [How emulated readings are computed](../concepts/ultrasonic.md#how-emulated-readings-are-computed).
+`wait_for` does not skip `Distance.inf`: a condition such as `d.meters > 1.0` is satisfied by a
+missing reading.
 
-## UltrasonicConfig
+## IrSensor, UltrasonicSensor
 
 ```python
-UltrasonicConfig(
-    angle: float,
-    offset: float = 0.15,
-    cone: float = math.radians(25),
-    min_range: float = 0.02,
-    max_range: float = 4.0,
-    noise_std: float = 0.01,
-    outlier_prob: float = 0.03,
-)
+type IrSensor = Sensor[IrSensorId]
+type UltrasonicSensor = Sensor[UltrasonicSensorId]
 ```
+
+Type aliases for annotations. They are `type` statements, so they cannot be called or used with
+`isinstance`; use `Sensor` for that.
+
+## SensorConfig
+
+```python
+SensorConfig(angle: float, offset: float, cone: float, min_range: float, max_range: float)
+```
+
+Mounting and range of a sensor. The dataclass is frozen.
 
 | Field | Description |
 | --- | --- |
 | `angle` | direction the sensor faces in the robot frame, radians; 0 is forward |
-| `offset` | distance of the sensor face from the robot center, meters |
+| `offset` | subtracted from every reading, meters |
 | `cone` | full beam angle, radians |
-| `min_range` | shortest reading, meters |
-| `max_range` | reading when no echo returns, meters |
-| `noise_std` | standard deviation of emulated noise, meters |
-| `outlier_prob` | probability that an emulated reading is a false echo |
-| `face: tuple[float, float]` | position of the sensor face in the robot frame, meters (read-only) |
+| `min_range` | shortest range, meters |
+| `max_range` | longest range, meters; used as the limit when ray-casting expected readings |
+
+| Member | Description |
+| --- | --- |
+| `SensorConfig.IR(angle: float = 0.0)` | ToF sensor: `offset=0.0`, `cone=radians(27)`, `min_range=0.04`, `max_range=4.0` |
+| `SensorConfig.US(angle: float = 0.0)` | ultrasonic sensor: `offset=0.0132`, `cone=radians(55)`, `min_range=0.01`, `max_range=4.0` |
+| `face: tuple[float, float]` | position of the sensor face in the robot frame: 0.15 m from the center in the direction `angle`, meters |
 | `beam_angles(rays: int = 7) -> np.ndarray` | `rays` directions spread evenly across the cone, robot frame, radians |
-| `in_beam(relative_points: np.ndarray) -> np.ndarray` | for `(N, 2)` points relative to the sensor face, a boolean mask of those inside the cone |
 
-`DEFAULT_ULTRASONIC` maps each `UltrasonicSensorId` to its configuration: `US_1` front
-(`angle=0`), `US_2` left (`π/2`), `US_3` right (`−π/2`).
+## Constants
 
-```python
-from omni_drive.models import UltrasonicSensorId
-from omni_drive.sensors import DEFAULT_ULTRASONIC
-
-DEFAULT_ULTRASONIC[UltrasonicSensorId.US_2].face  # (9.2e-18, 0.15)
-```
-
-## noisy_reading
-
-```python
-noisy_reading(true_range: float, config: UltrasonicConfig, rng: np.random.Generator) -> float
-```
-
-Converts a true distance into a reading of the kind an HC-SR04 produces, in meters. With probability
-`config.outlier_prob` it returns a false echo: half the time `config.max_range`, otherwise a
-random distance between `config.min_range` and the true range (at most 0.5 m). In all other cases it
-adds Gaussian noise with `config.noise_std`. A true range at `max_range` or beyond returns
-`max_range`. The result is clipped to `[min_range, max_range]`. The function is used by both the
-emulated sensors and the simulator.
-
-```python
-import numpy as np
-
-from omni_drive.models import UltrasonicSensorId
-from omni_drive.sensors import DEFAULT_ULTRASONIC, noisy_reading
-
-rng = np.random.default_rng(0)
-noisy_reading(1.0, DEFAULT_ULTRASONIC[UltrasonicSensorId.US_1], rng)  # about 1.0
-```
+| Name | Value |
+| --- | --- |
+| `SENSOR_ANGLES` | `LEFT` π/2, `FRONT` 0, `RIGHT` −π/2, for both `IrSensorId` and `UltrasonicSensorId` |
+| `BEAM_RAYS` | 7, the default number of rays for `beam_angles` |
+| `POLL_INTERVAL` | `Time.ms(20)`, the default `wait_for` interval |

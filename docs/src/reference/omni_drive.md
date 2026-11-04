@@ -2,14 +2,26 @@
 
 ```python
 from omni_drive import (
-    Angle, Distance, DriveVector, Estimate, Localizer,
-    OmniDrive, Pose, PoseKalmanFilter, PoseNoise, Time, WheelId,
+    Angle, Clock, Distance, DriveVector, Kalman2d, LidarScan, LivePlot, Localizer,
+    OmniDrive, Point2D, Pose, PoseNoise, PoseRecorder, PowerStatus, Recorder,
+    SensorRecorder, Time, WheelId, processing,
 )
 ```
 
-This page documents `OmniDrive` (defined in `omni_drive.robot`). The other names are documented in
-[`omni_drive.models`](models.md), [`omni_drive.localization`](localization.md) and
-[`omni_drive.kalman`](kalman.md).
+| Name | Documented in |
+| --- | --- |
+| `OmniDrive` | this page; defined in `omni_drive.omni_drive` |
+| `Time`, `Distance`, `Angle`, `DriveVector`, `Pose`, `Point2D`, `LidarScan`, `PowerStatus`, `WheelId` | [`omni_drive.models`](models.md) |
+| `Clock` | [`omni_drive.clock`](clock.md) |
+| `Recorder`, `SensorRecorder`, `PoseRecorder` | [`omni_drive.recorder`](recorder.md) |
+| `LivePlot` | [`omni_drive.live`](live.md) |
+| `Kalman2d` | [`omni_drive.kalman`](kalman.md) |
+| `PoseNoise` | [`omni_drive.processing.kalman`](kalman.md#posenoise) |
+| `Localizer` | [`omni_drive.processing.localization`](localization.md) |
+| `processing` | the `omni_drive.processing` subpackage; it exports only `RawPose` ([`localization`](localization.md#rawpose)) |
+
+`IrSensorId`, `UltrasonicSensorId` and the sensor classes are not exported here. Import them from
+[`omni_drive.models`](models.md) and [`omni_drive.sensors`](sensors.md).
 
 ## OmniDrive
 
@@ -17,14 +29,21 @@ This page documents `OmniDrive` (defined in `omni_drive.robot`). The other names
 OmniDrive()
 ```
 
-Returns the robot. The first call connects to the robot's services and starts a background
-thread that sends wheel commands 50 times a second. Subsequent calls return the same object
-until `close()` is called.
+Returns the robot. `OmniDrive` is a singleton: the first call subscribes to the ESP32 telemetry and
+LiDAR streams and starts a background thread that sends wheel commands 50 times a second.
+Every later call returns the same object until `close()` is called.
 
 ```python
 robot = OmniDrive()
 assert OmniDrive() is robot
-assert isinstance(robot, OmniDrive)
+```
+
+The object is also an async context manager. Leaving the block calls `stop()`; it does not close
+the connection.
+
+```python
+async with OmniDrive() as robot:
+    await robot.drive_for(Time.s(2), DriveVector(0.3, Angle.deg(0)))
 ```
 
 ### Driving
@@ -35,22 +54,29 @@ assert isinstance(robot, OmniDrive)
 robot.set_vector(vector: DriveVector) -> None
 ```
 
-Sets the drive command and returns immediately. The robot follows the command until the next
-one arrives. The method also sets the three `wheel_N.speed` values back to 0 and switches to vector mode,
-with acceleration limits, heading hold and, if enabled, field-centric driving. See [Driving](../guides/driving.md).
+Sets the drive command and returns immediately. The robot follows it until the next command.
+Switches to [vector mode](#vector-mode) and sets the stored speed of all three wheels to 0.
 
 #### drive_for
 
 ```python
-await robot.drive_for(vector: DriveVector, duration: Time) -> None
+await robot.drive_for(duration: Time, vector: DriveVector) -> None
 ```
 
-Drives with `vector` for `duration` and then stops. The robot also stops if the wait is cancelled,
-for example when the cell is interrupted.
+Drives with `vector` for `duration` and then stops. `duration` comes first. The robot also stops
+if the wait is cancelled, for example when the cell is interrupted. Only `Time` is supported.
 
 ```python
-await robot.drive_for(DriveVector(0.3, Angle.deg(0)), Time.s(2))
+await robot.drive_for(Time.s(2), DriveVector(0.3, Angle.deg(0)))
 ```
+
+#### pause_for
+
+```python
+await robot.pause_for(_for: Time) -> None
+```
+
+Calls `stop()` and waits for `_for`.
 
 #### stop
 
@@ -58,8 +84,8 @@ await robot.drive_for(DriveVector(0.3, Angle.deg(0)), Time.s(2))
 robot.stop() -> None
 ```
 
-Sets the drive command to zero and the three `wheel_N.speed` values to 0. The robot
-decelerates over a fraction of a second. The method has no effect on a closed robot.
+Same as `set_vector(DriveVector.zero())`. In vector mode the robot decelerates along the
+acceleration ramp.
 
 #### field_centric
 
@@ -67,18 +93,8 @@ decelerates over a fraction of a second. The method has no effect on a closed ro
 robot.field_centric: bool  # read and write, default True
 ```
 
-When `True`, `DriveVector.heading` is measured from the yaw reference (see `reset_yaw`).
-When `False`, it is measured from the robot's current front.
-
-#### reset_yaw
-
-```python
-robot.reset_yaw() -> None
-```
-
-Makes the robot's current heading the new yaw reference: `robot.yaw` becomes 0 and
-field-centric headings are measured from it. The change takes effect in the next control
-cycle, within 20 ms.
+When `True`, `DriveVector.heading` is measured from the IMU yaw reference (see
+[`reset_pose`](#reset_pose)). When `False`, it is measured from the robot's current front.
 
 #### wheel_1, wheel_2, wheel_3
 
@@ -104,80 +120,101 @@ with robot.batch():
     robot.wheel_3.speed = 0.2
 ```
 
+#### Vector mode
+
+The background thread runs at 50 Hz. In vector mode, each cycle:
+
+1. Ramps the commanded `vx`, `vy` and `omega` toward the target at no more than 9.0 per second
+   (in fractions of full speed), so going from 0 to 1 takes about 0.11 s.
+2. Clamps `omega` to [−1, 1] and scales the translation down to at most `1 − |omega|`.
+3. If `field_centric` is on, rotates `(vx, vy)` from the yaw-reference frame into the robot
+   frame using the IMU yaw, extrapolated 50 ms ahead at the commanded turn rate.
+4. Converts `(vx, vy, omega)` to the three wheel speeds with the inverse kinematics of the
+   wheel layout (see [Frames and units](../concepts/frames.md)) and clips each to [−1, 1].
+
+Speeds below 0.001 are sent as 0. After 10 consecutive all-zero commands, the thread stops sending
+until a non-zero command appears. In raw mode (wheel speeds set directly), steps 1 to 4 are
+skipped and the three stored wheel speeds are sent as they are.
+
 ### Pose and heading
 
-#### odometry
+#### pose
 
 ```python
-robot.odometry: Pose | None
+robot.pose: Pose
 ```
 
-Wheel odometry pose, integrated by the ESP32 since it powered on. `None` before the first
-telemetry message.
-
-#### yaw
-
-```python
-robot.yaw: float
-```
-
-Odometry heading in radians relative to the last `reset_yaw()`, wrapped to [−π, π).
+Wheel odometry pose relative to the origin. The origin is the odometry pose at the first read
+of `pose` (or at the last `reset_pose()`). `Pose()` before the first telemetry message.
 
 #### imu_yaw
 
 ```python
-robot.imu_yaw: float | None
+robot.imu_yaw: Angle
 ```
 
-Heading integrated from the gyroscope since the ESP32 powered on, in radians. The value is not wrapped.
-`None` before the first telemetry message.
+Gyroscope heading relative to the IMU baseline, wrapped to [−π, π) in `radians`. The baseline is
+the heading in the first telemetry message (the motion controller reads `imu_yaw` 50 times a
+second from the start), or at the last `reset_pose()`. `Angle(0.0)` before
+the first telemetry message. Field-centric driving, `LidarScan.yaw` and the IR
+sensor correction all use this value.
 
-### LiDAR
-
-#### lidar_scan
+#### reset_pose
 
 ```python
-robot.lidar_scan: LidarScan | None
+robot.reset_pose() -> None
 ```
 
-The latest scan, or `None` before the first one. A `LidarScan` has:
+Makes the current odometry pose the new origin of `pose` and the current gyroscope heading the
+new IMU baseline, and resets the heading held by the motion controller. Before the first
+telemetry message, it clears both, so they are set again from the first message that arrives.
 
-| Member | Description |
-| --- | --- |
-| `points: list[tuple[float, float]]` | `(x, y)` in **millimeters**, robot frame; directions without an echo are left out |
-| `timestamp: float` | the Pi's `time.monotonic()` in seconds when the scan was read |
-| `points_in_meters() -> np.ndarray` | the points as an `(N, 2)` array in meters |
+### Sensors
 
 #### lidar
 
 ```python
-robot.lidar() -> tuple[LidarScan | None, int]
+robot.lidar: LidarScan
 ```
 
-The latest scan and the number of scans received so far. The number increases when a new scan
-arrives.
+The latest LiDAR scan, with `yaw` set to `imu_yaw` at the time of the read. An empty
+`LidarScan()` before the first scan. Each read creates a new object. See
+[`LidarScan`](models.md#lidarscan).
 
-### Ultrasonic sensors
-
-#### us_1, us_2, us_3
+#### ir_left, ir_front, ir_right
 
 ```python
-robot.us_1: UltrasonicSensor  # front
-robot.us_2: UltrasonicSensor  # left
-robot.us_3: UltrasonicSensor  # right
+robot.ir_left: IrSensor
 ```
 
-See [`UltrasonicSensor`](sensors.md#ultrasonicsensor).
+The three time-of-flight distance sensors. See [`Sensor`](sensors.md#sensor).
+
+#### us_left, us_front, us_right
+
+```python
+robot.us_left: UltrasonicSensor
+```
+
+The three ultrasonic sensors. See [`Sensor`](sensors.md#sensor).
 
 #### ultrasonic_sensors
 
 ```python
-robot.ultrasonic_sensors: tuple[UltrasonicSensor, UltrasonicSensor, UltrasonicSensor]
+robot.ultrasonic_sensors: tuple[UltrasonicSensor, ...]
 ```
 
-`(us_1, us_2, us_3)`.
+`(us_left, us_front, us_right)`.
 
 ### Status and connection
+
+#### power
+
+```python
+robot.power: PowerStatus
+```
+
+The latest battery status. `PowerStatus()` (all zeros) before the first telemetry message. See
+[`PowerStatus`](models.md#powerstatus).
 
 #### print_status
 
@@ -185,20 +222,10 @@ robot.ultrasonic_sensors: tuple[UltrasonicSensor, UltrasonicSensor, UltrasonicSe
 robot.print_status() -> None
 ```
 
-Prints the battery voltage, current and charge (with `CRITICAL` when the firmware reports a
-critical battery), the odometry pose, target and actual wheel speeds as fractions of full
-speed, the size and age of the last LiDAR scan, and the three ultrasonic readings with their
-source. If no telemetry has arrived, a hint is printed instead.
-
-#### telemetry
-
-```python
-robot.telemetry() -> tuple[TelemetryResponse | None, int]
-```
-
-The latest raw telemetry message and the number received so far. `TelemetryResponse` is the
-protobuf message defined in `omni_drive/proto/robot.proto`, with `odometry`, `imu`, `diagnostics` and
-`ultrasonic` fields.
+Prints the battery voltage, current and charge (`CRITICAL!` when the firmware reports a critical
+battery), the pose relative to the origin, the raw odometry, the target and actual wheel speeds
+reported by the firmware, and the ToF and ultrasonic distances. Prints
+`[Status] No telemetry received.` if no telemetry has arrived.
 
 #### close
 
@@ -206,20 +233,10 @@ protobuf message defined in `omni_drive/proto/robot.proto`, with `odometry`, `im
 robot.close() -> None
 ```
 
-Stops the robot, stops the background thread and closes the connection. Repeated calls have
-no effect. The method is also called automatically when the kernel exits.
-
-After `close()`, commands (`set_vector`, `drive_for`, wheel speeds) raise `RuntimeError`.
-A new connection is opened with `OmniDrive()`, which then returns a new object.
-
-#### is_current
-
-```python
-robot.is_current: bool
-```
-
-`True` while this object is the open connection that `OmniDrive()` returns. `False` after
-`close()`.
+Stops the robot, stops the background thread, sends zero wheel speeds and closes the
+connections. The next `OmniDrive()` call opens a new connection and returns a new object. Commands
+given to the old object after `close()` are no longer sent. `close()` is also called
+automatically when the interpreter exits.
 
 ## Wheel
 
@@ -228,9 +245,15 @@ robot.wheel_1.speed = 0.5
 robot.wheel_1.speed  # 0.5
 ```
 
-`speed: float` is the commanded speed as a fraction of full speed, clipped to [−1, 1]. The
-attribute is readable and writable.
+Wheels are created by `OmniDrive`; get them from `robot.wheel_1` to `robot.wheel_3`.
 
-Setting a speed switches the robot to raw mode and takes effect immediately, except
-inside [`batch()`](#batch). A positive speed on all three wheels turns the robot counter-clockwise.
-Full speed is about 0.39 m/s at the wheel rim (see [`omni_drive.hardware`](hardware.md)).
+| Member | Description |
+| --- | --- |
+| `speed: float` | commanded speed as a fraction of full speed, clipped to [−1, 1]; read and write |
+| `set_speed(speed: float) -> None` | same as assigning `speed` |
+
+Setting a speed switches the robot to raw mode; all three stored wheel speeds go out with the
+next 50 Hz control cycle (within 20 ms), except inside [`batch()`](#batch), where they are
+applied when the block ends. The other wheels keep their stored speeds;
+`set_vector()` and `stop()` set them to 0. A positive speed on all three wheels turns the robot
+counter-clockwise.

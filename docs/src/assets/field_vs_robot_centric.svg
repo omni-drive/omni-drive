@@ -24,8 +24,8 @@
 <rect width="960" height="500" fill="#f8fafc" rx="16"/>
 
     <g transform="translate(480, 36)" text-anchor="middle">
-      <text font-size="20" font-weight="700" fill="#0f172a">Wpływ układu odniesienia na ruch złożony (jazda + obrót)</text>
-      <text y="22" font-size="13" font-weight="500" fill="#64748b">DriveVector(velocity=0.4 m/s, heading=0°, omega=0.5 rad/s)</text>
+      <text font-size="20" font-weight="700" fill="#0f172a">How the frame changes a combined move (driving + turning)</text>
+      <text y="22" font-size="13" font-weight="500" fill="#64748b">DriveVector(velocity=0.4, heading=Angle.deg(0), omega=0.5)</text>
     </g>
     
 
@@ -36,8 +36,8 @@
     <g transform="translate(56, 110)">
       <rect x="0" y="-18" width="168" height="26" rx="6" fill="#ecfdf5"/>
       <text x="8" y="0" font-size="12" font-weight="700" fill="#059669">robot.field_centric = True</text>
-      <text x="0" y="24" font-size="15" font-weight="700" fill="#0f172a">Tryb Field-Centric (Układ świata)</text>
-      <text x="0" y="42" font-size="12" fill="#64748b">Wektor prędkości 0° zadany w pokoju (stały kierunek).</text>
+      <text x="0" y="24" font-size="15" font-weight="700" fill="#0f172a">Field-centric (room frame)</text>
+      <text x="0" y="42" font-size="12" fill="#64748b">Heading 0° is fixed in the room.</text>
     </g>
     
 
@@ -73,8 +73,8 @@
     <g transform="translate(520, 110)">
       <rect x="0" y="-18" width="168" height="26" rx="6" fill="#eff6ff"/>
       <text x="8" y="0" font-size="12" font-weight="700" fill="#1d4ed8">robot.field_centric = False</text>
-      <text x="0" y="24" font-size="15" font-weight="700" fill="#0f172a">Tryb Robot-Centric (Układ robota)</text>
-      <text x="0" y="42" font-size="12" fill="#64748b">Wektor prędkości 0° zadany względem nosa (skręca wraz z nim).</text>
+      <text x="0" y="24" font-size="15" font-weight="700" fill="#0f172a">Robot-centric (robot frame)</text>
+      <text x="0" y="42" font-size="12" fill="#64748b">Heading 0° is the robot's front and turns with it.</text>
     </g>
     
 
