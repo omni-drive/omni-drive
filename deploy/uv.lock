@@ -549,8 +549,8 @@ wheels = [
 
 [[package]]
 name = "omni-drive"
-version = "0.5.0"
-source = { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.5.0/omni_drive-0.5.0-py3-none-any.whl" }
+version = "0.6.0"
+source = { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.6.0/omni_drive-0.6.0-py3-none-any.whl" }
 dependencies = [
     { name = "bokeh" },
     { name = "jupyter-bokeh" },
@@ -561,7 +561,7 @@ dependencies = [
     { name = "scipy" },
 ]
 wheels = [
-    { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.5.0/omni_drive-0.5.0-py3-none-any.whl", hash = "sha256:40db491c6c01e052b3e5def49518c3c1170ebdbbb4089dcd53007323802a974d" },
+    { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.6.0/omni_drive-0.6.0-py3-none-any.whl", hash = "sha256:99138f0f8f591f4a1169c035b14c6ccf29a1782bccdb2e2f55330ba2fcdaeff9" },
 ]
 
 [package.metadata]
@@ -591,7 +591,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "cobs", specifier = "==1.2.2" },
-    { name = "omni-drive", url = "https://github.com/omni-drive/omni-drive/releases/download/v0.5.0/omni_drive-0.5.0-py3-none-any.whl" },
+    { name = "omni-drive", url = "https://github.com/omni-drive/omni-drive/releases/download/v0.6.0/omni_drive-0.6.0-py3-none-any.whl" },
     { name = "pyserial-asyncio", specifier = ">=0.6" },
     { name = "websockets", specifier = ">=17.0.1" },
 ]
