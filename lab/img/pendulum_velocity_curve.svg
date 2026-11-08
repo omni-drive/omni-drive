@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 300" width="540" height="300" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+  <defs>
+    <!-- Arrow marker for axes -->
+    <marker id="arr-axis" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#334155"/>
+    </marker>
+    <!-- Double arrows for dimensions -->
+    <marker id="dim-green" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M 0 2 L 7 5 L 0 8 z" fill="#16a34a"/>
+    </marker>
+    <marker id="dim-orange" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M 0 2 L 7 5 L 0 8 z" fill="#ea580c"/>
+    </marker>
+  </defs>
+
+  <!-- Clean white background without card border -->
+  <rect width="540" height="300" fill="#ffffff" />
+
+  <!-- ================= TOP FORMULA BANNER ================= -->
+  <!-- Formula: v(t) = A · sin( 2π / T · t ) -->
+  <g id="formula-group" font-size="20" font-weight="700" text-anchor="middle">
+    <text x="160" y="46" fill="#1e293b">v(t) =</text>
+    <text x="210" y="46" fill="#16a34a" font-size="24">A</text>
+    <text x="260" y="46" fill="#334155" font-weight="600">· sin (</text>
+    <text x="310" y="46" fill="#334155" font-weight="600">2π /</text>
+    <text x="345" y="46" fill="#ea580c" font-size="24">T</text>
+    <text x="385" y="46" fill="#334155" font-weight="600">· t )</text>
+  </g>
+
+  <!-- ================= STANDSTILL SHADED AREA ================= -->
+  <!-- Shaded box from x_0 to x_t0 (No "Spoczynek" badge) -->
+  <rect x="90" y="95" width="80" height="155" fill="#f1f5f9" opacity="0.85" rx="3" />
+
+  <!-- ================= GUIDES & AXES ================= -->
+
+  <!-- Horizontal dashed guides at +A (126) and -A (234) -->
+  <line x1="50" y1="126" x2="485" y2="126" stroke="#bbf7d0" stroke-width="1.2" stroke-dasharray="4 4" />
+  <line x1="50" y1="234" x2="485" y2="234" stroke="#bbf7d0" stroke-width="1.2" stroke-dasharray="4 4" />
+
+  <!-- Vertical dashed guide at t0 -->
+  <line x1="170" y1="95" x2="170" y2="255" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="3 3" />
+  
+  <!-- Vertical dashed guides at Peak 1 and Peak 2 for Period T -->
+  <line x1="207.5" y1="88" x2="207.5" y2="126" stroke="#fed7aa" stroke-width="1.2" stroke-dasharray="3 3" />
+  <line x1="357.5" y1="88" x2="357.5" y2="126" stroke="#fed7aa" stroke-width="1.2" stroke-dasharray="3 3" />
+
+  <!-- Horizontal Time Axis (baseline cy=180) -->
+  <line x1="45" y1="180" x2="495" y2="180" stroke="#334155" stroke-width="1.8" marker-end="url(#arr-axis)" />
+  <text x="504" y="184" font-size="13" font-weight="700" font-style="italic" fill="#0f172a">t</text>
+
+  <!-- Vertical Axis (at x_0) -->
+  <line x1="90" y1="255" x2="90" y2="95" stroke="#334155" stroke-width="1.8" marker-end="url(#arr-axis)" />
+
+  <!-- Time Ticks & Labels on axis -->
+  <text x="81" y="197" font-size="11" font-weight="600" fill="#64748b" text-anchor="middle">0</text>
+  <line x1="170" y1="176" x2="170" y2="184" stroke="#334155" stroke-width="1.5" />
+  <text x="170" y="197" font-size="13" font-weight="700" fill="#1e293b" text-anchor="middle">t₀</text>
+
+  <!-- Curve Phase 1: Standstill (flat line at baseline v=0) -->
+  <line x1="90" y1="180" x2="170" y2="180" stroke="#0284c7" stroke-width="3.5" stroke-linecap="round" />
+
+  <!-- Curve Phase 2: Sine Wave (in dark slate/black, distinct from blue T) -->
+  <path d="M 170.0 180.0 L 172.5 174.4 L 175.0 168.8 L 177.5 163.3 L 180.0 158.0 L 182.5 153.0 L 185.0 148.3 L 187.5 143.9 L 190.0 139.9 L 192.5 136.3 L 195.0 133.2 L 197.5 130.7 L 200.0 128.6 L 202.5 127.2 L 205.0 126.3 L 207.5 126.0 L 210.0 126.3 L 212.5 127.2 L 215.0 128.6 L 217.5 130.7 L 220.0 133.2 L 222.5 136.3 L 225.0 139.9 L 227.5 143.9 L 230.0 148.3 L 232.5 153.0 L 235.0 158.0 L 237.5 163.3 L 240.0 168.8 L 242.5 174.4 L 245.0 180.0 L 247.5 185.6 L 250.0 191.2 L 252.5 196.7 L 255.0 202.0 L 257.5 207.0 L 260.0 211.7 L 262.5 216.1 L 265.0 220.1 L 267.5 223.7 L 270.0 226.8 L 272.5 229.3 L 275.0 231.4 L 277.5 232.8 L 280.0 233.7 L 282.5 234.0 L 285.0 233.7 L 287.5 232.8 L 290.0 231.4 L 292.5 229.3 L 295.0 226.8 L 297.5 223.7 L 300.0 220.1 L 302.5 216.1 L 305.0 211.7 L 307.5 207.0 L 310.0 202.0 L 312.5 196.7 L 315.0 191.2 L 317.5 185.6 L 320.0 180.0 L 322.5 174.4 L 325.0 168.8 L 327.5 163.3 L 330.0 158.0 L 332.5 153.0 L 335.0 148.3 L 337.5 143.9 L 340.0 139.9 L 342.5 136.3 L 345.0 133.2 L 347.5 130.7 L 350.0 128.6 L 352.5 127.2 L 355.0 126.3 L 357.5 126.0 L 360.0 126.3 L 362.5 127.2 L 365.0 128.6 L 367.5 130.7 L 370.0 133.2 L 372.5 136.3 L 375.0 139.9 L 377.5 143.9 L 380.0 148.3 L 382.5 153.0 L 385.0 158.0 L 387.5 163.3 L 390.0 168.8 L 392.5 174.4 L 395.0 180.0 L 397.5 185.6 L 400.0 191.2 L 402.5 196.7 L 405.0 202.0 L 407.5 207.0 L 410.0 211.7 L 412.5 216.1 L 415.0 220.1 L 417.5 223.7 L 420.0 226.8 L 422.5 229.3 L 425.0 231.4 L 427.5 232.8 L 430.0 233.7 L 432.5 234.0 L 435.0 233.7 L 437.5 232.8 L 440.0 231.4 L 442.5 229.3 L 445.0 226.8 L 447.5 223.7 L 450.0 220.1 L 452.5 216.1 L 455.0 211.7 L 457.5 207.0 L 460.0 202.0 L 462.5 196.7 L 465.0 191.2 L 467.5 185.6 L 470.0 180.0" fill="none" stroke="#0284c7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Key dots on curve -->
+  <circle cx="170" cy="180" r="3.5" fill="#0284c7" />
+  <circle cx="207.5" cy="126" r="3.5" fill="#0284c7" stroke="#ffffff" stroke-width="1.5" />
+  <circle cx="245.0" cy="180" r="3" fill="#1e293b" />
+  <circle cx="282.5" cy="234" r="3.5" fill="#1e293b" stroke="#ffffff" stroke-width="1.5" />
+  <circle cx="357.5" cy="126" r="3.5" fill="#0284c7" stroke="#ffffff" stroke-width="1.5" />
+  <circle cx="470" cy="180" r="3.5" fill="#1e293b" stroke="#ffffff" stroke-width="1.5" />
+
+  <!-- ================= AMPLITUDE LABELS (+A and -A) ================= -->
+  <!-- Top amplitude: from baseline (180) to peak (126) -->
+  <line x1="64" y1="176" x2="64" y2="130" stroke="#16a34a" stroke-width="1.6" marker-start="url(#dim-green)" marker-end="url(#dim-green)" />
+  <line x1="58" y1="126" x2="70" y2="126" stroke="#16a34a" stroke-width="1.4" />
+  <text x="54" y="157" font-size="12" font-weight="700" fill="#16a34a" text-anchor="end">+A</text>
+
+  <!-- Bottom amplitude: from baseline (180) to valley (234) -->
+  <line x1="64" y1="184" x2="64" y2="230" stroke="#16a34a" stroke-width="1.6" marker-start="url(#dim-green)" marker-end="url(#dim-green)" />
+  <line x1="58" y1="234" x2="70" y2="234" stroke="#16a34a" stroke-width="1.4" />
+  <text x="54" y="211" font-size="12" font-weight="700" fill="#16a34a" text-anchor="end">−A</text>
+
+  <!-- Baseline tick marker for amplitude at x=64 -->
+  <line x1="58" y1="180" x2="70" y2="180" stroke="#16a34a" stroke-width="1.4" />
+
+  <!-- ================= PERIOD DIMENSION (BLUE T) ================= -->
+  <!-- Dimension line between Peak 1 and Peak 2 -->
+  <line x1="211.5" y1="92" x2="353.5" y2="92" stroke="#ea580c" stroke-width="1.6" marker-start="url(#dim-orange)" marker-end="url(#dim-orange)" />
+  <line x1="207.5" y1="87" x2="207.5" y2="97" stroke="#ea580c" stroke-width="1.4" />
+  <line x1="357.5" y1="87" x2="357.5" y2="97" stroke="#ea580c" stroke-width="1.4" />
+  
+  <!-- White mask circle/rect behind T so dimension line does not strike through -->
+  <circle cx="282.5" cy="92" r="13" fill="#ffffff" />
+  <!-- Just the symbol T (No "Okres", No box border) -->
+  <text x="282.5" y="98" font-size="18" font-weight="700" fill="#ea580c" text-anchor="middle">T</text>
+
+</svg>

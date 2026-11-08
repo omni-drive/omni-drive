@@ -95,6 +95,14 @@ if [ -d "$GUEST_HOME" ]; then
   chown -R guest:guest "$GUEST_HOME"
 fi
 
+# ==========================================
+# 7. Configure offline environment for Bokeh
+# ==========================================
+echo "Configuring offline BOKEH_RESOURCES=inline in /etc/environment..."
+if ! grep -q "BOKEH_RESOURCES=inline" /etc/environment 2>/dev/null; then
+  echo "BOKEH_RESOURCES=inline" >> /etc/environment
+fi
+
 echo ""
 echo "=================================================="
 echo "System provisioning completed successfully!"

@@ -5,7 +5,7 @@ import logging.handlers
 import math
 
 import websockets
-from omni_drive import Angle, DriveVector, OmniDrive
+from omni_drive import DriveVector, OmniDrive
 from websockets.asyncio.server import ServerConnection
 
 from services.generated import remote_pb2
@@ -67,10 +67,10 @@ async def send_telemetry_loop(websocket: ServerConnection, robot: OmniDrive) -> 
                 battery_voltage=voltage,
                 battery_percentage=battery_pct,
                 is_battery_critical=is_critical,
-                x=x.meters,
-                y=y.meters,
-                yaw_rad=yaw.radians,
-                yaw_deg=yaw.degrees,
+                x=x,
+                y=y,
+                yaw_rad=yaw,
+                yaw_deg=math.degrees(yaw),
             )
 
             await websocket.send(telemetry.SerializeToString())
@@ -120,7 +120,7 @@ async def handle_connection(websocket: ServerConnection, robot: OmniDrive) -> No
                 heading_rad = math.atan2(-request.x, request.y)
                 omega = -request.omega
 
-                robot.set_vector(DriveVector(velocity=velocity, heading=Angle.rad(heading_rad), omega=omega))
+                robot.set_vector(DriveVector(velocity=velocity, heading=heading_rad, omega=omega))
             except Exception as parse_err:
                 joystick_logger.warning(
                     "client=%s,type=bytes,size=%d,error=%s",
