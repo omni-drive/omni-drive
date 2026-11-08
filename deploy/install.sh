@@ -38,11 +38,11 @@ if ! command -v uv >/dev/null 2>&1; then
   exit 1
 fi
 
-echo "Synchronizing backend dependencies with 'uv sync'..."
+echo "Synchronizing backend dependencies with 'uv sync --locked'..."
 if [ -n "${SUDO_USER:-}" ]; then
-  sudo -u "$SUDO_USER" env PATH="$PATH" uv sync --directory "$DEPLOY_DIR"
+  sudo -u "$SUDO_USER" env PATH="$PATH" uv sync --locked --directory "$DEPLOY_DIR"
 else
-  uv sync --directory "$DEPLOY_DIR"
+  uv sync --locked --directory "$DEPLOY_DIR"
 fi
 
 if [ ! -f "$PYTHON_BIN" ]; then
@@ -50,11 +50,11 @@ if [ ! -f "$PYTHON_BIN" ]; then
   exit 1
 fi
 
-echo "Synchronizing lab dependencies with 'uv sync'..."
+echo "Synchronizing lab dependencies with 'uv sync --locked'..."
 if [ -n "${SUDO_USER:-}" ]; then
-  sudo -u "$SUDO_USER" env PATH="$PATH" uv sync --directory "$LAB_DIR"
+  sudo -u "$SUDO_USER" env PATH="$PATH" uv sync --locked --directory "$LAB_DIR"
 else
-  uv sync --directory "$LAB_DIR"
+  uv sync --locked --directory "$LAB_DIR"
 fi
 chmod -R go=rX "$LAB_DIR/.venv" 2>/dev/null || true
 
