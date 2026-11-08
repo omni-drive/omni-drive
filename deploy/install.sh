@@ -56,12 +56,20 @@ if [ -n "${SUDO_USER:-}" ]; then
 else
   uv sync --locked --directory "$LAB_DIR"
 fi
-chmod -R go=rX "$LAB_DIR/.venv" 2>/dev/null || true
-
 if [ ! -f "$LAB_PYTHON" ]; then
   echo "Error: Lab Python executable not found at $LAB_PYTHON."
   exit 1
 fi
+
+# Link lab directory to virtualenv sys.path so files living next to .venv (e.g. recorders.py) are directly importable
+echo "Configuring lab directory in virtualenv sys.path..."
+"$LAB_PYTHON" -c "
+import sysconfig, pathlib
+sp = pathlib.Path(sysconfig.get_path('purelib'))
+(sp / 'lab.pth').write_text('$LAB_DIR\n')
+" 2>/dev/null || true
+
+chmod -R go=rX "$LAB_DIR/.venv" 2>/dev/null || true
 
 # Register single 'python3' kernel pointing to lab virtualenv
 echo "Registering 'python3' Jupyter kernel..."

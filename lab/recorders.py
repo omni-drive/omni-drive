@@ -97,6 +97,6 @@ RECORDERS = {
 }
 
 
-def get_recorder(name: str, *args, **kwargs):
+def GET_RECORDER(name: str, *args, **kwargs):
     """Instantiate a preconfigured recorder by task name."""
     return RECORDERS[name](*args, **kwargs)
