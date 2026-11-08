@@ -68,7 +68,8 @@ echo "Registering 'python3' Jupyter kernel..."
 "$LAB_PYTHON" -m ipykernel install \
   --prefix "$LAB_DIR/.venv" \
   --name python3 \
-  --display-name "Python 3 (OmniDrive)" >/dev/null 2>&1 || true
+  --display-name "Python 3 (OmniDrive)" \
+  --env BOKEH_RESOURCES inline >/dev/null 2>&1 || true
 
 if [ ! -f "$PROJECT_ROOT/remote_control/build/web/index.html" ]; then
   echo "Warning: Built web client not found at $PROJECT_ROOT/remote_control/build/web/index.html"
@@ -95,6 +96,7 @@ Type=simple
 User=${user}
 WorkingDirectory=${work_dir}
 Environment="PYTHONUNBUFFERED=1"
+Environment="BOKEH_RESOURCES=inline"
 UMask=0000
 ExecStart=${exec_start}
 Restart=always
