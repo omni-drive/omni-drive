@@ -16,21 +16,17 @@ fi
 
 mkdir -p "$LAB_WORKSPACE"
 
-# Jeśli notebook już istnieje, twórz bezpieczną kopię zapasową
-if [ -f "$LAB_WORKSPACE/notebook.ipynb" ]; then
-  TIMESTAMP="$(date +'%Y%m%d_%H%M%S')"
-  BACKUP_NAME="notebook_backup_${TIMESTAMP}.ipynb"
-  cp "$LAB_WORKSPACE/notebook.ipynb" "$LAB_WORKSPACE/$BACKUP_NAME"
-  echo "Utworzono kopię zapasową poprzedniego pliku:"
-  echo "  -> $BACKUP_NAME"
-fi
+TIMESTAMP="$(date +'%m%d%H%M%S')"
+TARGET_NOTEBOOK="lab_${TIMESTAMP}.ipynb"
 
-echo "Kopiowanie czystego szablonu notebook.ipynb..."
-cp "$MASTER_TEMPLATE" "$LAB_WORKSPACE/notebook.ipynb"
-chmod 664 "$LAB_WORKSPACE/notebook.ipynb"
+echo "Tworzenie nowego pliku notebooka:"
+echo "  -> $TARGET_NOTEBOOK"
+
+cp "$MASTER_TEMPLATE" "$LAB_WORKSPACE/$TARGET_NOTEBOOK"
+chmod 664 "$LAB_WORKSPACE/$TARGET_NOTEBOOK"
 
 echo ""
-echo "Gotowe! Zresetowano plik notebook.ipynb do stanu początkowego."
+echo "Gotowe! Utworzono plik $TARGET_NOTEBOOK z czystego szablonu."
+echo "Otwórz go w JupyterLab po lewej stronie i rozpocznij wykonywanie zadań."
 echo "Powodzenia w realizacji zadań laboratoryjnych!"
 echo "=================================================="
-

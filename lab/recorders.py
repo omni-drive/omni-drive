@@ -81,7 +81,8 @@ RECORDERS = {
         kalman_fusion=lambda: x_fusion,
         lidar=lambda: lidar_get_x(),
     ),
-    "task_6": lambda: PoseRecorder(
+    "task_6": lambda clock: PoseRecorder(
+        clock,
         odometry=lambda: (robot.pose.x, robot.pose.y),
         kalman=lambda: kalman.state,
         lidar=lambda: (lidar_get_x(), lidar_get_y()),

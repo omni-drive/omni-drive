@@ -24,7 +24,7 @@ This script:
 * Adds the developer user to the `dialout` group for serial port access.
 * Sets permissions on `/home/<user>` to read-only for students (`r-x`).
 * Prepares `/home/guest/lab` with the self-contained `notebook.ipynb`.
-* Installs the global `lab-start` system command in `/usr/local/bin` to allow students to initialize or restore a clean notebook with automatic backup.
+* Installs the global `lab-start` system command in `/usr/local/bin` to allow students to initialize a new timestamped notebook (`lab_<timestamp>.ipynb`) from the master template.
 
 ### 2. Service Deployment & Updates (`install.sh`)
 Run to deploy or update services whenever repository code changes:

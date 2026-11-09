@@ -18,12 +18,10 @@ The robot runs JupyterLab on its Raspberry Pi, and `omni_drive` is already insta
     lab-start
     ```
 
-    A fresh `notebook.ipynb` appears in the file browser on the left (click the refresh icon if
-    it doesn't). `lab-start` replaces the notebook that is there and keeps the old one as
-    `notebook_backup_<date>_<time>.ipynb`. To continue your own work from an earlier session,
-    skip this step. If the notebook is already open in a tab, close that tab before running
-    `lab-start` and open the file again afterwards, so the old tab doesn't save over the fresh copy.
-4. Open `notebook.ipynb` and start with the tasks.
+    A new notebook `lab_<timestamp>.ipynb` appears in the file browser on the left (click the
+    refresh icon if it doesn't). Each run of `lab-start` creates a fresh timestamped file,
+    leaving any earlier files untouched.
+4. Open the created `lab_<timestamp>.ipynb` and start with the tasks.
 
 The phone remote control is at [http://omnidrive.local/joystick/](http://omnidrive.local/joystick/).
 Don't use it while a notebook is driving the robot: both send commands, and the robot follows
