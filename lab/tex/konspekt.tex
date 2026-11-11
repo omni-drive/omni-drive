@@ -58,7 +58,32 @@ Aby robot mobilny mógł precyzyjnie nawigować w~otoczeniu, musi w~każdej chwi
     \item \textbf{Moduł IMU / żyroskop}: bezpośredni pomiar prędkości kątowej oraz kąta orientacji $\theta$ (\emph{yaw}) platformy.
 \end{itemize}
 
-\clearpage
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[b]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{robot_front_left.jpg}\\[2pt]
+        \small (a) widok z~przodu i~z~lewej
+    \end{minipage}\hfill
+    \begin{minipage}[b]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{robot_front_right.jpg}\\[2pt]
+        \small (b) widok z~przodu i~z~prawej
+    \end{minipage}
+    \caption{Robot OmniDrive: rozmieszczenie czujników, kół i~przełącznika zasilania. Kąty $0^\circ$, $+90^\circ$, $-90^\circ$ to kierunki pomiaru w~układzie robota (przód, lewo, prawo).}
+    \label{fig:robot_photos}
+\end{figure}
+
+\paragraph{Rozmieszczenie elementów na robocie (rys.~\ref{fig:robot_photos} i~\ref{fig:wheel_forces}):}
+\begin{itemize}[itemsep=3pt, topsep=3pt]
+    \item \textbf{Obudowa}: ośmiokątny korpus drukowany w~3D, osadzony na płycie ze sklejki. \textbf{Przód} robota to płaska ściana pomiędzy kołami 1 i~3 -- to na niej znajdują się przednie czujniki US i~ToF. Koło 2 znajduje się z~tyłu.
+    \item \textbf{LiDAR} (Hokuyo URG): czarny cylinder na górnej pokrywie, w~pobliżu środka robota. Wiązka laserowa obiega pole widzenia ok.~$240^\circ$ (682 pomiary na obrót) w~zasięgu $0{,}02$--$5{,}6\text{ m}$; martwa strefa znajduje się z~tyłu. Punkty bliższe niż ok.~$18\text{ cm}$ są odbiciami od samego robota i~biblioteka je pomija.
+    \item \textbf{Czujniki ultradźwiękowe US} (HC-SR04): pary srebrnych cylindrów -- jeden to nadajnik, drugi odbiornik echa. Trzy zestawy: na przedniej ścianie oraz na skośnych wspornikach na lewym i~prawym boku.
+    \item \textbf{Czujniki ToF / IR} (VL53L1X): niewielkie ciemne okienko tuż pod każdą parą US -- na przedniej ścianie (rys.~\ref{fig:front_sensors}) oraz na bocznych wspornikach; kryje ono nadajnik laserowy i~detektor. Każdy czujnik ToF jest skierowany tak samo jak sąsiadujący z~nim czujnik US.
+    \item \textbf{Koła omnikierunkowe}: trzy koła o~promieniu $3{,}5\text{ cm}$, zamocowane $10\text{ cm}$ od środka robota. Numeracja: \textbf{koło 1} -- przednie lewe, \textbf{koło 2} -- tylne, \textbf{koło 3} -- przednie prawe.
+    \item \textbf{Przełącznik kołyskowy ON/OFF}: na skośnej ścianie nad kołem 1, tuż przy płycie ze sklejki. Przycisk zasilania komputera pokładowego znajduje się pod spodem robota.
+    \item \textbf{Elementy niewidoczne na zdjęciach}: enkodery silników kół (990 impulsów na obrót koła), moduł IMU, mikrokontroler ESP32 (regulacja prędkości kół i~odometria), komputer pokładowy Raspberry Pi (Wi-Fi \texttt{OmniDrive}, Jupyter) oraz akumulator ($13$--$16{,}8\text{ V}$).
+\end{itemize}
 
 \paragraph{Zasada działania kół omnikierunkowych (\emph{omni wheels}):}
 Na obwodzie każdego koła znajdują się bierne rolki obracające się swobodnie w~kierunku prostopadłym do osi napędu koła. Koło przekazuje siłę na podłoże wyłącznie stycznie do okręgu platformy, a~w~kierunku poprzecznym przetacza się swobodnie bez oporu.
@@ -68,8 +93,17 @@ Dzięki trzem kołom rozmieszczonym co $120^\circ$ platforma jest \textbf{holono
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.64\textwidth]{wheel_forces_top.png}
-    \caption{Układ współrzędnych robota ($x$ -- przód, $y$ -- lewo), kąty montażowe $\beta_i$ oraz kierunki napędu kół $w_i$.}
+    \begin{minipage}[b]{0.43\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{robot_top.jpg}\\[2pt]
+        \small (a) robot widziany z~góry
+    \end{minipage}\hspace{0.05\textwidth}
+    \begin{minipage}[b]{0.43\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{wheel_forces_top.png}\\[2pt]
+        \small (b) model kinematyczny
+    \end{minipage}
+    \caption{Układ współrzędnych robota ($x$ -- przód, $y$ -- lewo) na rzeczywistej platformie (a) i~w~modelu ruchu (b): kąty montażowe $\beta_i$ oraz kierunki napędu kół $w_i$. Koło 1 jest przednie lewe ($\beta_1 = 60^\circ$), koło 2 tylne ($\beta_2 = 180^\circ$), koło 3 przednie prawe ($\beta_3 = 300^\circ$).}
     \label{fig:wheel_forces}
 \end{figure}
 
@@ -94,10 +128,18 @@ Do powstrzymania dryfu odometrii wykorzystujemy czujniki mierzące dystans do ni
 
 \begin{figure}[htbp]
     \centering
-    \captionsetup{width=0.82\linewidth}
-    \includegraphics[width=0.56\textwidth]{ultrasonic.png}
-    \caption{Propagacja fali ultradźwiękowej: prostopadła ściana gwarantuje mocne echo; ściana ukośna powoduje odbicie fali w~bok i~utratę odczytu.}
-    \label{fig:ultrasonic}
+    \begin{minipage}[t]{0.42\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{robot_front_sensors.jpg}
+        \caption{Przednia ściana robota: przetworniki HC-SR04 (nadajnik i~odbiornik) oraz okienko czujnika ToF VL53L1X tuż pod nimi.}
+        \label{fig:front_sensors}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.54\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{ultrasonic.png}
+        \caption{Propagacja fali ultradźwiękowej: prostopadła ściana gwarantuje mocne echo; ściana ukośna powoduje odbicie fali w~bok i~utratę odczytu.}
+        \label{fig:ultrasonic}
+    \end{minipage}
 \end{figure}
 
 \vspace{-0.1cm}
