@@ -40,6 +40,30 @@ class _Var:
     def __float__(self) -> float:
         return float(self._val())
 
+    def __add__(self, other):
+        return self._val() + other
+
+    def __radd__(self, other):
+        return other + self._val()
+
+    def __sub__(self, other):
+        return self._val() - other
+
+    def __rsub__(self, other):
+        return other - self._val()
+
+    def __mul__(self, other):
+        return self._val() * other
+
+    def __rmul__(self, other):
+        return other * self._val()
+
+    def __truediv__(self, other):
+        return self._val() / other
+
+    def __rtruediv__(self, other):
+        return other / self._val()
+
 
 # Notebook scope proxies
 robot = _Var("robot")
@@ -54,21 +78,9 @@ z = _Var("z")
 x_ir = _Var("x_ir")
 z_us = _Var("z_us")
 x_fusion = _Var("x_fusion")
-d0_ir_f = _Var("d0_ir_f")
-d0_ir_l = _Var("d0_ir_l")
-d0_ir_r = _Var("d0_ir_r")
-
-
-def ir_get_x() -> float:
-    return float(d0_ir_f) - robot.ir_front.distance
-
-
-def ir_get_y() -> float:
-    dl = float(d0_ir_l) - robot.ir_left.distance
-    dr = float(d0_ir_r) - robot.ir_right.distance
-    return 0.5 * (dl - dr)
-
-
+d0_ir = _Var("d0_ir")
+Q = _Var("Q")
+R_ir = _Var("R_ir")
 TASK_3 = "task_3"
 TASK_4 = "task_4"
 TASK_5_2 = "task_5_2"
@@ -88,6 +100,29 @@ DEFAULT_LABELS = {
     "trust_odom": "Zaufanie odometrii",
     "trust_sensor": "Zaufanie czujnikom",
 }
+
+
+def _kalman_ir():
+    """Background 1D Kalman filter (IR-only baseline for Task 5.3)."""
+    x, P, last_ox = 0.0, None, None
+
+    def step():
+        nonlocal x, P, last_ox
+        ox = robot.pose.x
+        if P is None:
+            P, last_ox = Q, ox
+
+        x += ox - last_ox
+        P += Q
+        last_ox = ox
+
+        z = d0_ir - robot.ir_front.distance
+        K = P / (P + R_ir)
+        x += K * (z - x)
+        P *= 1.0 - K
+        return x
+
+    return step
 
 
 RECORDERS = {
@@ -132,16 +167,15 @@ RECORDERS = {
         },
         odometry=delayed(lambda: robot.pose.x),
         ultrasonic=delayed(lambda: z_us),
-        kalman_ir=delayed(lambda: x_ir),
-        kalman_fusion=delayed(lambda: x_fusion),
+        kalman_ir=delayed(_kalman_ir()),
+        kalman_fusion=delayed(lambda: x),
         lidar=lambda: lidar_get_x(),
     ),
     TASK_6: lambda clock: PoseRecorder(
         clock,
         labels=DEFAULT_LABELS,
-        styles={"infrared": "dashed+scatter", "lidar": "dashed"},
+        styles={"lidar": "dashed"},
         odometry=delayed(lambda: (robot.pose.x, robot.pose.y)),
-        infrared=delayed(lambda: (ir_get_x(), ir_get_y())),
         kalman=delayed(lambda: kalman.state),
         lidar=lambda: (lidar_get_x(), lidar_get_y()),
         title="Odometria, Filtr Kalmana, LiDAR",
