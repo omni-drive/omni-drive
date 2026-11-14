@@ -23,8 +23,9 @@ This script:
 * Creates the unprivileged student account (`guest`) with no sudo privileges.
 * Adds the developer user to the `dialout` group for serial port access.
 * Sets permissions on `/home/<user>` to read-only for students (`r-x`).
-* Prepares `/home/guest/lab` with the self-contained `notebook.ipynb`.
+* Prepares the unprivileged student workspace directory `/home/guest/lab`.
 * Installs the global `lab-start` system command in `/usr/local/bin` to allow students to initialize a new timestamped notebook (`lab_<timestamp>.ipynb`) from the master template.
+* Installs the global `lab-finish` system command in `/usr/local/bin` allowing students to safely power off the robot without entering sudo passwords.
 
 ### 2. Service Deployment & Updates (`install.sh`)
 Run to deploy or update services whenever repository code changes:

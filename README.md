@@ -99,7 +99,7 @@ sudo ./setup_system.sh
 ```
 * Installs required system packages (`nginx`, `curl`, and `uv`).
 * Creates the unprivileged `guest` user (no sudo) and locks down repository access to read-only.
-* Prepares `/home/guest/lab/` with the self-contained `notebook.ipynb` and installs `/usr/local/bin/lab-start`.
+* Prepares `/home/guest/lab/` for students and installs `/usr/local/bin/lab-start` and `/usr/local/bin/lab-finish`.
 * Configures JupyterLab dark theme by default for students.
 * Registers the global `Python (OmniDrive)` Jupyter kernel pointing to the master `.venv`.
 

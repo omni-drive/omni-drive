@@ -123,7 +123,7 @@ create_service "esp-proxy" "OmniDrive ESP32 Proxy" "${PYTHON_BIN} -m services.es
 create_service "lidar-proxy" "OmniDrive LiDAR Proxy" "${PYTHON_BIN} -m services.lidar_proxy"
 create_service "joystick-server" "OmniDrive Joystick WebSocket Server" "${PYTHON_BIN} -m services.joystick_server"
 create_service "jupyter-lab" "OmniDrive JupyterLab Server for Students" \
-  "${LAB_PYTHON} -m jupyterlab --ip=127.0.0.1 --port=8888 --no-browser --ServerApp.token='' --ServerApp.password='' --ServerApp.allow_remote_access=True --ServerApp.root_dir=/home/guest/lab --LabApp.default_url=/lab/tree/notebook.ipynb" \
+  "${LAB_PYTHON} -m jupyterlab --ip=127.0.0.1 --port=8888 --no-browser --ServerApp.token='' --ServerApp.password='' --ServerApp.allow_remote_access=True --ServerApp.root_dir=/home/guest/lab" \
   "guest" \
   "/home/guest/lab"
 

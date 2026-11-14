@@ -51,7 +51,7 @@ gpasswd -d guest sudo >/dev/null 2>&1 || true
 # Allow guest to safely power off the robot without password
 echo "Allowing 'guest' user to run poweroff..."
 cat << 'EOF' > /etc/sudoers.d/020-guest-poweroff
-guest ALL=(ALL) NOPASSWD: /sbin/poweroff, /usr/sbin/poweroff, /sbin/reboot, /usr/sbin/reboot, /sbin/shutdown, /usr/sbin/shutdown, /bin/systemctl poweroff, /usr/bin/systemctl poweroff
+guest ALL=(ALL) NOPASSWD: /sbin/poweroff, /usr/sbin/poweroff, /sbin/reboot, /usr/sbin/reboot, /sbin/shutdown, /usr/sbin/shutdown, /bin/systemctl poweroff, /usr/bin/systemctl poweroff, /usr/local/bin/lab-finish
 EOF
 chmod 0440 /etc/sudoers.d/020-guest-poweroff
 
@@ -81,15 +81,19 @@ GUEST_LAB="$GUEST_HOME/lab"
 if [ -d "$GUEST_HOME" ]; then
   echo "Setting up student workspace in $GUEST_LAB..."
   mkdir -p "$GUEST_LAB"
-  if [ -f "$PROJECT_ROOT/lab/notebook.ipynb" ]; then
-    cp -n "$PROJECT_ROOT/lab/notebook.ipynb" "$GUEST_LAB/"
-  fi
 
   # Install global lab-start command
   if [ -f "$SCRIPT_DIR/lab-start" ]; then
     echo "Installing global 'lab-start' command to /usr/local/bin..."
     sed "s|{{PROJECT_ROOT}}|${PROJECT_ROOT}|g" "$SCRIPT_DIR/lab-start" > /usr/local/bin/lab-start
     chmod 755 /usr/local/bin/lab-start
+  fi
+
+  # Install global lab-finish command
+  if [ -f "$SCRIPT_DIR/lab-finish" ]; then
+    echo "Installing global 'lab-finish' command to /usr/local/bin..."
+    cp "$SCRIPT_DIR/lab-finish" /usr/local/bin/lab-finish
+    chmod 755 /usr/local/bin/lab-finish
   fi
 
   chown -R guest:guest "$GUEST_HOME"

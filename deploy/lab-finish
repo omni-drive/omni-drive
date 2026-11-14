@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo "=================================================="
+echo "   OmniDrive Lab - Zakończenie pracy"
+echo "=================================================="
+echo "Bezpieczne zamykanie systemu i wyłączanie robota..."
+echo "=================================================="
+
+# Flush buffers to prevent SD card corruption
+sync
+
+if [ "${EUID:-$(id -u)}" -eq 0 ]; then
+  poweroff
+else
+  exec sudo poweroff
+fi
