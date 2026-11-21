@@ -1,86 +1,26 @@
 """Preconfigured telemetry recorders for laboratory tasks."""
 
-import sys
 from collections import deque
 from collections.abc import Callable
 
 from omni_drive import PoseRecorder, SensorRecorder
 
+from .context import (
+    Q,
+    R_ir,
+    d0_ir,
+    d0_us,
+    kalman,
+    kf_optimal,
+    kf_trust_odom,
+    kf_trust_sensor,
+    lidar_get_x,
+    lidar_get_y,
+    robot,
+    x,
+    z,
+)
 
-def delayed[T](channel: Callable[[], T], samples: int = 2) -> Callable[[], T]:
-    """Hold a FIFO buffer to delay channel readings by `samples` ticks, aligning phase with LiDAR latency."""
-    buf: deque[T] = deque()
-
-    def wrapper() -> T:
-        val = channel()
-        buf.append(val)
-        if len(buf) > samples:
-            return buf.popleft()
-        return buf[0]
-
-    return wrapper
-
-
-class _Var:
-    """Dynamic proxy resolving attributes and calls lazily from the notebook's __main__ scope."""
-
-    def __init__(self, name: str, default=0.0):
-        self._name = name
-        self._default = default
-
-    def _val(self):
-        return getattr(sys.modules["__main__"], self._name, self._default)
-
-    def __getattr__(self, item: str):
-        return getattr(self._val(), item)
-
-    def __call__(self, *args, **kwargs):
-        return self._val()(*args, **kwargs)
-
-    def __float__(self) -> float:
-        return float(self._val())
-
-    def __add__(self, other):
-        return self._val() + other
-
-    def __radd__(self, other):
-        return other + self._val()
-
-    def __sub__(self, other):
-        return self._val() - other
-
-    def __rsub__(self, other):
-        return other - self._val()
-
-    def __mul__(self, other):
-        return self._val() * other
-
-    def __rmul__(self, other):
-        return other * self._val()
-
-    def __truediv__(self, other):
-        return self._val() / other
-
-    def __rtruediv__(self, other):
-        return other / self._val()
-
-
-# Notebook scope proxies
-robot = _Var("robot")
-kalman = _Var("kalman")
-kf_optimal = _Var("kf_optimal")
-kf_trust_odom = _Var("kf_trust_odom")
-kf_trust_sensor = _Var("kf_trust_sensor")
-lidar_get_x = _Var("lidar_get_x")
-lidar_get_y = _Var("lidar_get_y")
-x = _Var("x")
-z = _Var("z")
-x_ir = _Var("x_ir")
-z_us = _Var("z_us")
-x_fusion = _Var("x_fusion")
-d0_ir = _Var("d0_ir")
-Q = _Var("Q")
-R_ir = _Var("R_ir")
 TASK_3 = "task_3"
 TASK_4 = "task_4"
 TASK_5_2 = "task_5_2"
@@ -102,35 +42,61 @@ DEFAULT_LABELS = {
 }
 
 
+def delayed[T](channel: Callable[[], T], samples: int = 2) -> Callable[[], T]:
+    """Hold a FIFO buffer to delay channel readings by `samples` ticks, aligning phase with LiDAR latency."""
+    buf: deque[T] = deque()
+
+    def wrapper() -> T:
+        buf.append(channel())
+        if len(buf) > samples:
+            return buf.popleft()
+        return buf[0]
+
+    return wrapper
+
+
 def _kalman_ir():
     """Background 1D Kalman filter (IR-only baseline for Task 5.3)."""
-    x, P, last_ox = 0.0, None, None
+    state_x, P, last_ox = 0.0, None, None
 
     def step():
-        nonlocal x, P, last_ox
+        nonlocal state_x, P, last_ox
         ox = robot.pose.x
+        q = Q.get()
         if P is None:
-            P, last_ox = Q, ox
+            P, last_ox = q, ox
 
-        x += ox - last_ox
-        P += Q
+        state_x += ox - last_ox
+        P += q
         last_ox = ox
 
-        z = d0_ir - robot.ir_front.distance
-        K = P / (P + R_ir)
-        x += K * (z - x)
+        meas_z = d0_ir.get() - robot.ir_front.distance
+        K = P / (P + R_ir.get())
+        state_x += K * (meas_z - state_x)
         P *= 1.0 - K
-        return x
+        return state_x
 
     return step
+
+
+def _odom_x() -> float:
+    return robot.pose.x
+
+
+def _odom_xy() -> tuple[float, float]:
+    return robot.pose.x, robot.pose.y
+
+
+def _lidar_xy() -> tuple[float, float]:
+    return lidar_get_x(), lidar_get_y()
 
 
 RECORDERS = {
     TASK_3: lambda: PoseRecorder(
         labels=DEFAULT_LABELS,
         styles={"lidar": "dashed"},
-        odometry=delayed(lambda: (robot.pose.x, robot.pose.y)),
-        lidar=lambda: (lidar_get_x(), lidar_get_y()),
+        odometry=delayed(_odom_xy),
+        lidar=_lidar_xy,
         title="Odometria vs LiDAR",
     ),
     TASK_4: lambda clock: SensorRecorder(
@@ -148,10 +114,10 @@ RECORDERS = {
         y_label="Pozycja x [m]",
         labels=DEFAULT_LABELS,
         styles={"infrared": "line+scatter", "kalman": "line", "odometry": "line", "lidar": "dashed"},
-        odometry=delayed(lambda: robot.pose.x),
-        infrared=delayed(lambda: z),
-        kalman=delayed(lambda: x),
-        lidar=lambda: lidar_get_x(),
+        odometry=delayed(_odom_x),
+        infrared=delayed(z.get),
+        kalman=delayed(x.get),
+        lidar=lidar_get_x,
     ),
     TASK_5_3: lambda clock: SensorRecorder(
         clock,
@@ -165,19 +131,19 @@ RECORDERS = {
             "odometry": "line",
             "lidar": "dashed",
         },
-        odometry=delayed(lambda: robot.pose.x),
-        ultrasonic=delayed(lambda: z_us),
+        odometry=delayed(_odom_x),
+        ultrasonic=delayed(lambda: d0_us.get() - robot.us_front.distance),
         kalman_ir=delayed(_kalman_ir()),
-        kalman_fusion=delayed(lambda: x),
-        lidar=lambda: lidar_get_x(),
+        kalman_fusion=delayed(x.get),
+        lidar=lidar_get_x,
     ),
     TASK_6: lambda clock: PoseRecorder(
         clock,
         labels=DEFAULT_LABELS,
         styles={"lidar": "dashed"},
-        odometry=delayed(lambda: (robot.pose.x, robot.pose.y)),
+        odometry=delayed(_odom_xy),
         kalman=delayed(lambda: kalman.state),
-        lidar=lambda: (lidar_get_x(), lidar_get_y()),
+        lidar=_lidar_xy,
         title="Odometria, Filtr Kalmana, LiDAR",
     ),
     TASK_6_TUNING: lambda: PoseRecorder(
@@ -186,7 +152,7 @@ RECORDERS = {
         optimal=delayed(lambda: kf_optimal.state),
         trust_odom=delayed(lambda: kf_trust_odom.state),
         trust_sensor=delayed(lambda: kf_trust_sensor.state),
-        lidar=lambda: (lidar_get_x(), lidar_get_y()),
+        lidar=_lidar_xy,
         title="Wpływ strojenia Q i R w 2D",
     ),
 }
