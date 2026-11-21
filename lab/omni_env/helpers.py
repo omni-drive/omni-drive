@@ -33,6 +33,15 @@ def lidar_reset() -> tuple[float, float, float]:
     )
 
 
+def median_distance(sensor, samples: int = 25, delay: float = 0.02) -> float:
+    """Collect baseline distance measurements from a single sensor at rest and return their median."""
+    readings = []
+    for _ in range(samples):
+        readings.append(sensor.distance)
+        time.sleep(delay)
+    return _median(readings)
+
+
 def sensors_reset(samples: int = 25, delay: float = 0.02) -> tuple[float, float, float, float, float, float]:
     """Collect baseline distance measurements at rest and store their median."""
     ir_f, ir_l, ir_r = [], [], []

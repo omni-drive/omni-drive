@@ -42,7 +42,7 @@ DEFAULT_LABELS = {
 }
 
 
-def delayed[T](channel: Callable[[], T], samples: int = 2) -> Callable[[], T]:
+def delayed[T](channel: Callable[[], T], samples: int = 1) -> Callable[[], T]:
     """Hold a FIFO buffer to delay channel readings by `samples` ticks, aligning phase with LiDAR latency."""
     buf: deque[T] = deque()
 

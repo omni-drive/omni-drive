@@ -1397,8 +1397,8 @@ wheels = [
 
 [[package]]
 name = "omni-drive"
-version = "0.8.1"
-source = { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.8.1/omni_drive-0.8.1-py3-none-any.whl" }
+version = "0.9.0"
+source = { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.9.0/omni_drive-0.9.0-py3-none-any.whl" }
 dependencies = [
     { name = "bokeh" },
     { name = "jupyter-bokeh" },
@@ -1409,7 +1409,7 @@ dependencies = [
     { name = "scipy" },
 ]
 wheels = [
-    { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.8.1/omni_drive-0.8.1-py3-none-any.whl", hash = "sha256:45b882cc1c874bca2b788e7fef587a658fbfb6d101dc9ae4dcd996a37c3506bc" },
+    { url = "https://github.com/omni-drive/omni-drive/releases/download/v0.9.0/omni_drive-0.9.0-py3-none-any.whl", hash = "sha256:a4da8a2946fab19f8cb4ce898e31fec4f79c9e9c0b4dbf5843135902af48ecc5" },
 ]
 
 [package.optional-dependencies]
@@ -1448,7 +1448,7 @@ docs = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "omni-drive", extras = ["jupyter-fix"], url = "https://github.com/omni-drive/omni-drive/releases/download/v0.8.1/omni_drive-0.8.1-py3-none-any.whl" }]
+requires-dist = [{ name = "omni-drive", extras = ["jupyter-fix"], url = "https://github.com/omni-drive/omni-drive/releases/download/v0.9.0/omni_drive-0.9.0-py3-none-any.whl" }]
 
 [package.metadata.requires-dev]
 dev = [{ name = "jupyterlab", specifier = ">=4.6.5" }]
