@@ -4,13 +4,14 @@ import sys
 
 
 class _Var:
-    """Dynamic proxy resolving attributes and calls lazily from the notebook's __main__ scope."""
+    """Dynamic proxy resolving attributes, calls and arithmetic lazily from the notebook's __main__ scope."""
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, default=0.0):
         self._name = name
+        self._default = default
 
     def get(self):
-        return getattr(sys.modules["__main__"], self._name)
+        return getattr(sys.modules["__main__"], self._name, self._default)
 
     def set[T](self, val: T) -> T:
         setattr(sys.modules["__main__"], self._name, val)
@@ -21,6 +22,33 @@ class _Var:
 
     def __call__(self, *args, **kwargs):
         return self.get()(*args, **kwargs)
+
+    def __float__(self) -> float:
+        return float(self.get())
+
+    def __add__(self, other):
+        return self.get() + other
+
+    def __radd__(self, other):
+        return other + self.get()
+
+    def __sub__(self, other):
+        return self.get() - other
+
+    def __rsub__(self, other):
+        return other - self.get()
+
+    def __mul__(self, other):
+        return self.get() * other
+
+    def __rmul__(self, other):
+        return other * self.get()
+
+    def __truediv__(self, other):
+        return self.get() / other
+
+    def __rtruediv__(self, other):
+        return other / self.get()
 
 
 # Notebook scope proxies (in order of appearance in notebook.ipynb)
@@ -46,6 +74,7 @@ d0_ir = _Var("d0_ir")
 
 # Task 5.3 – Kalman 1D fusion (IR + US)
 d0_us = _Var("d0_us")
+z_us = _Var("z_us")
 
 # Task 6 – Kalman 2D
 d0_ir_f = _Var("d0_ir_f")

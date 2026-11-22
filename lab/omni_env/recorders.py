@@ -1,15 +1,16 @@
 """Preconfigured telemetry recorders for laboratory tasks."""
 
+import math
 from collections import deque
 from collections.abc import Callable
 
-from omni_drive import PoseRecorder, SensorRecorder
+from omni_drive import Clock, PoseRecorder, SensorRecorder
 
 from .context import (
     Q,
     R_ir,
+    _Var,
     d0_ir,
-    d0_us,
     kalman,
     kf_optimal,
     kf_trust_odom,
@@ -19,7 +20,25 @@ from .context import (
     robot,
     x,
     z,
+    z_us,
 )
+
+
+def delayed[T](channel: Callable[[], T], samples: int = 1) -> Callable[[], T]:
+    """Hold a FIFO buffer to delay channel readings by `samples` ticks, aligning phase with LiDAR latency."""
+    buf: deque[T] = deque()
+
+    def wrapper() -> T:
+        val = channel()
+        if isinstance(val, _Var):
+            val = val.get()
+        buf.append(val)
+        if len(buf) > samples:
+            return buf.popleft()
+        return buf[0]
+
+    return wrapper
+
 
 TASK_3 = "task_3"
 TASK_4 = "task_4"
@@ -42,61 +61,35 @@ DEFAULT_LABELS = {
 }
 
 
-def delayed[T](channel: Callable[[], T], samples: int = 1) -> Callable[[], T]:
-    """Hold a FIFO buffer to delay channel readings by `samples` ticks, aligning phase with LiDAR latency."""
-    buf: deque[T] = deque()
-
-    def wrapper() -> T:
-        buf.append(channel())
-        if len(buf) > samples:
-            return buf.popleft()
-        return buf[0]
-
-    return wrapper
-
-
 def _kalman_ir():
     """Background 1D Kalman filter (IR-only baseline for Task 5.3)."""
-    state_x, P, last_ox = 0.0, None, None
+    x, P, last_ox = 0.0, None, None
 
     def step():
-        nonlocal state_x, P, last_ox
+        nonlocal x, P, last_ox
         ox = robot.pose.x
-        q = Q.get()
         if P is None:
-            P, last_ox = q, ox
+            P, last_ox = Q, ox
 
-        state_x += ox - last_ox
-        P += q
+        x += ox - last_ox
+        P += Q
         last_ox = ox
 
-        meas_z = d0_ir.get() - robot.ir_front.distance
-        K = P / (P + R_ir.get())
-        state_x += K * (meas_z - state_x)
+        z = d0_ir - robot.ir_front.distance
+        K = P / (P + R_ir)
+        x += K * (z - x)
         P *= 1.0 - K
-        return state_x
+        return x
 
     return step
-
-
-def _odom_x() -> float:
-    return robot.pose.x
-
-
-def _odom_xy() -> tuple[float, float]:
-    return robot.pose.x, robot.pose.y
-
-
-def _lidar_xy() -> tuple[float, float]:
-    return lidar_get_x(), lidar_get_y()
 
 
 RECORDERS = {
     TASK_3: lambda: PoseRecorder(
         labels=DEFAULT_LABELS,
         styles={"lidar": "dashed"},
-        odometry=delayed(_odom_xy),
-        lidar=_lidar_xy,
+        odometry=delayed(lambda: (robot.pose.x, robot.pose.y)),
+        lidar=lambda: (lidar_get_x(), lidar_get_y()),
         title="Odometria vs LiDAR",
     ),
     TASK_4: lambda clock: SensorRecorder(
@@ -114,10 +107,10 @@ RECORDERS = {
         y_label="Pozycja x [m]",
         labels=DEFAULT_LABELS,
         styles={"infrared": "line+scatter", "kalman": "line", "odometry": "line", "lidar": "dashed"},
-        odometry=delayed(_odom_x),
-        infrared=delayed(z.get),
-        kalman=delayed(x.get),
-        lidar=lidar_get_x,
+        odometry=delayed(lambda: robot.pose.x),
+        infrared=delayed(lambda: z),
+        kalman=delayed(lambda: x),
+        lidar=lambda: lidar_get_x(),
     ),
     TASK_5_3: lambda clock: SensorRecorder(
         clock,
@@ -131,19 +124,19 @@ RECORDERS = {
             "odometry": "line",
             "lidar": "dashed",
         },
-        odometry=delayed(_odom_x),
-        ultrasonic=delayed(lambda: d0_us.get() - robot.us_front.distance),
+        odometry=delayed(lambda: robot.pose.x),
+        ultrasonic=delayed(lambda: z_us),
         kalman_ir=delayed(_kalman_ir()),
-        kalman_fusion=delayed(x.get),
-        lidar=lidar_get_x,
+        kalman_fusion=delayed(lambda: x),
+        lidar=lambda: lidar_get_x(),
     ),
     TASK_6: lambda clock: PoseRecorder(
         clock,
         labels=DEFAULT_LABELS,
         styles={"lidar": "dashed"},
-        odometry=delayed(_odom_xy),
+        odometry=delayed(lambda: (robot.pose.x, robot.pose.y)),
         kalman=delayed(lambda: kalman.state),
-        lidar=_lidar_xy,
+        lidar=lambda: (lidar_get_x(), lidar_get_y()),
         title="Odometria, Filtr Kalmana, LiDAR",
     ),
     TASK_6_TUNING: lambda: PoseRecorder(
@@ -152,7 +145,7 @@ RECORDERS = {
         optimal=delayed(lambda: kf_optimal.state),
         trust_odom=delayed(lambda: kf_trust_odom.state),
         trust_sensor=delayed(lambda: kf_trust_sensor.state),
-        lidar=_lidar_xy,
+        lidar=lambda: (lidar_get_x(), lidar_get_y()),
         title="Wpływ strojenia Q i R w 2D",
     ),
 }
@@ -161,3 +154,27 @@ RECORDERS = {
 def GET_RECORDER(name: str, *args, **kwargs):
     """Instantiate a preconfigured recorder by task name."""
     return RECORDERS[name](*args, **kwargs)
+
+
+def GET_ERROR_RECORDER(pose_rec, clock=None, reference: str = "lidar"):
+    """Live companion of a 2D recorder, shown next to it with LivePlot(rec, err):
+    distance of each recorded trajectory from the reference, in millimetres."""
+
+    def error_of(name):
+        def channel():
+            data = pose_rec.data
+            if not data.get(name) or not data.get(reference):
+                return math.nan
+            a, b = data[name][-1], data[reference][-1]
+            return math.hypot(a[0] - b[0], a[1] - b[1]) * 1000
+
+        return channel
+
+    names = [n for n in pose_rec.channels if n != reference]
+    return SensorRecorder(
+        clock if clock is not None else Clock(duration=40),
+        title="Błąd położenia względem LiDAR-u",
+        y_label="błąd [mm]",
+        labels=DEFAULT_LABELS,
+        **{n: error_of(n) for n in names},
+    )

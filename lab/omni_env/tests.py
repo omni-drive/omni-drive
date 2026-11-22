@@ -1,30 +1,224 @@
-"""Test fixtures and validators for OmniDrive laboratory exercises."""
+"""Testy do zadań z notebooka. Każda funkcja wypisuje ✓/✗ dla kolejnych sprawdzeń.
 
-from unittest.mock import Mock
+Testy funkcji nie poruszają robotem: tam, gdzie funkcja korzysta z robota, na czas testu
+podstawiamy w przestrzeni nazw notebooka atrapę (fake), a potem przywracamy oryginał.
+"""
+
+import math
+import types
+from contextlib import contextmanager
 
 import numpy as np
+import pandas as pd
 
-from .context import f0, l0, r0, robot
+
+def _report(checks):
+    """checks: lista (opis, ok[, komunikat przy błędzie])."""
+    all_ok = True
+    for i, (name, ok, *hint) in enumerate(checks, start=1):
+        ok = bool(ok)
+        all_ok &= ok
+        extra = "" if ok else " – BŁĄD!" + (f" {hint[0]}" if hint and hint[0] else "")
+        print(f"{'✓' if ok else '✗'} Test {i}: {name}{extra}")
+    if all_ok and len(checks) > 1:
+        print("\n✓ Wszystkie testy zaliczone pomyślnie!")
+    return all_ok
 
 
-def TEST_TASK_1A(wheel_speeds):
-    """Weryfikacja poprawności funkcji kinematyki odwrotnej (Zadanie 1a)."""
-    cases = [
+@contextmanager
+def _patched(ns, **values):
+    """Tymczasowo podmienia zmienne w przestrzeni nazw notebooka (ns = fn.__globals__)."""
+    missing = object()
+    saved = {k: ns.get(k, missing) for k in values}
+    ns.update(values)
+    try:
+        yield
+    finally:
+        for k, v in saved.items():
+            if v is missing:
+                ns.pop(k, None)
+            else:
+                ns[k] = v
+
+
+def _close(a, b, tol):
+    try:
+        return np.allclose(np.asarray(a, dtype=float), np.asarray(b, dtype=float), atol=tol)
+    except (TypeError, ValueError):
+        return False
+
+
+# ---------------------------------------------------------------- Zadanie 1
+def test_wheel_speeds(wheel_speeds):
+    checks = []
+    for (vx, vy, omega), expected in [
         ((0.4, 0.2, 0.1), (-0.146, -0.1, 0.546)),
         ((1.0, 0.0, 0.0), (-0.866, 0.0, 0.866)),
         ((-0.3, 0.5, -0.2), (0.310, -0.7, -0.210)),
         ((0.0, 0.0, 1.0), (1.0, 1.0, 1.0)),
         ((0.5, -0.4, 0.3), (-0.333, 0.7, 0.533)),
-    ]
-    all_ok = True
-    for i, ((vx, vy, omega), expected) in enumerate(cases, start=1):
+    ]:
         got = wheel_speeds(vx, vy, omega)
-        if np.allclose(got, expected, atol=1e-3):
-            print(f"✓ Test {i}: vx={vx}, vy={vy}, omega={omega}")
-        else:
-            all_ok = False
-            print(f"✗ Test {i}: BŁĄD! Dla (vx={vx}, vy={vy}, omega={omega}) otrzymano {got}, oczekiwano {expected}")
+        checks.append((f"vx={vx}, vy={vy}, omega={omega}", _close(got, expected, 1e-3),
+                       f"otrzymano {got}, oczekiwano {expected}"))
+    return _report(checks)
 
-    if all_ok:
-        print("\n✓ Wszystkie testy zaliczone pomyślnie!")
-    return all_ok
+
+async def test_drive_raw(drive_raw, wheel_speeds):
+    from omni_drive import DriveVector
+
+    captured = []
+    checks = []
+    with _patched(drive_raw.__globals__, set_wheels=lambda w1, w2, w3: captured.append((w1, w2, w3))):
+        for v, heading, omega in [(0.5, 0.0, 0.0), (0.5, math.pi / 2, 0.0), (0.3, math.pi, 0.2), (0.4, -math.pi / 4, 0.0)]:
+            captured.clear()
+            await drive_raw(0.05, DriveVector(velocity=v, heading=heading, omega=omega))
+            expected = wheel_speeds(v * math.cos(heading), v * math.sin(heading), omega)
+            got = captured[0] if captured else None
+            checks.append((f"velocity={v}, heading={math.degrees(heading):.0f}°, omega={omega}",
+                           got is not None and _close(got, expected, 1e-6),
+                           f"otrzymano {got}, oczekiwano {expected}. Sprawdź cos/sin w vx, vy."))
+    return _report(checks)
+
+
+# ---------------------------------------------------------------- Zadanie 2
+class _FakeDriveRobot:
+    def __init__(self):
+        self.calls = []
+
+    async def drive_for(self, duration, vector):
+        self.calls.append((duration, math.degrees(vector.heading) % 360, vector.velocity))
+
+    async def pause_for(self, duration):
+        pass
+
+
+async def test_burst(burst):
+    ns = burst.__globals__
+    fake = _FakeDriveRobot()
+    with _patched(ns, robot=fake):
+        await burst(90, reps=2, leg=0.10, velocity=0.8)
+    calls = fake.calls
+    d = 0.10 / (0.8 * ns["V_MAX"])
+    expected = [(d, 90.0, 0.8), (d, 270.0, 0.8)] * 2
+    same_len = len(calls) == len(expected)
+    got = str([(round(c[0], 3), round(c[1]), c[2]) for c in calls])
+    return _report([
+        ("liczba przejazdów (2 × tam i z powrotem)", same_len, f"otrzymano {len(calls)} przejazdy"),
+        ("czas przejazdu odcinka = leg / (velocity * V_MAX)",
+         same_len and all(abs(c[0] - e[0]) < 1e-6 for c, e in zip(calls, expected)), got),
+        ("kierunki: 90°, 270°, 90°, 270°",
+         same_len and all(abs(c[1] - e[1]) < 1e-6 for c, e in zip(calls, expected)), got),
+        ("prędkość = velocity", same_len and all(abs(c[2] - e[2]) < 1e-9 for c, e in zip(calls, expected)), got),
+    ])
+
+
+# ---------------------------------------------------------------- Zadanie 3
+def test_lidar_position(lidar_get_x, lidar_get_y):
+    checks = []
+    for (front, left, right), (ex, ey), desc in [
+        ((0.30, 0.25, 0.35), (0.10, 0.05), "10 cm do przodu, 5 cm w lewo"),
+        ((0.45, 0.33, 0.27), (-0.05, -0.03), "5 cm do tyłu, 3 cm w prawo"),
+    ]:
+        fake = types.SimpleNamespace(lidar=types.SimpleNamespace(beam_front=front, beam_left=left, beam_right=right))
+        with _patched(lidar_get_x.__globals__, robot=fake, f0=0.40, l0=0.30, r0=0.30):
+            gx, gy = lidar_get_x(), lidar_get_y()
+        checks.append((desc, _close((gx, gy), (ex, ey), 1e-9),
+                       f"otrzymano x={gx}, y={gy}, oczekiwano x={ex}, y={ey}"))
+    return _report(checks)
+
+
+def test_Q(Q, final_drift, N_steps):
+    return _report([
+        ("Q = final_drift² / N_steps", _close(Q, final_drift ** 2 / N_steps, 1e-12)),
+        ("√Q jest rozsądne (od 0,1 do 20 mm na krok)", 1e-4 <= math.sqrt(Q) <= 0.02, f"√Q = {math.sqrt(Q) * 1000:.2f} mm"),
+    ])
+
+
+# ---------------------------------------------------------------- Zadanie 4
+def test_calc_R(calc_R):
+    rng = np.random.default_rng(0)
+    e = pd.Series(np.r_[rng.normal(0, 0.005, 300), [0.5, -0.4, 0.8, np.nan]])
+    got = math.sqrt(calc_R(e)) * 1000
+    return _report([
+        (f"szum 5 mm z fałszywymi echami → √R = {got:.1f} mm", 4.0 <= got <= 6.0,
+         "oczekiwano ok. 5 mm (czy używasz mediany, a nie średniej?)"),
+    ])
+
+
+def test_R(R_ir, R_us, still, moving, calc_R):
+    return _report([
+        ("R_ir z fazy spoczynku (still)", _close(R_ir, calc_R(still["infrared"] - still["lidar"]), 1e-15)),
+        ("R_us z fazy ruchu (moving)", _close(R_us, calc_R(moving["ultrasonic"] - moving["lidar"]), 1e-15)),
+    ])
+
+
+# ---------------------------------------------------------------- Zadanie 5
+def test_kalman(kalman_predict, kalman_update):
+    checks = []
+    for fn, args, expected, desc in [
+        (kalman_predict, (0.10, 0.004, 0.02, 0.001), (0.12, 0.005), "predykcja: x + dx, P + Q"),
+        (kalman_update, (0.12, 0.005, 0.15, 0.005), (0.135, 0.0025), "korekta: P = R → K = 0,5"),
+        (kalman_update, (0.12, 0.004, 0.10, 0.012), (0.115, 0.003), "korekta: K = 0,25"),
+    ]:
+        got = fn(*args)
+        checks.append((desc, _close(got, expected, 1e-9), f"otrzymano {got}, oczekiwano {expected}"))
+    return _report(checks)
+
+
+def test_rmse(rmse):
+    got = rmse(pd.Series([0.10, 0.20, 0.40, np.nan]), pd.Series([0.10, 0.10, 0.10, 0.10]))
+    expected = math.sqrt((0.0 ** 2 + 0.1 ** 2 + 0.3 ** 2) / 3)
+    return _report([(f"RMSE = {got:.4f} m", _close(got, expected, 1e-12), f"oczekiwano {expected:.4f} m")])
+
+
+def test_task_5_2(df, rmse):
+    r_odo, r_ir, r_kf = (rmse(df[n], df["lidar"]) for n in ("odometry", "infrared", "kalman"))
+    hint = "Sprawdź dx (od poprzedniego kroku) i znak w z = d0 - d."
+    return _report([
+        ("filtr dokładniejszy od odometrii", r_kf < r_odo, hint),
+        ("filtr dokładniejszy od samego czujnika IR", r_kf < r_ir, hint),
+    ])
+
+
+def test_task_5_3(df, rmse):
+    r_odo, r_ir, r_fu = (rmse(df[n], df["lidar"]) for n in ("odometry", "kalman_ir", "kalman_fusion"))
+    return _report([
+        ("fuzja dokładniejsza od odometrii", r_fu < r_odo),
+        ("fuzja nie gorsza od samego IR (tolerancja 2 mm)", r_fu <= r_ir + 0.002),
+        ("pomiar US użyty w pętli (z_us ma wartości)",
+         df["ultrasonic"].notna().sum() > 10 and df["ultrasonic"].abs().sum() > 0),
+    ])
+
+
+# ---------------------------------------------------------------- Zadanie 6
+def test_task_6_model(z, Q_mat, R_mat, H, Q, R_ir, R_us):
+    dx, dy, d0 = 0.05, 0.03, 0.40  # robot przesunięty o 5 cm do przodu i 3 cm w lewo
+    def s(d):
+        return types.SimpleNamespace(distance=d)
+
+    fake = types.SimpleNamespace(ir_front=s(d0 - dx), ir_left=s(d0 - dy), ir_right=s(d0 + dy),
+                                 us_front=s(d0 - dx), us_left=s(d0 - dy), us_right=s(d0 + dy))
+    baselines = dict.fromkeys(("d0_ir_f", "d0_ir_l", "d0_ir_r", "d0_us_f", "d0_us_l", "d0_us_r"), d0)
+    with _patched(z[0].__globals__, robot=fake, **baselines):
+        z_vals = np.array([f() for f in z], dtype=float)
+
+    H_arr = np.asarray(H, dtype=float)
+    checks = [
+        ("Q_mat to diag([Q, Q])", np.shape(Q_mat) == (2, 2) and _close(Q_mat, np.diag([Q, Q]), 1e-15)),
+        ("R_mat ma R_ir dla IR i R_us dla US na przekątnej",
+         np.shape(R_mat) == (6, 6) and _close(R_mat, np.diag([R_ir] * 3 + [R_us] * 3), 1e-15)),
+        ("H ma kształt 6 × 2", H_arr.shape == (6, 2)),
+    ]
+    if H_arr.shape == (6, 2):
+        pred = H_arr @ np.array([dx, dy])
+        names = ["IR przód", "IR lewy", "IR prawy", "US przód", "US lewy", "US prawy"]
+        for k, n in enumerate(names):
+            checks.append((f"{n}: z = {z_vals[k] * 100:+.1f} cm, H·[x, y] = {pred[k] * 100:+.1f} cm",
+                           abs(pred[k] - z_vals[k]) < 1e-9, "sprawdź znak w z albo w wierszu H"))
+    return _report(checks)
+
+
+def test_task_6(rec, rmse_2d):
+    r_odo, r_kf = (rmse_2d(rec.data[n], rec.data["lidar"]) for n in ("odometry", "kalman"))
+    return _report([("filtr 2D dokładniejszy od odometrii", r_kf < r_odo, "Sprawdź znaki w z i H (test powyżej).")])
