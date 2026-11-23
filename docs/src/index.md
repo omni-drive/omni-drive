@@ -45,7 +45,8 @@ async with robot:
 - `async with robot:` stops the robot when the block ends, also when the cell fails or you
   press the stop button. Always drive inside it. See [Stopping safely](guides/safety.md).
 - `velocity` and `omega` are fractions of full speed, from `-1.0` to `1.0`, not meters or
-  radians per second. `heading` is the direction of travel: `0°` forward, `90°` left.
+  radians per second. `heading` is the direction of travel, an `Angle`: `0°` forward, `90°`
+  right, `-90°` left.
 
 Because the loop knows the time, the command can change with it, for example a speed that
 slowly builds up:
@@ -87,8 +88,8 @@ clock = Clock(duration=Time.s(3))
 # Data sources sampled on every tick of the clock:
 rec = SensorRecorder(
     clock,
-    front=lambda: robot.us_front.distance.meters,
-    left=lambda: robot.us_left.distance.meters,
+    front=lambda: robot.us_front.distance,
+    left=lambda: robot.us_left.distance,
 )
 
 # Control loop and live plot together:
@@ -97,9 +98,8 @@ async with LivePlot(rec), robot:
         robot.set_vector(DriveVector(velocity=0.2, heading=Angle.deg(0)))
 ```
 
-Each channel is a function without arguments that returns something `float()` accepts. Return
-`.meters`, not a `Distance`: a `Distance` makes the recording stop without an error message.
-Infinite readings (for example `Distance.inf` from a sensor without an echo) are stored as
+Each channel is a function without arguments that returns something `float()` accepts: a
+number, a `Distance` (stored in meters) or an `Angle` (stored in radians). Infinite readings (for example `Distance.infinite()` from a sensor without an echo) are stored as
 `NaN`, so they show up as gaps.
 
 After the run, `rec.data` holds every sample as lists, with the time in `rec.data["t"]`. Turn
@@ -126,7 +126,7 @@ async with robot:
     # 2. Stand still for 1 second:
     await robot.pause_for(Time.s(1))
 
-    # 3. Turn on the spot for 2 seconds (omega = turn rate):
+    # 3. Turn on the spot for 2 seconds (omega = turn rate, positive = clockwise):
     await robot.drive_for(Time.s(2), DriveVector(velocity=0.0, heading=Angle.deg(0), omega=0.5))
 ```
 
@@ -140,16 +140,16 @@ it at any time; the current position then becomes the origin:
 
 ```python
 pose = robot.pose
-print(f"{pose.x.meters:.3f} m, {pose.y.meters:.3f} m, {pose.yaw.degrees:.1f}°")  # e.g. 0.450 m, 0.120 m, 35.0°
+print(f"{pose.x:.3f}, {pose.y:.3f}, {pose.yaw:.1f}")  # e.g. 0.450 m, 0.120 m, 35.0°
 
 robot.reset_pose()
 
-print(robot.pose)  # Pose(x=0.000m, y=0.000m, yaw=0.0°), or yaw=360.0° for a tiny negative yaw
+print(robot.pose)  # Pose(x=0.000 m, y=0.000 m, yaw=0.0°)
 ```
 
-- `pose.x` and `pose.y` are `Distance` values and `pose.yaw` is an `Angle`, so read them with
-  `.meters` and `.degrees` or `.radians`.
-- After a reset, x points forward, y to the left, and yaw grows counter-clockwise.
+- `pose.x` and `pose.y` are `Distance` values and `pose.yaw` is an `Angle`; read them with
+  `.meters` and `.degrees` or `.radians`, or compute with them directly.
+- After a reset, x points forward, y to the right, and yaw grows clockwise.
 - Odometry drifts the longer you drive, because the wheels slip. See
   [Odometry and drift](concepts/odometry.md) and [Frames and units](concepts/frames.md).
 
@@ -159,24 +159,29 @@ print(robot.pose)  # Pose(x=0.000m, y=0.000m, yaw=0.0°), or yaw=360.0° for a t
 
 | Type | Create | Read |
 | --- | --- | --- |
-| `Distance` | `Distance.m(0.25)`, `Distance.cm(25)`, `Distance.mm(250)` | `.meters`, `.as_cm`, `.as_mm` |
-| `Angle` | `Angle.deg(90)`, `Angle.rad(1.57)` | `.degrees` (always 0–360), `.radians` |
-| `Time` | `Time.s(1.5)`, `Time.ms(1500)` | `.seconds` |
+| `Distance` | `Distance.m(0.25)`, `Distance.cm(25)`, `Distance.mm(250)` | `.meters`, `.centimeters`, `.millimeters` |
+| `Angle` | `Angle.deg(90)`, `Angle.rad(1.57)` | `.degrees`, `.radians` |
+| `Time` | `Time.s(1.5)`, `Time.ms(1500)` | `.seconds`, `.milliseconds` |
+| `Speed` | `Speed.mps(0.39)`, `Speed.cmps(39)` | `.meters_per_second` |
+
+You can calculate with them:
 
 ```python
-dist = Distance.cm(25)
-print(f"Distance: {dist.meters} m = {dist.as_cm} cm = {dist.as_mm} mm")
+leg = Distance.cm(20)
+v_max = Speed.mps(0.39)
+duration = leg / (0.5 * v_max)       # Distance / Speed = Time
+print(duration)                      # 1.02564 s
 
-ang = Angle.deg(90)
-print(f"Angle: {ang.degrees:.1f}° = {ang.radians:.3f} rad")
-
-t = Time.s(1.5)
-print(f"Time: {t.seconds} s")
+d0, d = Distance.cm(40), robot.ir_front.distance
+moved = d0 - d                       # Distance - Distance = Distance
+print(f"moved {moved.centimeters:.1f} cm")
 ```
 
-Values of the same type can be compared, for example `robot.ir_front.distance < Distance.cm(30)`.
-Comparing a `Distance` with a plain number raises an error. All types are described in
-[`omni_drive.models`](reference/models.md).
+Adding, subtracting and comparing work only between values of the same type, for example
+`robot.ir_front.distance < Distance.cm(30)`. A plain number there (`d < 0.3`) raises an error
+that tells you to write the unit. Multiplying or dividing by a number keeps the type, and
+`float(d)` gives the value in meters (radians for an `Angle`, seconds for a `Time`). See
+[Frames and units](concepts/frames.md#units) for all the rules.
 
 ## Distance sensors (ToF and ultrasonic)
 
@@ -184,9 +189,9 @@ The robot has two sets of distance sensors around its body:
 
 | Direction | Time-of-Flight (laser) | Ultrasonic |
 | --- | --- | --- |
-| left (+90°) | `robot.ir_left` | `robot.us_left` |
+| left (−90°) | `robot.ir_left` | `robot.us_left` |
 | front (0°) | `robot.ir_front` | `robot.us_front` |
-| right (−90°) | `robot.ir_right` | `robot.us_right` |
+| right (90°) | `robot.ir_right` | `robot.us_right` |
 
 The `.distance` property of each sensor returns a `Distance`:
 
@@ -198,7 +203,7 @@ print(f"Right: ToF = {robot.ir_right.distance.meters:.3f} m  |  US = {robot.us_r
 
 - The `ir_*` sensors are VL53L1X Time-of-Flight sensors: they measure how long an infrared
   laser pulse takes to come back.
-- When a sensor has no valid reading (no echo, out of range), `.distance` is `Distance.inf`.
+- When a sensor has no valid reading (no echo, out of range), `.distance` is `Distance.infinite()`.
 - The firmware adds Gaussian noise to both kinds of sensor on purpose, so the lab's filtering
   tasks have something to filter.
 - To wait until a reading meets a condition, use
@@ -211,18 +216,19 @@ See [Reading sensors](guides/sensors.md) for update rates, ranges and noise.
 The LiDAR provides averaged beams in the same three directions as the distance sensors:
 
 ```python
-print(f"LiDAR left (+90°):  {robot.lidar.beam_left.meters:.3f} m")
-print(f"LiDAR front (0°):   {robot.lidar.beam_front.meters:.3f} m")
-print(f"LiDAR right (-90°): {robot.lidar.beam_right.meters:.3f} m")
+print(f"LiDAR left (-90°): {robot.lidar.beam_left:.3f}")
+print(f"LiDAR front (0°):  {robot.lidar.beam_front:.3f}")
+print(f"LiDAR right (90°): {robot.lidar.beam_right:.3f}")
 ```
 
 - Each beam is an average over many neighbouring laser points, which removes most of the
   noise. That is why the lab uses the LiDAR as the reference for the other sensors.
-- The beams return a `Distance`, or `Distance.inf` if there are not enough points in that
+- The beams return a `Distance`, or `Distance.infinite()` if there are not enough points in that
   direction.
 - The beam directions are fixed in the room, like field-centric headings (see below). After
   the robot turns, `beam_front` still looks the way the robot faced at the last
-  `reset_pose()`, while `ir_front` turns with the robot.
+  `reset_pose()`, while `ir_front` turns with the robot. `robot.lidar.beam(Angle.deg(45))`
+  measures in any other direction.
 
 ## Other features
 
@@ -230,8 +236,7 @@ Telemetry and diagnostics that you usually don't need for basic driving:
 
 - `robot.power`: the power supply (`percentage`, `voltage`, `current`, `is_critical`).
 - `robot.lidar`: the latest raw LiDAR scan. `robot.lidar.point_cloud` returns a NumPy array of
-  shape `N × 2` with `[x, y]` points in meters, which the library also uses for SLAM
-  ([Localization](guides/localization.md)).
+  shape `N × 2` with `[x, y]` points in meters (x forward, y right).
 - `robot.print_status()`: a full diagnostic summary of the robot.
 
 ```python

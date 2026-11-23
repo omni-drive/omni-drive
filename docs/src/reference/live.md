@@ -31,8 +31,8 @@ columns. The view redraws 30 times a second.
 `LivePlot` is an async context manager: entering calls `show()`, leaving calls `stop()`.
 
 ```python
-ir = SensorRecorder(front=lambda: robot.ir_front.distance.meters)
-path = PoseRecorder(odometry=lambda: (robot.pose.x.meters, robot.pose.y.meters))
+ir = SensorRecorder(front=lambda: robot.ir_front.distance)
+path = PoseRecorder(odometry=lambda: (robot.pose.x, robot.pose.y))
 
 async with LivePlot(ir, path):
     await robot.drive_for(Time.s(3), DriveVector(0.3, Angle.deg(0)))
@@ -68,8 +68,7 @@ PosePlot(recorder: PoseRecorder, height: int = DEFAULT_PLOT_HEIGHT, rollover: in
 ```
 
 A top-down trajectory figure for a `PoseRecorder`: one line per channel, a dot at its latest
-point and a cross at `(0, 0)`. Forward (+x) points up; the horizontal axis shows −y, so left
-(+y) is on the left. The figure keeps
+point and a cross at `(0, 0)`. Forward (+x) points up and right (+y) points right. The figure keeps
 at most `rollover` points per channel. Without a `title`, the figure uses the Polish default
 `"Trajektoria 2D"`.
 

@@ -16,34 +16,34 @@ Sensor[SensorIdT: (IrSensorId, UltrasonicSensorId)](
 ```
 
 One distance sensor that reads the latest ESP32 telemetry message. `esp_sub` is the telemetry
-subscriber; a sensor without one always reads `Distance.inf`. `config` defaults to
+subscriber; a sensor without one always reads `Distance.infinite()`. `config` defaults to
 `SensorConfig.IR(...)` for an `IrSensorId` and `SensorConfig.US(...)` for an
 `UltrasonicSensorId`, with the angle from `SENSOR_ANGLES`. `get_yaw`, if given, returns a
-heading in radians used to correct the reading.
+heading in radians (internal frame) used to correct the reading.
 
 | Member | Description |
 | --- | --- |
-| `distance: Distance` | the current reading (below) |
+| `distance: Distance` | the current reading (below); `Distance.infinite()` without one, check with `.is_finite` |
 | `await wait_for(condition: Callable[[Distance], bool], polling_interval: Time = Time.ms(20)) -> Distance` | reads `distance` every `polling_interval` until `condition(reading)` is true, then returns that reading |
 | `index: SensorIdT` | the sensor's `IrSensorId` or `UltrasonicSensorId` |
 | `config: SensorConfig` | mounting and range, described below |
 
 `distance` is computed as follows:
 
-1. If there is no telemetry yet, or the raw reading is 0 or less, it returns `Distance.inf`.
+1. If there is no telemetry yet, or the raw reading is 0 or less, it returns `Distance.infinite()`.
 2. If `get_yaw` was given, the raw reading in meters is multiplied by `cos(get_yaw())`. The robot
-   passes `imu_yaw` to the three IR (ToF) sensors, so their readings are multiplied by
-   `cos(robot.imu_yaw.radians)`; ultrasonic readings are not.
+   passes its heading to the three IR (ToF) sensors, so their readings are multiplied by
+   `cos(robot.heading)`; ultrasonic readings are not.
 3. `config.offset` is subtracted and the result is clamped at 0.
 
 `min_range` and `max_range` from the config are not applied to the reading.
 
 ```python
-d = await robot.ir_front.wait_for(lambda d: d.meters < 0.5)
+d = await robot.ir_front.wait_for(lambda d: d < Distance.cm(50))
 ```
 
-`wait_for` does not skip `Distance.inf`: a condition such as `d.meters > 1.0` is satisfied by a
-missing reading.
+`wait_for` does not skip `Distance.infinite()`: a condition such as `d > Distance.m(1)` is
+satisfied by a missing reading.
 
 ## IrSensor, UltrasonicSensor
 
@@ -65,7 +65,7 @@ Mounting and range of a sensor. The dataclass is frozen.
 
 | Field | Description |
 | --- | --- |
-| `angle` | direction the sensor faces in the robot frame, radians; 0 is forward |
+| `angle` | direction the sensor faces, radians, internal frame (counter-clockwise, π/2 is left); 0 is forward |
 | `offset` | subtracted from every reading, meters |
 | `cone` | full beam angle, radians |
 | `min_range` | shortest range, meters |
@@ -75,13 +75,13 @@ Mounting and range of a sensor. The dataclass is frozen.
 | --- | --- |
 | `SensorConfig.IR(angle: float = 0.0)` | ToF sensor: `offset=0.0`, `cone=radians(27)`, `min_range=0.04`, `max_range=4.0` |
 | `SensorConfig.US(angle: float = 0.0)` | ultrasonic sensor: `offset=0.0132`, `cone=radians(55)`, `min_range=0.01`, `max_range=4.0` |
-| `face: tuple[float, float]` | position of the sensor face in the robot frame: 0.15 m from the center in the direction `angle`, meters |
-| `beam_angles(rays: int = 7) -> np.ndarray` | `rays` directions spread evenly across the cone, robot frame, radians |
+| `face: tuple[float, float]` | position of the sensor face, internal frame: 0.15 m from the center in the direction `angle`, meters |
+| `beam_angles(rays: int = 7) -> np.ndarray` | `rays` directions spread evenly across the cone, internal frame, radians |
 
 ## Constants
 
 | Name | Value |
 | --- | --- |
-| `SENSOR_ANGLES` | `LEFT` π/2, `FRONT` 0, `RIGHT` −π/2, for both `IrSensorId` and `UltrasonicSensorId` |
+| `SENSOR_ANGLES` | `LEFT` π/2, `FRONT` 0, `RIGHT` −π/2 (internal frame; in the robot frame left is −90° and right is 90°), for both `IrSensorId` and `UltrasonicSensorId` |
 | `BEAM_RAYS` | 7, the default number of rays for `beam_angles` |
 | `POLL_INTERVAL` | `Time.ms(20)`, the default `wait_for` interval |

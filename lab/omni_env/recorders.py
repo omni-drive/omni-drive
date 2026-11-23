@@ -4,7 +4,7 @@ import math
 from collections import deque
 from collections.abc import Callable
 
-from omni_drive import Clock, PoseRecorder, SensorRecorder
+from omni_drive import Clock, Distance, PoseRecorder, SensorRecorder, Time
 
 from .context import (
     Q,
@@ -63,13 +63,13 @@ DEFAULT_LABELS = {
 
 def _kalman_ir():
     """Background 1D Kalman filter (IR-only baseline for Task 5.3)."""
-    x, P, last_ox = 0.0, None, None
+    x, P, last_ox = Distance.zero(), None, None
 
     def step():
         nonlocal x, P, last_ox
         ox = robot.pose.x
         if P is None:
-            P, last_ox = Q, ox
+            P, last_ox = float(Q), ox
 
         x += ox - last_ox
         P += Q
@@ -172,7 +172,7 @@ def GET_ERROR_RECORDER(pose_rec, clock=None, reference: str = "lidar"):
 
     names = [n for n in pose_rec.channels if n != reference]
     return SensorRecorder(
-        clock if clock is not None else Clock(duration=40),
+        clock if clock is not None else Clock(duration=Time.s(40)),
         title="Błąd położenia względem LiDAR-u",
         y_label="błąd [mm]",
         labels=DEFAULT_LABELS,

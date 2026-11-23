@@ -11,29 +11,30 @@ If you have not driven the robot before, start with [Getting started](../index.m
 ## Drive with a vector
 
 ```python
-from omni_drive import Angle, DriveVector, OmniDrive, Time
+from omni_drive import Angle, DriveVector, OmniDrive, Speed, Time
 
 robot = OmniDrive()
 
 async with robot:
-    await robot.drive_for(Time.s(1), DriveVector(velocity=0.3, heading=Angle.deg(90)))   # left
+    await robot.drive_for(Time.s(1), DriveVector(velocity=0.3, heading=Angle.deg(90)))   # right
     await robot.pause_for(Time.s(0.5))
-    await robot.drive_for(Time.s(1), DriveVector(velocity=0.3, heading=Angle.deg(270)))  # right, back to the start
+    await robot.drive_for(Time.s(1), DriveVector(velocity=0.3, heading=Angle.deg(-90)))  # left, back to the start
 ```
 
-The robot drives to the left without turning, stops for half a second and drives back.
+The robot drives to the right without turning, stops for half a second and drives back.
 
 `OmniDrive()` always returns the same object, so every cell that calls it talks to the same
 connection.
 
 | Method | What it does |
 | --- | --- |
-| `await robot.drive_for(duration, vector)` | Sends `vector`, waits `duration` (a `Time`), then stops the robot. It also stops when the cell fails or you interrupt it. |
-| `await robot.pause_for(duration)` | Stops the robot and waits `duration`. |
+| `await robot.drive_for(duration, vector)` | Sends `vector`, waits `duration` (a `Time`), then stops the robot. It also stops when the cell fails or you interrupt it. A plain number raises `TypeError`. |
+| `await robot.pause_for(duration)` | Stops the robot and waits `duration` (a `Time`). |
 | `robot.set_vector(vector)` | Changes the command and returns at once. The robot keeps moving until the next command. |
 | `robot.stop()` | Same as `robot.set_vector(DriveVector.zero())`. |
 
-The duration comes first: `drive_for(Time.s(2), vector)`.
+The duration comes first: `drive_for(Time.s(2), vector)`. Durations can be computed from a
+distance and a speed: `Distance.cm(20) / Speed.mps(0.2)` is `Time.s(1)`.
 
 Use `set_vector` when the command changes while the robot moves, for example when you steer
 from sensor readings. Put it inside `async with robot:`, which stops the robot when the block
@@ -56,8 +57,8 @@ async with robot:
 | Argument | Meaning |
 | --- | --- |
 | `velocity` | speed of travel, as a fraction of full wheel speed. Clipped to −1.0 … 1.0. |
-| `heading` | direction of travel, as an `Angle`. `Angle.deg(0)` is forward, `Angle.deg(90)` is left. |
-| `omega` | turn rate, as a fraction of full wheel speed. Positive turns counter-clockwise. Clipped to −1.0 … 1.0. |
+| `heading` | direction of travel, as an `Angle`. `Angle.deg(0)` is forward, `Angle.deg(90)` is right, `Angle.deg(-90)` is left. A plain number raises `TypeError`. |
+| `omega` | turn rate, as a fraction of full wheel speed. Positive turns clockwise. Clipped to −1.0 … 1.0. |
 
 `velocity` and `omega` are not in meters per second or radians per second. The library does not
 convert them to physical units. If you need a speed in m/s, measure it: drive for a known time
@@ -72,14 +73,22 @@ applies these steps, in this order, on every cycle:
 
 1. **Acceleration limit.** The speed of travel and the turn rate each change by at most 9.0 per
    second, so going from 0 to full speed takes about 0.11 s.
-2. **Turn priority.** The turn rate is clipped to −1 … 1 and the speed of travel is reduced to
+2. **Heading hold.** While the robot translates with `omega = 0`, a proportional controller adds
+   a small turn command (at most 0.5) that keeps `robot.heading` constant (below).
+3. **Turn priority.** The turn rate is clipped to −1 … 1 and the speed of travel is reduced to
    at most `1 − |omega|`. A full-speed `omega` therefore leaves no speed for travel.
-3. **Field-centric rotation**, if `robot.field_centric` is `True` (see below).
-4. **Inverse kinematics.** The vector becomes three wheel speeds, each clipped to −1 … 1.
+4. **Field-centric rotation**, if `robot.field_centric` is `True` (see below).
+5. **Inverse kinematics.** The vector becomes three wheel speeds, each clipped to −1 … 1.
 
-The controller does not correct the robot's heading while it drives. With `omega=0` it sends no
-turn command, so any small rotation from uneven wheels or floor stays; you can see it in
-`robot.imu_yaw`.
+By default the heading hold locks the heading at the start of every translation and uses the
+odometry yaw, which cannot see wheel slip. After `await robot.calibrate_imu()` (the robot must
+stand still for about 1.5 s), `robot.heading` comes from the bias-corrected gyroscope and the
+controller holds the heading of the last `robot.reset_pose()` across moves:
+
+```python
+await robot.calibrate_imu()   # measures the gyroscope drift; the robot must not move
+robot.reset_pose()            # the current heading becomes 0°
+```
 
 Wheel speeds below 0.001 are sent as 0. When all three wheels have been 0 for 10 cycles, the
 thread stops sending until the next nonzero command.
@@ -88,8 +97,7 @@ thread stops sending until the next nonzero command.
 
 `robot.field_centric` is `True` by default. In this mode, `heading` is measured from a fixed
 direction in the room, not from the robot's current front. That direction is the one the robot
-faced when the gyroscope reading was first taken (shortly after `OmniDrive()` is created), or
-when you last called `robot.reset_pose()`.
+faced when you last called `robot.reset_pose()` (or when `robot.pose` was first read).
 
 The difference shows when the robot turns while it drives:
 
@@ -104,12 +112,9 @@ With `field_centric = True` the robot spins while it travels in a straight line.
 `robot.field_centric = False` the same command drives a curve, because "forward" turns with
 the robot.
 
-The rotation uses `robot.imu_yaw`, the gyroscope heading. The controller adds a small lead to
-compensate for the delay between reading the heading and the wheels reacting. You can change
-`robot.field_centric` at any time.
-
-If the gyroscope failed to start, `robot.imu_yaw` stays at 0. Field-centric driving then
-behaves like robot-centric driving.
+The rotation uses `robot.heading`: the odometry yaw, or the gyroscope after
+`calibrate_imu()`. The controller adds a small lead to compensate for the delay between
+reading the heading and the wheels reacting. You can change `robot.field_centric` at any time.
 
 ## Set the wheels directly
 
@@ -124,7 +129,7 @@ async with robot:
     await asyncio.sleep(1)
 ```
 
-The same speed on all three wheels rotates the robot in place, counter-clockwise for positive
+The same speed on all three wheels rotates the robot in place, clockwise for positive
 speeds. [Frames and units](../concepts/frames.md#wheels) shows where each wheel sits.
 
 - Speeds range from −1.0 to 1.0, as a fraction of full wheel speed. Values outside this range

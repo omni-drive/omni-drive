@@ -10,6 +10,7 @@ from contextlib import contextmanager
 
 import numpy as np
 import pandas as pd
+from omni_drive import Angle, Distance, DriveVector, Time
 
 
 def _report(checks):
@@ -48,15 +49,14 @@ def _close(a, b, tol):
         return False
 
 
-# ---------------------------------------------------------------- Zadanie 1
 def test_wheel_speeds(wheel_speeds):
     checks = []
     for (vx, vy, omega), expected in [
-        ((0.4, 0.2, 0.1), (-0.146, -0.1, 0.546)),
-        ((1.0, 0.0, 0.0), (-0.866, 0.0, 0.866)),
-        ((-0.3, 0.5, -0.2), (0.310, -0.7, -0.210)),
+        ((0.4, 0.2, 0.1), (0.546, -0.1, -0.146)),
+        ((1.0, 0.0, 0.0), (0.866, 0.0, -0.866)),
+        ((-0.3, 0.5, -0.2), (-0.210, -0.7, 0.310)),
         ((0.0, 0.0, 1.0), (1.0, 1.0, 1.0)),
-        ((0.5, -0.4, 0.3), (-0.333, 0.7, 0.533)),
+        ((0.5, -0.4, 0.3), (0.533, 0.7, -0.333)),
     ]:
         got = wheel_speeds(vx, vy, omega)
         checks.append((f"vx={vx}, vy={vy}, omega={omega}", _close(got, expected, 1e-3),
@@ -64,30 +64,40 @@ def test_wheel_speeds(wheel_speeds):
     return _report(checks)
 
 
-async def test_drive_raw(drive_raw, wheel_speeds):
-    from omni_drive import DriveVector
+class _FakeContextRobot:
+    async def __aenter__(self):
+        return self
 
+    async def __aexit__(self, *exc):
+        pass
+
+    def stop(self):
+        pass
+
+
+async def test_drive_raw(drive_raw, wheel_speeds):
     captured = []
     checks = []
-    with _patched(drive_raw.__globals__, set_wheels=lambda w1, w2, w3: captured.append((w1, w2, w3))):
-        for v, heading, omega in [(0.5, 0.0, 0.0), (0.5, math.pi / 2, 0.0), (0.3, math.pi, 0.2), (0.4, -math.pi / 4, 0.0)]:
+    with _patched(drive_raw.__globals__, robot=_FakeContextRobot(),
+                  set_wheels=lambda w1, w2, w3: captured.append((w1, w2, w3))):
+        for v, deg, omega in [(0.5, 0, 0.0), (0.5, 90, 0.0), (0.3, 180, 0.2), (0.4, -45, 0.0)]:
             captured.clear()
-            await drive_raw(0.05, DriveVector(velocity=v, heading=heading, omega=omega))
+            await drive_raw(Time.ms(50), DriveVector(velocity=v, heading=Angle.deg(deg), omega=omega))
+            heading = math.radians(deg)
             expected = wheel_speeds(v * math.cos(heading), v * math.sin(heading), omega)
             got = captured[0] if captured else None
-            checks.append((f"velocity={v}, heading={math.degrees(heading):.0f}°, omega={omega}",
+            checks.append((f"velocity={v}, heading={deg}°, omega={omega}",
                            got is not None and _close(got, expected, 1e-6),
                            f"otrzymano {got}, oczekiwano {expected}. Sprawdź cos/sin w vx, vy."))
     return _report(checks)
 
 
-# ---------------------------------------------------------------- Zadanie 2
 class _FakeDriveRobot:
     def __init__(self):
         self.calls = []
 
     async def drive_for(self, duration, vector):
-        self.calls.append((duration, math.degrees(vector.heading) % 360, vector.velocity))
+        self.calls.append((float(duration), vector.heading.degrees % 360, vector.velocity))
 
     async def pause_for(self, duration):
         pass
@@ -97,9 +107,9 @@ async def test_burst(burst):
     ns = burst.__globals__
     fake = _FakeDriveRobot()
     with _patched(ns, robot=fake):
-        await burst(90, reps=2, leg=0.10, velocity=0.8)
+        await burst(Angle.deg(90), reps=2, leg=Distance.cm(10), velocity=0.8)
     calls = fake.calls
-    d = 0.10 / (0.8 * ns["V_MAX"])
+    d = float(Distance.cm(10) / (0.8 * ns["V_MAX"]))
     expected = [(d, 90.0, 0.8), (d, 270.0, 0.8)] * 2
     same_len = len(calls) == len(expected)
     got = str([(round(c[0], 3), round(c[1]), c[2]) for c in calls])
@@ -113,29 +123,32 @@ async def test_burst(burst):
     ])
 
 
-# ---------------------------------------------------------------- Zadanie 3
 def test_lidar_position(lidar_get_x, lidar_get_y):
     checks = []
     for (front, left, right), (ex, ey), desc in [
-        ((0.30, 0.25, 0.35), (0.10, 0.05), "10 cm do przodu, 5 cm w lewo"),
-        ((0.45, 0.33, 0.27), (-0.05, -0.03), "5 cm do tyłu, 3 cm w prawo"),
+        ((0.30, 0.35, 0.25), (0.10, 0.05), "10 cm do przodu, 5 cm w prawo"),
+        ((0.45, 0.27, 0.33), (-0.05, -0.03), "5 cm do tyłu, 3 cm w lewo"),
     ]:
-        fake = types.SimpleNamespace(lidar=types.SimpleNamespace(beam_front=front, beam_left=left, beam_right=right))
-        with _patched(lidar_get_x.__globals__, robot=fake, f0=0.40, l0=0.30, r0=0.30):
+        beams = {k: Distance.m(v) for k, v in (("beam_front", front), ("beam_left", left), ("beam_right", right))}
+        fake = types.SimpleNamespace(lidar=types.SimpleNamespace(**beams))
+        start = dict(f0=Distance.m(0.40), l0=Distance.m(0.30), r0=Distance.m(0.30))
+        with _patched(lidar_get_x.__globals__, robot=fake, **start):
             gx, gy = lidar_get_x(), lidar_get_y()
         checks.append((desc, _close((gx, gy), (ex, ey), 1e-9),
                        f"otrzymano x={gx}, y={gy}, oczekiwano x={ex}, y={ey}"))
+    checks.append(("wynik to Distance (nie zwykła liczba)",
+                   isinstance(gx, Distance) and isinstance(gy, Distance),
+                   "zwróć różnicę odległości bez .meters"))
     return _report(checks)
 
 
 def test_Q(Q, final_drift, N_steps):
     return _report([
-        ("Q = final_drift² / N_steps", _close(Q, final_drift ** 2 / N_steps, 1e-12)),
+        ("Q = final_drift² / N_steps", _close(Q, float(final_drift) ** 2 / N_steps, 1e-12)),
         ("√Q jest rozsądne (od 0,1 do 20 mm na krok)", 1e-4 <= math.sqrt(Q) <= 0.02, f"√Q = {math.sqrt(Q) * 1000:.2f} mm"),
     ])
 
 
-# ---------------------------------------------------------------- Zadanie 4
 def test_calc_R(calc_R):
     rng = np.random.default_rng(0)
     e = pd.Series(np.r_[rng.normal(0, 0.005, 300), [0.5, -0.4, 0.8, np.nan]])
@@ -153,16 +166,17 @@ def test_R(R_ir, R_us, still, moving, calc_R):
     ])
 
 
-# ---------------------------------------------------------------- Zadanie 5
 def test_kalman(kalman_predict, kalman_update):
     checks = []
     for fn, args, expected, desc in [
-        (kalman_predict, (0.10, 0.004, 0.02, 0.001), (0.12, 0.005), "predykcja: x + dx, P + Q"),
-        (kalman_update, (0.12, 0.005, 0.15, 0.005), (0.135, 0.0025), "korekta: P = R → K = 0,5"),
-        (kalman_update, (0.12, 0.004, 0.10, 0.012), (0.115, 0.003), "korekta: K = 0,25"),
+        (kalman_predict, (Distance.m(0.10), 0.004, Distance.m(0.02), 0.001), (0.12, 0.005), "predykcja: x + dx, P + Q"),
+        (kalman_update, (Distance.m(0.12), 0.005, Distance.m(0.15), 0.005), (0.135, 0.0025), "korekta: P = R → K = 0,5"),
+        (kalman_update, (Distance.m(0.12), 0.004, Distance.m(0.10), 0.012), (0.115, 0.003), "korekta: K = 0,25"),
     ]:
         got = fn(*args)
-        checks.append((desc, _close(got, expected, 1e-9), f"otrzymano {got}, oczekiwano {expected}"))
+        is_distance = isinstance(got, tuple) and len(got) == 2 and isinstance(got[0], Distance)
+        checks.append((desc, is_distance and _close(got, expected, 1e-9),
+                       f"otrzymano {got}, oczekiwano {expected}" + ("" if is_distance else "; x musi być Distance")))
     return _report(checks)
 
 
@@ -191,17 +205,17 @@ def test_task_5_3(df, rmse):
     ])
 
 
-# ---------------------------------------------------------------- Zadanie 6
 def test_task_6_model(z, Q_mat, R_mat, H, Q, R_ir, R_us):
-    dx, dy, d0 = 0.05, 0.03, 0.40  # robot przesunięty o 5 cm do przodu i 3 cm w lewo
-    def s(d):
-        return types.SimpleNamespace(distance=d)
+    dx, dy, d0 = 0.05, 0.03, 0.40
 
-    fake = types.SimpleNamespace(ir_front=s(d0 - dx), ir_left=s(d0 - dy), ir_right=s(d0 + dy),
-                                 us_front=s(d0 - dx), us_left=s(d0 - dy), us_right=s(d0 + dy))
-    baselines = dict.fromkeys(("d0_ir_f", "d0_ir_l", "d0_ir_r", "d0_us_f", "d0_us_l", "d0_us_r"), d0)
+    def s(d):
+        return types.SimpleNamespace(distance=Distance.m(d))
+
+    fake = types.SimpleNamespace(ir_front=s(d0 - dx), ir_left=s(d0 + dy), ir_right=s(d0 - dy),
+                                 us_front=s(d0 - dx), us_left=s(d0 + dy), us_right=s(d0 - dy))
+    baselines = dict.fromkeys(("d0_ir_f", "d0_ir_l", "d0_ir_r", "d0_us_f", "d0_us_l", "d0_us_r"), Distance.m(d0))
     with _patched(z[0].__globals__, robot=fake, **baselines):
-        z_vals = np.array([f() for f in z], dtype=float)
+        z_vals = np.array([float(f()) for f in z], dtype=float)
 
     H_arr = np.asarray(H, dtype=float)
     checks = [

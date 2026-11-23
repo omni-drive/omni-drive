@@ -66,6 +66,7 @@ nav:
   - API reference:
       - omni_drive: reference/omni_drive.md
       - omni_drive.models: reference/models.md
+      - omni_drive.units: reference/units.md
       - omni_drive.sensors: reference/sensors.md
       - omni_drive.clock: reference/clock.md
       - omni_drive.recorder: reference/recorder.md

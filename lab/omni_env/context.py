@@ -6,12 +6,11 @@ import sys
 class _Var:
     """Dynamic proxy resolving attributes, calls and arithmetic lazily from the notebook's __main__ scope."""
 
-    def __init__(self, name: str, default=0.0):
+    def __init__(self, name: str):
         self._name = name
-        self._default = default
 
     def get(self):
-        return getattr(sys.modules["__main__"], self._name, self._default)
+        return getattr(sys.modules["__main__"], self._name)
 
     def set[T](self, val: T) -> T:
         setattr(sys.modules["__main__"], self._name, val)

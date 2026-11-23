@@ -21,8 +21,8 @@
   <!-- Axes -->
   <line x1="330" y1="235" x2="330" y2="35" stroke="#1e293b" stroke-width="2.2" marker-end="url(#arr-axis)"/>
   <text x="342" y="40" font-size="13" font-weight="700" fill="#0f172a">x (przód)</text>
-  <line x1="330" y1="235" x2="140" y2="235" stroke="#1e293b" stroke-width="2.2" marker-end="url(#arr-axis)"/>
-  <text x="145" y="255" font-size="13" font-weight="700" fill="#0f172a">y (lewo)</text>
+  <line x1="330" y1="235" x2="520" y2="235" stroke="#1e293b" stroke-width="2.2" marker-end="url(#arr-axis)"/>
+  <text x="524" y="226" text-anchor="start" font-size="13" font-weight="700" fill="#0f172a">y</text><text x="524" y="241" text-anchor="start" font-size="11.5" font-weight="700" fill="#0f172a">(prawo)</text>
 
   <!-- Motor Arms -->
   <line x1="330" y1="235" x2="204.4" y2="162.5" stroke="#475569" stroke-width="7" stroke-linecap="round"/>
@@ -44,38 +44,38 @@
 
   <!-- ================= WHEEL 1 ================= -->
   <!-- 60° Angle Sector & Arc -->
-  <path d="M 204.4 162.5 L 166.4 162.5 A 38.0 38.0 0 0 0 185.4 195.4 Z" fill="#22c55e" fill-opacity="0.14"/>
-  <path d="M 166.4 162.5 A 38.0 38.0 0 0 0 185.4 195.4" fill="none" stroke="#16a34a" stroke-width="1.8"/>
+  <path d="M 204.4 162.5 L 242.4 162.5 A 38.0 38.0 0 0 0 223.4 129.6 Z" fill="#22c55e" fill-opacity="0.14"/>
+  <path d="M 242.4 162.5 A 38.0 38.0 0 0 0 223.4 129.6" fill="none" stroke="#16a34a" stroke-width="1.8"/>
   <!-- Components and vector -->
-  <line x1="163.4" y1="233.5" x2="204.4" y2="233.5" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="3 3"/>
-  <line x1="163.4" y1="233.5" x2="163.4" y2="162.5" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="3 3"/>
-  <line x1="204.4" y1="162.5" x2="204.4" y2="233.5" stroke="#16a34a" stroke-width="2.8" marker-end="url(#arr-green-comp)"/>
-  <line x1="204.4" y1="162.5" x2="163.4" y2="162.5" stroke="#16a34a" stroke-width="2.8" marker-end="url(#arr-green-comp)"/>
-  <line x1="204.4" y1="162.5" x2="163.4" y2="233.5" stroke="#15803d" stroke-width="3.8" stroke-linecap="round" marker-end="url(#arr-green-main)"/>
-  <text x="177.5" y="173.5" font-size="10.5" font-weight="700" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linejoin="round" text-anchor="middle">60°</text>
-  <text x="177.5" y="173.5" font-size="10.5" font-weight="700" fill="#15803d" text-anchor="middle">60°</text>
-  <text x="136.0" y="208.0" text-anchor="start" font-size="15" font-weight="700" font-style="italic" fill="#15803d">w<tspan dy="3" font-size="11">1</tspan></text>
+  <line x1="245.4" y1="91.5" x2="204.4" y2="91.5" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <line x1="245.4" y1="91.5" x2="245.4" y2="162.5" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <line x1="204.4" y1="162.5" x2="204.4" y2="91.5" stroke="#16a34a" stroke-width="2.8" marker-end="url(#arr-green-comp)"/>
+  <line x1="204.4" y1="162.5" x2="245.4" y2="162.5" stroke="#16a34a" stroke-width="2.8" marker-end="url(#arr-green-comp)"/>
+  <line x1="204.4" y1="162.5" x2="245.4" y2="91.5" stroke="#15803d" stroke-width="3.8" stroke-linecap="round" marker-end="url(#arr-green-main)"/>
+  <text x="229.0" y="151.0" font-size="10.5" font-weight="700" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linejoin="round" text-anchor="middle">60°</text>
+  <text x="229.0" y="151.0" font-size="10.5" font-weight="700" fill="#15803d" text-anchor="middle">60°</text>
+  <text x="252.0" y="88.0" text-anchor="start" font-size="15" font-weight="700" font-style="italic" fill="#15803d">w<tspan dy="3" font-size="11">1</tspan></text>
 
   <!-- ================= WHEEL 2 ================= -->
-  <!-- Wheel 2 vector (purely horizontal to the right) -->
-  <line x1="330.0" y1="380.0" x2="412.0" y2="380.0" stroke="#15803d" stroke-width="3.8" stroke-linecap="round" marker-end="url(#arr-green-main)"/>
-  <text x="420.0" y="375.0" text-anchor="start" font-size="15" font-weight="700" font-style="italic" fill="#15803d">w<tspan dy="3" font-size="11">2</tspan></text>
+  <!-- Wheel 2 vector (purely horizontal to the left, -y) -->
+  <line x1="330.0" y1="380.0" x2="248.0" y2="380.0" stroke="#15803d" stroke-width="3.8" stroke-linecap="round" marker-end="url(#arr-green-main)"/>
+  <text x="240.0" y="375.0" text-anchor="end" font-size="15" font-weight="700" font-style="italic" fill="#15803d">w<tspan dy="3" font-size="11">2</tspan></text>
   <!-- Guide dashed line showing axis alignment -->
-  <line x1="280.0" y1="380.0" x2="330.0" y2="380.0" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <line x1="330.0" y1="380.0" x2="380.0" y2="380.0" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 3"/>
 
   <!-- ================= WHEEL 3 ================= -->
   <!-- 60° Angle Sector & Arc -->
-  <path d="M 455.6 162.5 L 417.6 162.5 A 38.0 38.0 0 0 1 436.6 129.6 Z" fill="#22c55e" fill-opacity="0.14"/>
-  <path d="M 417.6 162.5 A 38.0 38.0 0 0 1 436.6 129.6" fill="none" stroke="#16a34a" stroke-width="1.8"/>
+  <path d="M 455.6 162.5 L 493.6 162.5 A 38.0 38.0 0 0 1 474.6 195.4 Z" fill="#22c55e" fill-opacity="0.14"/>
+  <path d="M 493.6 162.5 A 38.0 38.0 0 0 1 474.6 195.4" fill="none" stroke="#16a34a" stroke-width="1.8"/>
   <!-- Components and vector -->
-  <line x1="414.6" y1="91.5" x2="414.6" y2="162.5" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="3 3"/>
-  <line x1="414.6" y1="91.5" x2="455.6" y2="91.5" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="3 3"/>
-  <line x1="455.6" y1="162.5" x2="455.6" y2="91.5" stroke="#16a34a" stroke-width="2.8" marker-end="url(#arr-green-comp)"/>
-  <line x1="455.6" y1="162.5" x2="414.6" y2="162.5" stroke="#16a34a" stroke-width="2.8" marker-end="url(#arr-green-comp)"/>
-  <line x1="455.6" y1="162.5" x2="414.6" y2="91.5" stroke="#15803d" stroke-width="3.8" stroke-linecap="round" marker-end="url(#arr-green-main)"/>
-  <text x="431.0" y="151.0" font-size="10.5" font-weight="700" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linejoin="round" text-anchor="middle">60°</text>
-  <text x="431.0" y="151.0" font-size="10.5" font-weight="700" fill="#15803d" text-anchor="middle">60°</text>
-  <text x="382.0" y="82.0" text-anchor="start" font-size="15" font-weight="700" font-style="italic" fill="#15803d">w<tspan dy="3" font-size="11">3</tspan></text>
+  <line x1="496.6" y1="233.5" x2="455.6" y2="233.5" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <line x1="496.6" y1="233.5" x2="496.6" y2="162.5" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <line x1="455.6" y1="162.5" x2="455.6" y2="233.5" stroke="#16a34a" stroke-width="2.8" marker-end="url(#arr-green-comp)"/>
+  <line x1="455.6" y1="162.5" x2="496.6" y2="162.5" stroke="#16a34a" stroke-width="2.8" marker-end="url(#arr-green-comp)"/>
+  <line x1="455.6" y1="162.5" x2="496.6" y2="233.5" stroke="#15803d" stroke-width="3.8" stroke-linecap="round" marker-end="url(#arr-green-main)"/>
+  <text x="482.5" y="181.0" font-size="10.5" font-weight="700" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linejoin="round" text-anchor="middle">60°</text>
+  <text x="482.5" y="181.0" font-size="10.5" font-weight="700" fill="#15803d" text-anchor="middle">60°</text>
+  <text x="503.0" y="254.0" text-anchor="start" font-size="15" font-weight="700" font-style="italic" fill="#15803d">w<tspan dy="3" font-size="11">3</tspan></text>
 
   <!-- Physical Rollers -->
   <g transform="translate(204.4, 162.5) rotate(-60.0)">

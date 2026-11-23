@@ -40,7 +40,8 @@ LidarView(
 
 Top-down view of the LiDAR map and the latest scan (colored by distance), with the odometry,
 LiDAR and Kalman estimates drawn as robot markers with trails and the Kalman position
-uncertainty as an ellipse. Forward (+x) points up and left (+y) points left. The view initially
+uncertainty as an ellipse. It uses the internal frame: forward (+x) points up and left (+y)
+points left. The view initially
 covers `view_range` meters around the start and expands to fit the map. After a pan or zoom, the
 view stays where the user put it; the reset tool makes it follow the map again. Range rings are
 drawn every 0.5 m around the LiDAR pose, out to the edge of the view. Below the plot, a table

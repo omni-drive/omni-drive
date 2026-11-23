@@ -10,10 +10,10 @@ clock = Clock(period=Time.ms(100), duration=Time.s(20))
 ir = SensorRecorder(
     clock,
     title="IR",
-    front=lambda: robot.ir_front.distance.meters,
-    left=lambda: robot.ir_left.distance.meters,
+    front=lambda: robot.ir_front.distance,
+    left=lambda: robot.ir_left.distance,
 )
-path = PoseRecorder(clock, odometry=lambda: (robot.pose.x.meters, robot.pose.y.meters))
+path = PoseRecorder(clock, odometry=lambda: (robot.pose.x, robot.pose.y))
 ```
 
 ## Recorder
@@ -29,7 +29,7 @@ Abstract base class of the recorders. `clock` defaults to a new `Clock()` (100 m
 | `start() -> Self` | starts the recording task; returns `self`. Needs a running event loop. Raises `RuntimeError` if the recorder is already running |
 | `stop() -> DataT` | cancels the recording task and returns `data` |
 | `data: DataT` | the recorded data (abstract) |
-| `record(t: Time) -> object` | samples every channel once and appends to `data` (abstract); called on each tick |
+| `record(t: float) -> object` | samples every channel once and appends to `data` (abstract); called on each tick with the clock's time in seconds |
 | `clock: Clock`, `title: str`, `channels: dict` | as passed in |
 
 The task ends by itself when the clock reaches its `duration`. If a channel raises an
@@ -50,14 +50,14 @@ SensorRecorder(
 ```
 
 Records scalar time series. Each keyword argument in `channels` is a channel: a function with no
-arguments that returns a number. The result is converted with `float()`, so return
-`distance.meters`, not a `Distance`. Values that are not finite (`inf`, `nan`) are stored as
+arguments that returns a number or a unit value. The result is converted with `float()`, so a
+`Distance` is stored in meters and an `Angle` in radians. Values that are not finite (`inf`, `nan`) are stored as
 `nan`. Raises `ValueError` for a channel named `t`.
 
 | Member | Description |
 | --- | --- |
 | `data: dict[str, list[float]]` | `"t"` (seconds, from the clock) and one list per channel |
-| `record(t: Time) -> dict[str, float]` | samples once, appends, and returns the sample |
+| `record(t: float) -> dict[str, float]` | samples once, appends, and returns the sample |
 | `window: float` | seconds of history `LivePlot` shows: the clock's `duration` if a clock with a finite positive duration was passed, otherwise 30.0 |
 | `y_label: str` | y-axis label for `LivePlot` |
 | `styles: dict[str, str]` | how `LivePlot` draws each channel: `"line"` (default), `"scatter"`, `"line+scatter"` or `"dashed"` |
@@ -78,12 +78,13 @@ data["front"][-1]
 PoseRecorder(clock: Clock | None = None, *, title: str = "", **channels: Callable[[], tuple[float, float]])
 ```
 
-Records 2D trajectories. Each channel returns an `(x, y)` pair, in meters by convention.
+Records 2D trajectories. Each channel returns an `(x, y)` pair of `Distance` values or of floats
+in meters (x forward, y right).
 Coordinates that are not finite are stored as `nan`.
 
 | Member | Description |
 | --- | --- |
 | `data: dict[str, list[Point2D]]` | one list of points per channel; there is no time column |
-| `record(t: Time) -> dict[str, Point2D]` | samples once, appends, and returns the sample |
+| `record(t: float) -> dict[str, Point2D]` | samples once, appends, and returns the sample |
 
 `DEFAULT_WINDOW_DURATION_S = 30.0` is a module constant.

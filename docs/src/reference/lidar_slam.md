@@ -60,7 +60,7 @@ LidarSlam(
 
 | Member | Description |
 | --- | --- |
-| `update(points: np.ndarray, heading_hint: float | None = None) -> tuple[float, float, float]` | matches one scan, an `(N, 2)` array in meters in the robot frame, and returns the new `(x, y, yaw)`. The prediction is the previous pose plus the previous confident motion. `heading_hint`, if given, is an absolute heading from the gyroscope or odometry; only its change since the previous call is used, as the predicted turn |
+| `update(points: np.ndarray, heading_hint: float | None = None) -> tuple[float, float, float]` | matches one scan, an `(N, 2)` array in meters in the robot frame with internal axes (y left, as `LidarScan.raw_point_cloud`), and returns the new `(x, y, yaw)`. The prediction is the previous pose plus the previous confident motion. `heading_hint`, if given, is an absolute heading from the gyroscope or odometry; only its change since the previous call is used, as the predicted turn |
 | `reset() -> None` | clears the map and puts the pose back at `(0, 0, 0)` |
 | `snapshot() -> MapSnapshot | None` | a copy of the mapped area; `None` before the first scan |
 | `x`, `y`, `yaw` | the current pose, meters and radians |

@@ -132,7 +132,7 @@ $$
 ### Correct
 
 `update()` calls each function in `z` and keeps only the finite results. A sensor without a
-reading returns `Distance.inf`, so a measurement such as `d0 - d` becomes infinite and that
+reading returns `Distance.infinite()`, so a measurement such as `d0 - d` becomes infinite and that
 sensor is skipped for this step. $H$ and $R$ are cut down to the remaining rows.
 
 $$
@@ -177,19 +177,19 @@ from omni_drive import Kalman2d, OmniDrive, PoseRecorder
 from omni_drive.live import LivePlot
 
 robot.reset_pose()
-d0_front = robot.ir_front.distance.meters
-assert np.isfinite(d0_front), "no sensor reading yet, run the cell again"
+d0_front = robot.ir_front.distance
+assert d0_front.is_finite, "no sensor reading yet, run the cell again"
 
 kf = Kalman2d(
     robot,
-    z=[lambda: d0_front - robot.ir_front.distance.meters],  # one sensor, measures x
+    z=[lambda: d0_front - robot.ir_front.distance],  # one sensor, measures x
     Q=np.diag([1e-6, 1e-6]),
     R=np.diag([4e-4]),
     H=[[1, 0]],
 )
 
 rec = PoseRecorder(
-    odometry=lambda: (robot.pose.x.meters, robot.pose.y.meters),
+    odometry=lambda: (robot.pose.x, robot.pose.y),
     kalman=lambda: kf.state,
 )
 async with LivePlot(rec), robot:
@@ -207,12 +207,16 @@ that only measures x, y follows the odometry alone; more sensors add more rows t
   one correction. Read it once per tick.
 - You can also call `predict(displacement)` and `update(measurements)` yourself. `update()`
   without arguments calls the `z` functions.
-- The `z` functions must return floats. Use `.meters`, not a `Distance`.
+- The `z` functions may return a `Distance` or a float in meters. `kf.state` returns
+  `(x, y)` as two `Distance` values, x forward and y to the right.
+- A side sensor follows y: with y to the right, a right-facing sensor's $z = d_0 - d$ grows
+  as the robot moves right (row `[0, 1]`), a left-facing one shrinks (row `[0, -1]`).
 
 ## Three dimensions: the localizer's filter
 
 `Localizer` uses `PoseKalmanFilter`, an extended Kalman filter (EKF). The state is the whole pose,
-the odometry step is in the robot's frame, and the LiDAR measures the pose directly.
+the odometry step is in the robot's frame, and the LiDAR measures the pose directly. Like the
+rest of the localizer, it works in the internal frame (y left, angles counter-clockwise).
 
 ### State
 

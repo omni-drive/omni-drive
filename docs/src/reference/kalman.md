@@ -15,7 +15,7 @@ Two modules with Kalman filters:
 Kalman2d(
     robot: OmniDrive,
     *,
-    z: Sequence[Callable[[], float]],
+    z: Sequence[Callable[[], Distance | float]],
     Q: ArrayLike,
     R: ArrayLike,
     H: ArrayLike,
@@ -38,21 +38,21 @@ step; the update step uses the measurements.
 
 | Member | Description |
 | --- | --- |
-| `step() -> tuple[float, float]` | reads `robot.pose`, predicts with the displacement since the last step, updates with `z`, and returns `(x, y)` |
-| `state: tuple[float, float]` | same as `step()`: every read advances the filter |
+| `step() -> tuple[Distance, Distance]` | reads `robot.pose`, predicts with the displacement since the last step, updates with `z`, and returns `(x, y)` (x forward, y right) |
+| `state: tuple[Distance, Distance]` | same as `step()`: every read advances the filter |
 | `predict(displacement: ArrayLike) -> None` | adds `[dx, dy]` to the state and `Q` to `P` |
-| `update(measurements: Sequence[float] | None = None) -> bool` | corrects with `measurements`, or with the values of `z` if `None`. Measurements that are not finite (for example a sensor's `Distance.inf`) are left out. Returns `False` if no measurement is finite or the gate rejected the update. Uses the Joseph form for `P` |
+| `update(measurements: Sequence[float] | None = None) -> bool` | corrects with `measurements`, or with the values of `z` if `None`. Measurements that are not finite (for example a sensor's `Distance.infinite()`) are left out. Returns `False` if no measurement is finite or the gate rejected the update. Uses the Joseph form for `P` |
 | `P: np.ndarray` | the 2 × 2 covariance |
 | `robot`, `z`, `Q`, `R`, `H`, `gate` | as passed in (matrices as float arrays) |
 
 ```python
 import numpy as np
-from omni_drive import Kalman2d, OmniDrive
+from omni_drive import Distance, Kalman2d, OmniDrive
 
 robot = OmniDrive()
 kf = Kalman2d(
     robot,
-    z=[lambda: 2.0 - robot.ir_front.distance.meters],  # x, given a wall 2 m ahead of the origin
+    z=[lambda: Distance.m(2.0) - robot.ir_front.distance],  # x, given a wall 2 m ahead of the origin
     Q=np.diag([1e-4, 1e-4]),
     R=[[0.02**2]],
     H=[[1.0, 0.0]],

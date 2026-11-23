@@ -9,11 +9,13 @@ estimates of the robot pose at the same time:
 | `lidar` | LiDAR scans matched against a map that the localizer builds | does not drift while the map is accurate, but is noisy and can get lost |
 | `kalman` | an extended Kalman filter that combines the two | smooth and free of drift, if `PoseNoise` fits your robot |
 
-All three start at `(0, 0, 0)` at the robot's pose when the localizer starts or resets. x points
-forward, y points left, and yaw is counter-clockwise.
+All three start at `(0, 0, 0)` at the robot's pose when the localizer starts or resets. The
+localizer works in the internal frame: x points forward, y points **left**, and yaw is
+counter-clockwise.
 
 The poses are `RawPose` objects with plain floats: `x` and `y` in meters, `yaw` in radians. This
-is different from `robot.pose`, which uses `Distance` and `Angle`.
+is different from `robot.pose`, which uses `Distance` and `Angle` in the robot frame (y right,
+yaw clockwise): `robot.pose.y` is `-estimate.odometry.y`.
 
 If you are new to the robot, start with [Getting started](../index.md).
 

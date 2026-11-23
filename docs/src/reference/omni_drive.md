@@ -4,14 +4,15 @@
 from omni_drive import (
     Angle, Clock, Distance, DriveVector, Kalman2d, LidarScan, LivePlot, Localizer,
     OmniDrive, Point2D, Pose, PoseNoise, PoseRecorder, PowerStatus, Recorder,
-    SensorRecorder, Time, WheelId, processing,
+    SensorRecorder, Speed, Time, WheelId, processing,
 )
 ```
 
 | Name | Documented in |
 | --- | --- |
 | `OmniDrive` | this page; defined in `omni_drive.omni_drive` |
-| `Time`, `Distance`, `Angle`, `DriveVector`, `Pose`, `Point2D`, `LidarScan`, `PowerStatus`, `WheelId` | [`omni_drive.models`](models.md) |
+| `Distance`, `Angle`, `Time`, `Speed` | [`omni_drive.units`](units.md) |
+| `DriveVector`, `Pose`, `Point2D`, `LidarScan`, `PowerStatus`, `WheelId` | [`omni_drive.models`](models.md) |
 | `Clock` | [`omni_drive.clock`](clock.md) |
 | `Recorder`, `SensorRecorder`, `PoseRecorder` | [`omni_drive.recorder`](recorder.md) |
 | `LivePlot` | [`omni_drive.live`](live.md) |
@@ -64,7 +65,8 @@ await robot.drive_for(duration: Time, vector: DriveVector) -> None
 ```
 
 Drives with `vector` for `duration` and then stops. `duration` comes first. The robot also stops
-if the wait is cancelled, for example when the cell is interrupted. Only `Time` is supported.
+if the wait is cancelled, for example when the cell is interrupted. `duration` must be a `Time`;
+a plain number raises `TypeError`.
 
 ```python
 await robot.drive_for(Time.s(2), DriveVector(0.3, Angle.deg(0)))
@@ -73,10 +75,10 @@ await robot.drive_for(Time.s(2), DriveVector(0.3, Angle.deg(0)))
 #### pause_for
 
 ```python
-await robot.pause_for(_for: Time) -> None
+await robot.pause_for(duration: Time) -> None
 ```
 
-Calls `stop()` and waits for `_for`.
+Calls `stop()` and waits for `duration` (a `Time`; a plain number raises `TypeError`).
 
 #### stop
 
@@ -93,8 +95,9 @@ acceleration ramp.
 robot.field_centric: bool  # read and write, default True
 ```
 
-When `True`, `DriveVector.heading` is measured from the IMU yaw reference (see
-[`reset_pose`](#reset_pose)). When `False`, it is measured from the robot's current front.
+When `True`, `DriveVector.heading` is measured from the heading at the last
+[`reset_pose`](#reset_pose), using [`heading`](#heading). When `False`, it is measured from the
+robot's current front.
 
 #### wheel_1, wheel_2, wheel_3
 
@@ -120,21 +123,28 @@ with robot.batch():
     robot.wheel_3.speed = 0.2
 ```
 
+The public commands use the robot frame (y right, clockwise positive); before they go to the
+firmware, which uses the ROS convention, the library flips the sign of `vy`, `omega` and the raw
+wheel speeds.
+
 #### Vector mode
 
 The background thread runs at 50 Hz. In vector mode, each cycle:
 
 1. Ramps the commanded `vx`, `vy` and `omega` toward the target at no more than 9.0 per second
    (in fractions of full speed), so going from 0 to 1 takes about 0.11 s.
-2. Clamps `omega` to [−1, 1] and scales the translation down to at most `1 − |omega|`.
-3. If `field_centric` is on, rotates `(vx, vy)` from the yaw-reference frame into the robot
-   frame using the IMU yaw, extrapolated 50 ms ahead at the commanded turn rate.
-4. Converts `(vx, vy, omega)` to the three wheel speeds with the inverse kinematics of the
+2. While translating with `omega = 0`, adds a proportional heading-hold correction (at most
+   0.5) towards the held heading: the heading at the start of the move, or, after
+   [`calibrate_imu`](#calibrate_imu), the heading of the last `reset_pose()`.
+3. Clamps `omega` to [−1, 1] and scales the translation down to at most `1 − |omega|`.
+4. If `field_centric` is on, rotates `(vx, vy)` from the yaw-reference frame into the robot
+   frame using [`heading`](#heading), extrapolated 50 ms ahead at the commanded turn rate.
+5. Converts `(vx, vy, omega)` to the three wheel speeds with the inverse kinematics of the
    wheel layout (see [Frames and units](../concepts/frames.md)) and clips each to [−1, 1].
 
 Speeds below 0.001 are sent as 0. After 10 consecutive all-zero commands, the thread stops sending
 until a non-zero command appears. In raw mode (wheel speeds set directly), steps 1 to 4 are
-skipped and the three stored wheel speeds are sent as they are.
+skipped and the three stored wheel speeds are sent as they are (sign-flipped for the firmware).
 
 ### Pose and heading
 
@@ -144,8 +154,36 @@ skipped and the three stored wheel speeds are sent as they are.
 robot.pose: Pose
 ```
 
-Wheel odometry pose relative to the origin. The origin is the odometry pose at the first read
-of `pose` (or at the last `reset_pose()`). `Pose()` before the first telemetry message.
+Wheel odometry pose relative to the origin: `x` forward and `y` right as `Distance`, `yaw`
+clockwise as `Angle`. The origin is the odometry pose at the first read of `pose` (or at the
+last `reset_pose()`). `Pose()` before the first telemetry message.
+
+#### heading
+
+```python
+robot.heading: Angle
+```
+
+The robot's heading since the last `reset_pose()`, clockwise positive, wrapped to
+[−180°, 180°). Before `calibrate_imu()` it is the odometry yaw (`robot.pose.yaw`); afterwards
+it comes from the drift-corrected gyroscope. The heading hold, field-centric driving,
+`LidarScan.yaw` and the IR sensor correction all use this value.
+
+#### calibrate_imu
+
+```python
+await robot.calibrate_imu(duration: Time = Time.s(1.5)) -> float
+```
+
+Stops the robot and measures the gyroscope drift for `duration` (plus 0.3 s to settle); the
+robot must not move. Afterwards `heading` comes from the drift-corrected gyroscope and the
+heading hold keeps the heading of the last `reset_pose()` across moves. Returns the measured
+drift in rad/s, positive = clockwise. Raises `RuntimeError` if no IMU telemetry arrived.
+
+```python
+await robot.calibrate_imu()
+robot.reset_pose()
+```
 
 #### imu_yaw
 
@@ -153,11 +191,9 @@ of `pose` (or at the last `reset_pose()`). `Pose()` before the first telemetry m
 robot.imu_yaw: Angle
 ```
 
-Gyroscope heading relative to the IMU baseline, wrapped to [−π, π) in `radians`. The baseline is
-the heading in the first telemetry message (the motion controller reads `imu_yaw` 50 times a
-second from the start), or at the last `reset_pose()`. `Angle(0.0)` before
-the first telemetry message. Field-centric driving, `LidarScan.yaw` and the IR
-sensor correction all use this value.
+Raw gyroscope heading relative to the IMU baseline, clockwise positive, wrapped to
+[−180°, 180°), without drift correction. The baseline is the heading in the first telemetry
+message, or at the last `reset_pose()`. `Angle(0.0)` before the first telemetry message.
 
 #### reset_pose
 
@@ -166,7 +202,8 @@ robot.reset_pose() -> None
 ```
 
 Makes the current odometry pose the new origin of `pose` and the current gyroscope heading the
-new IMU baseline, and resets the heading held by the motion controller. Before the first
+new IMU baseline (and, after `calibrate_imu()`, the zero of `heading`), and resets the heading
+held by the motion controller. Before the first
 telemetry message, it clears both, so they are set again from the first message that arrives.
 
 ### Sensors
@@ -177,7 +214,8 @@ telemetry message, it clears both, so they are set again from the first message 
 robot.lidar: LidarScan
 ```
 
-The latest LiDAR scan, with `yaw` set to `imu_yaw` at the time of the read. An empty
+The latest LiDAR scan, with `yaw` set to the robot's heading (in radians, internal frame) at the
+time of the read. An empty
 `LidarScan()` before the first scan. Each read creates a new object. See
 [`LidarScan`](models.md#lidarscan).
 
@@ -223,7 +261,8 @@ robot.print_status() -> None
 ```
 
 Prints the battery voltage, current and charge (`CRITICAL!` when the firmware reports a critical
-battery), the pose relative to the origin, the raw odometry, the target and actual wheel speeds
+battery), the pose relative to the origin (`Pose:` line, robot frame), the raw firmware odometry
+(`Odom:` line, internal frame), the target and actual wheel speeds
 reported by the firmware, and the ToF and ultrasonic distances. Prints
 `[Status] No telemetry received.` if no telemetry has arrived.
 
@@ -256,4 +295,4 @@ Setting a speed switches the robot to raw mode; all three stored wheel speeds go
 next 50 Hz control cycle (within 20 ms), except inside [`batch()`](#batch), where they are
 applied when the block ends. The other wheels keep their stored speeds;
 `set_vector()` and `stop()` set them to 0. A positive speed on all three wheels turns the robot
-counter-clockwise.
+clockwise.

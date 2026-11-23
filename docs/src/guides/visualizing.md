@@ -45,9 +45,9 @@ rec = SensorRecorder(
     title="Front sensors",
     y_label="distance [m]",
     styles={"ultrasonic": "line+scatter", "lidar": "dashed"},
-    ultrasonic=lambda: robot.us_front.distance.meters,
-    ir=lambda: robot.ir_front.distance.meters,
-    lidar=lambda: robot.lidar.beam_front.meters,
+    ultrasonic=lambda: robot.us_front.distance,
+    ir=lambda: robot.ir_front.distance,
+    lidar=lambda: robot.lidar.beam_front,
 )
 
 async with LivePlot(rec), robot:
@@ -59,7 +59,7 @@ async with LivePlot(rec), robot:
 
 ### Clock
 
-`Clock(*, period=Time.ms(100), duration=Time.inf)` (keyword arguments only) ticks every `period` until `duration` has
+`Clock(*, period=Time.ms(100), duration=Time.infinite())` (keyword arguments only) ticks every `period` until `duration` has
 passed. `async for t in clock` yields the elapsed time as a `Time`, starting at `t = 0`. Read
 seconds with `t.seconds`.
 
@@ -75,12 +75,11 @@ again; it starts from `t = 0`.
 `SensorRecorder(clock=None, *, title="", y_label="", styles=None, **channels)` records numbers
 over time.
 
-- Each keyword argument is a channel: a function without arguments that returns a `float`. The
-  argument name is the channel name.
-- Return a number, not a `Distance`. Use `.meters`, for example
-  `robot.us_front.distance.meters`.
+- Each keyword argument is a channel: a function without arguments that returns anything
+  `float()` accepts. The argument name is the channel name.
+- A `Distance` is recorded in meters, an `Angle` in radians, a `Time` in seconds.
 - `inf` and `NaN` are recorded as `NaN` and show as a gap. A sensor with no reading returns
-  `Distance.inf`, so it shows as a gap too.
+  `Distance.infinite()`, so it shows as a gap too.
 - If a channel raises an exception, the recorder stops recording. Return `math.nan` instead.
 - `t` is reserved for the time column and raises `ValueError`.
 
@@ -104,7 +103,7 @@ Without `title` and `y_label`, the plot uses Polish defaults: "Wykres czujników
 ### PoseRecorder
 
 `PoseRecorder(clock=None, *, title="", **channels)` records 2D paths. Each channel returns a
-tuple `(x, y)` in meters.
+tuple `(x, y)` of `Distance` values or of floats in meters.
 
 ```python
 from omni_drive import PoseRecorder
@@ -112,7 +111,7 @@ from omni_drive import PoseRecorder
 robot.reset_pose()
 rec = PoseRecorder(
     title="Odometry",
-    odometry=lambda: (robot.pose.x.meters, robot.pose.y.meters),
+    odometry=lambda: (robot.pose.x, robot.pose.y),
 )
 
 async with LivePlot(rec), robot:
@@ -121,8 +120,8 @@ async with LivePlot(rec), robot:
 
 `rec.data` maps each channel name to a list of `Point2D(x, y)`. Non-finite values become `NaN`.
 
-The plot is a top view with the robot's start at the cross. x points up and y points left. The horizontal axis is labeled "Y [m]" but shows −y: a point 0.2 m to
-the left of the start is drawn at −0.2. Without `title`, the plot is called "Trajektoria 2D".
+The plot is a top view with the robot's start at the cross: x (forward) points up and y (right)
+points right, as in a usual graph. Without `title`, the plot is called "Trajektoria 2D".
 
 ### Without a clock
 
@@ -168,8 +167,8 @@ view = LidarView().show()
 
 The view shows:
 
-- a top view with world x pointing up (the robot's front at the start) and world y pointing
-  left, unlike a usual graph with y to the right,
+- a top view in the internal frame: world x pointing up (the robot's front at the start) and
+  world y pointing left, unlike `robot.pose` and the `PoseRecorder` plot, where y points right,
 - the occupancy map that the scan matcher builds: dark is occupied, white is free, gray is
   unknown,
 - the latest scan, colored by distance, drawn at the LiDAR pose, with dotted range rings every
@@ -325,8 +324,9 @@ from omni_drive.ui import InteractiveMode, Steer
 mode = Steer(robot).using(InteractiveMode())
 ```
 
-This shows a canvas with the robot's odometry pose and the latest LiDAR points. Unlike
-`LidarView`, x points right and y points up. Click to place a waypoint, and drag to move it. One
+This shows a canvas with the robot's odometry pose and the latest LiDAR points, in the
+internal frame (y left of the robot's start, see [Frames and units](../concepts/frames.md)).
+Unlike `LidarView`, x points right and y points up. Click to place a waypoint, and drag to move it. One
 slider sets the smoothing of the whole route, the other the speed of the selected waypoint, in
 percent; a new waypoint is selected and starts at 60 %.
 
@@ -335,7 +335,7 @@ The robot does not follow the route. The "Uruchom trasę" button only prints the
 
 ```python
 mode.planner.get_payload()
-# {"route": [{"x": ..., "y": ..., "speed": ...}, ...]}, meters and percent
+# {"route": [{"x": ..., "y": ..., "speed": ...}, ...]}, meters (internal frame) and percent
 ```
 
 The first entry is the robot's position. With no waypoints, the route is empty.

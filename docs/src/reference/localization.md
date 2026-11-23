@@ -2,7 +2,8 @@
 
 Fuses wheel odometry, the gyroscope and LiDAR scan matching into one pose estimate. `Localizer`
 is also exported from `omni_drive`. All poses on this page are [`RawPose`](#rawpose) values in
-meters and radians, in the localizer's start frame.
+meters and radians, in the localizer's start frame, using the internal axes (y left, yaw
+counter-clockwise; see [Frames and units](../concepts/frames.md)).
 
 ## Localizer
 
@@ -21,7 +22,7 @@ Localizer(
 Keeps three pose estimates (odometry, LiDAR, Kalman filter) up to date in a background
 thread. The localizer is created stopped; call `start()` to run it.
 
-On every loop pass, the thread reads `robot.pose`, feeds the increment to the Kalman filter
+On every loop pass, the thread reads the odometry pose (internal frame), feeds the increment to the Kalman filter
 and publishes an estimate. It then reads `robot.lidar`, drops points closer than `min_range`,
 matches the scan with [`LidarSlam`](lidar_slam.md#lidarslam), and, if the match is confident,
 corrects the filter with the LiDAR pose.

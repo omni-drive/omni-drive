@@ -3,11 +3,12 @@
 ## Clock
 
 ```python
-Clock(*, period: Time = Time.ms(100), duration: Time = Time.inf)
+Clock(*, period: Time = Time.ms(100), duration: Time = Time.infinite())
 ```
 
 A periodic ticker for async control loops. Every `async for` loop over the same clock receives
-the same ticks. Raises `ValueError` if `period` is not positive.
+the same ticks. Plain numbers are accepted and read as seconds. Raises `ValueError` if `period` is
+not positive.
 
 ```python
 clock = Clock(period=Time.ms(50), duration=Time.s(5))
@@ -19,7 +20,7 @@ async for t in clock:
 | --- | --- |
 | `async for t in clock` | yields a `Time`: the time elapsed since the clock started |
 | `stop() -> None` | stops the clock and ends every loop over it |
-| `period: Time`, `duration: Time` | as passed in |
+| `period: Time`, `duration: Time` | as passed in, converted to `Time` |
 
 Behaviour:
 
@@ -36,4 +37,4 @@ Behaviour:
   code after the loop still runs. An interrupt during an `await` in the loop body (for example
   `await robot.drive_for(...)`) is raised as usual.
 
-`DEFAULT_PERIOD = Time.ms(100)` and `DEFAULT_DURATION = Time.inf` are module constants.
+`DEFAULT_PERIOD = Time.ms(100)` and `DEFAULT_DURATION = Time.infinite()` are module constants.

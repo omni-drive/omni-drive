@@ -11,7 +11,7 @@ are:
 
 | Field | Default | Used for |
 | --- | --- | --- |
-| `angle` | π/2 (left), 0 (front), −π/2 (right) | direction the sensor faces in the robot frame |
+| `angle` | π/2 (left), 0 (front), −π/2 (right) | direction the sensor faces, in radians, in the internal frame (y left, counter-clockwise) |
 | `offset` | 0.0132 m | subtracted from every reading in `sensor.distance` |
 | `cone` | 55° | full width of the beam in `expected_range` |
 | `min_range` | 0.01 m | not used by `expected_range` |
@@ -20,7 +20,7 @@ are:
 `config.face` is the sensor face in the robot frame: 0.15 m from the center in the direction of
 `angle`.
 
-The real sensor reports no echo beyond 2 m. `sensor.distance` is then `Distance.inf`, while
+The real sensor reports no echo beyond 2 m. `sensor.distance` is then `Distance.infinite()`, while
 `expected_range` returns at most 4.0 m. Compare the two only where the reading is finite.
 
 ## Ray casting on the map

@@ -34,36 +34,36 @@
   <g opacity="0.35">
     <circle cx="200" cy="200" r="28" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,3" />
     <circle cx="200" cy="200" r="3" fill="#94a3b8" />
-    <text x="216" y="218" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#94a3b8">start</text>
+    <text x="184" y="218" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#94a3b8">start</text>
   </g>
 
   <!-- Laser Beams from current robot pose -->
   <!-- Front Beam -->
-  <line x1="145" y1="135" x2="145" y2="56" stroke="#e11d48" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-beam)" />
+  <line x1="255" y1="135" x2="255" y2="56" stroke="#e11d48" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-beam)" />
   <!-- Left Beam -->
-  <line x1="145" y1="135" x2="56" y2="135" stroke="#e11d48" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-beam)" />
+  <line x1="255" y1="135" x2="56" y2="135" stroke="#e11d48" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-beam)" />
   <!-- Right Beam -->
-  <line x1="145" y1="135" x2="344" y2="135" stroke="#e11d48" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-beam)" />
+  <line x1="255" y1="135" x2="344" y2="135" stroke="#e11d48" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-beam)" />
 
   <!-- Laser Beam Badges (f, l, r) -->
   <!-- Front badge -->
-  <g transform="translate(153, 80.5)">
+  <g transform="translate(263, 80.5)">
     <rect width="32" height="24" rx="4" fill="#ffffff" stroke="#e11d48" stroke-width="1.5" filter="url(#shadow)" />
     <text x="16" y="16" text-anchor="middle" font-family="serif" font-size="14" font-weight="bold" font-style="italic" fill="#e11d48">f</text>
   </g>
   <!-- Left badge -->
-  <g transform="translate(81.5, 105)">
+  <g transform="translate(136.5, 105)">
     <rect width="32" height="24" rx="4" fill="#ffffff" stroke="#e11d48" stroke-width="1.5" filter="url(#shadow)" />
     <text x="16" y="16" text-anchor="middle" font-family="serif" font-size="14" font-weight="bold" font-style="italic" fill="#e11d48">l</text>
   </g>
   <!-- Right badge -->
-  <g transform="translate(231.5, 105)">
+  <g transform="translate(286.5, 105)">
     <rect width="32" height="24" rx="4" fill="#ffffff" stroke="#e11d48" stroke-width="1.5" filter="url(#shadow)" />
     <text x="16" y="16" text-anchor="middle" font-family="serif" font-size="14" font-weight="bold" font-style="italic" fill="#e11d48">r</text>
   </g>
 
   <!-- Robot Body -->
-  <g transform="translate(145, 135)" filter="url(#shadow)">
+  <g transform="translate(255, 135)" filter="url(#shadow)">
     <circle cx="0" cy="0" r="28" fill="#f1f5f9" stroke="#334155" stroke-width="2.5" />
     
     <!-- 3 Omni Wheels -->
@@ -84,24 +84,24 @@
   </g>
 
   <!-- Displacement vectors: ORANGE and LAYERED ON TOP OF ROBOT -->
-  <!-- Vector y: from start_x left to robot_x at start_y -->
-  <line x1="200" y1="200" x2="150" y2="200" stroke="#ea580c" stroke-width="2.5" marker-end="url(#arrow-disp-orange)" />
+  <!-- Vector y: from start_x right to robot_x at start_y -->
+  <line x1="200" y1="200" x2="250" y2="200" stroke="#ea580c" stroke-width="2.5" marker-end="url(#arrow-disp-orange)" />
 
   <!-- Vector x: from start_y UP to the center of robot (robot_y) -->
-  <line x1="145" y1="200" x2="145" y2="139" stroke="#ea580c" stroke-width="2.5" marker-end="url(#arrow-disp-orange)" />
+  <line x1="255" y1="200" x2="255" y2="139" stroke="#ea580c" stroke-width="2.5" marker-end="url(#arrow-disp-orange)" />
 
   <!-- Corner projection dot at (robot_x, start_y) -->
-  <circle cx="145" cy="200" r="2.5" fill="#ea580c" />
+  <circle cx="255" cy="200" r="2.5" fill="#ea580c" />
 
   <!-- Displacement badges (y, x) in ORANGE -->
   <!-- y badge (horizontal vector) -->
-  <g transform="translate(160.5, 208)">
+  <g transform="translate(215.5, 208)">
     <rect width="24" height="22" rx="4" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5" filter="url(#shadow)" />
     <text x="12" y="15" text-anchor="middle" font-family="serif" font-size="14" font-weight="bold" font-style="italic" fill="#ea580c">y</text>
   </g>
 
   <!-- x badge (vertical vector) -->
-  <g transform="translate(113, 156.5)">
+  <g transform="translate(263, 156.5)">
     <rect width="24" height="22" rx="4" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5" filter="url(#shadow)" />
     <text x="12" y="15" text-anchor="middle" font-family="serif" font-size="14" font-weight="bold" font-style="italic" fill="#ea580c">x</text>
   </g>

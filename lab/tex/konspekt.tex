@@ -52,8 +52,8 @@ Aby robot mobilny mógł precyzyjnie nawigować w~otoczeniu, musi w~każdej chwi
 \begin{itemize}[itemsep=4.5pt, topsep=4pt, parsep=1pt]
     \item \textbf{3 koła omnikierunkowe}: rozmieszczone symetrycznie co $120^\circ$ wokół środka platformy,
     \item \textbf{Skaner laserowy 2D (LiDAR)}: optoelektroniczny dalmierz z~wirującą głowicą o~polu widzenia $240^\circ$ i~zasięgu pomiarowym do $5{,}6\text{ m}$; generuje gęstą dwuwymiarową chmurę punktów otoczenia, wykorzystywaną m.in. do budowania mapy i~lokalizacji (SLAM),
-    \item \textbf{3 czujniki odległości ToF / IR (VL53L1X)}: skierowane do przodu, w~lewo i~w~prawo ($0^\circ, +90^\circ, -90^\circ$) -- optyczny pomiar odległości w~wąskim stożku wiązki laserowej,
-    \item \textbf{3 czujniki ultradźwiękowe US (HC-SR04)}: skierowane do przodu, w~lewo i~w~prawo ($0^\circ, +90^\circ, -90^\circ$) -- akustyczny pomiar odległości w~szerokim stożku wiązki ultradźwiękowej,
+    \item \textbf{3 czujniki odległości ToF / IR (VL53L1X)}: skierowane do przodu, w~lewo i~w~prawo ($0^\circ, -90^\circ, +90^\circ$) -- optyczny pomiar odległości w~wąskim stożku wiązki laserowej,
+    \item \textbf{3 czujniki ultradźwiękowe US (HC-SR04)}: skierowane do przodu, w~lewo i~w~prawo ($0^\circ, -90^\circ, +90^\circ$) -- akustyczny pomiar odległości w~szerokim stożku wiązki ultradźwiękowej,
     \item \textbf{Enkodery kół}: pomiar prędkości obrotowych oraz kąta obrotu poszczególnych kół (podstawa odometrii),
     \item \textbf{Moduł IMU / żyroskop}: bezpośredni pomiar prędkości kątowej oraz kąta orientacji $\theta$ (\emph{yaw}) platformy.
 \end{itemize}
@@ -70,7 +70,7 @@ Aby robot mobilny mógł precyzyjnie nawigować w~otoczeniu, musi w~każdej chwi
         \includegraphics[width=\linewidth]{robot_front_right.jpg}\\[2pt]
         \small (b) widok z~przodu i~z~prawej
     \end{minipage}
-    \caption{Robot OmniDrive: rozmieszczenie czujników, kół i~przełącznika zasilania. Kąty $0^\circ$, $+90^\circ$, $-90^\circ$ to kierunki pomiaru w~układzie robota (przód, lewo, prawo).}
+    \caption{Robot OmniDrive: rozmieszczenie czujników, kół i~przełącznika zasilania. Kąty $0^\circ$, $-90^\circ$, $+90^\circ$ to kierunki pomiaru w~układzie robota (przód, lewo, prawo); kąty rosną zgodnie z~ruchem wskazówek zegara.}
     \label{fig:robot_photos}
 \end{figure}
 
@@ -103,15 +103,26 @@ Dzięki trzem kołom rozmieszczonym co $120^\circ$ platforma jest \textbf{holono
         \includegraphics[width=\linewidth]{wheel_forces_top.png}\\[2pt]
         \small (b) model kinematyczny
     \end{minipage}
-    \caption{Układ współrzędnych robota ($x$ -- przód, $y$ -- lewo) na rzeczywistej platformie (a) i~w~modelu ruchu (b): kąty montażowe $\beta_i$ oraz kierunki napędu kół $w_i$. Koło 1 jest przednie lewe ($\beta_1 = 60^\circ$), koło 2 tylne ($\beta_2 = 180^\circ$), koło 3 przednie prawe ($\beta_3 = 300^\circ$).}
+    \caption{Układ współrzędnych robota ($x$ -- przód, $y$ -- prawo; kąty i~obrót dodatni zgodnie z~ruchem wskazówek zegara) na rzeczywistej platformie (a) i~w~modelu ruchu (b): kąty montażowe $\beta_i$ oraz dodatnie kierunki napędu kół $w_i$. Koło 1 jest przednie lewe ($\beta_1 = 300^\circ$), koło 2 tylne ($\beta_2 = 180^\circ$), koło 3 przednie prawe ($\beta_3 = 60^\circ$).}
     \label{fig:wheel_forces}
 \end{figure}
 
 \vspace{-0.1cm}
 \paragraph{Kinematyka i odometria:}
 \begin{itemize}[itemsep=6pt, topsep=4pt]
+    \item \textbf{Układ współrzędnych robota}: oś $x$ wskazuje przód, oś $y$ -- prawą stronę robota. Kąty (kierunek jazdy, orientacja $\theta$) i~prędkość obrotu $\omega$ są dodatnie \textbf{zgodnie z~ruchem wskazówek zegara}: $0^\circ$ to przód, $90^\circ$ -- prawo, $180^\circ$ -- tył, $-90^\circ$ -- lewo. Dodatnia prędkość koła obraca robota zgodnie z~ruchem wskazówek zegara.
     \item \textbf{Kinematyka odwrotna}: odpowiada na pytanie sterowania -- jak należy napędzić poszczególne koła $(w_1, w_2, w_3)$, aby platforma poruszała się z~żądaną prędkością liniową $(v_x, v_y)$ i~kątową $\omega$.
     \item \textbf{Kinematyka prosta}: proces odwrotny, na którym bazuje \textbf{odometria}. Zlicza ona impulsy z~enkoderów kół i~przelicza ruch obwodów kół na elementarne przesunięcie robota $(\Delta x, \Delta y, \Delta\theta)$. Odometria jest szybka i~płynna, lecz działa w~pętli otwartej: mikropoślizgi i~nierówności podłoża nieuchronnie się kumulują, powodując narastający w~czasie \textbf{dryf} estymaty pozycji.
+\end{itemize}
+
+\paragraph{Wielkości fizyczne w~bibliotece \texttt{omni\_drive}:}
+Odczyty czujników, położenie i~polecenia ruchu to obiekty z~jednostką, a~nie gołe liczby: \texttt{Distance} (odległość, np. \texttt{Distance.cm(5)}), \texttt{Angle} (kąt, \texttt{Angle.deg(90)}), \texttt{Time} (czas, \texttt{Time.s(2)}) oraz \texttt{Speed} (prędkość, \texttt{Speed.mps(0.39)}).
+\begin{itemize}[itemsep=2pt, topsep=2pt, parsep=0pt]
+    \item dodawać i~odejmować można tylko wielkości tego samego typu; każdą można mnożyć i~dzielić przez liczbę,
+    \item \texttt{Distance / Time} $\to$ \texttt{Speed}, \texttt{Distance / Speed} $\to$ \texttt{Time}, \texttt{Speed * Time} $\to$ \texttt{Distance},
+    \item iloraz dwóch wielkości tego samego typu jest liczbą, a~kwadrat odległości (\texttt{d**2}) -- liczbą w~$\text{m}^2$,
+    \item \texttt{float(d)} zwraca wartość w~jednostkach SI (m, rad, s, m/s), a~\texttt{math.cos(kat)} działa bezpośrednio na obiekcie \texttt{Angle},
+    \item dodanie gołej liczby do wielkości z~jednostką (np. \texttt{Distance.cm(5) + 1}) zgłasza błąd -- jednostkę trzeba podać jawnie.
 \end{itemize}
 
 \clearpage

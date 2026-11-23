@@ -7,7 +7,7 @@ firmware:
 
 1. converts the encoder counts since the last step into the distance each wheel rolled;
 2. turns the three distances into a small motion of the robot in its own frame: \(\Delta x\)
-   forward, \(\Delta y\) left and \(\Delta\psi\) turned. This is the inverse of the wheel
+   forward, \(\Delta y\) to the right and \(\Delta\psi\) turned clockwise. This is the inverse of the wheel
    kinematics you derive in the lab;
 3. adds that motion to the pose, rotated by the heading halfway through the step:
 
@@ -20,12 +20,14 @@ y &\leftarrow y + \Delta x\sin\bar\psi + \Delta y\cos\bar\psi \\
 \end{aligned}
 \]
 
+The firmware itself works in the internal frame (y left, counter-clockwise); the formulas have
+the same form in both frames, because switching only flips the sign of \(y\) and \(\psi\).
 The firmware sends this pose with every telemetry message. `robot.pose` is the same pose,
 expressed relative to the origin that `robot.reset_pose()` stores (see
 [Frames and units](frames.md)).
 
 In Python, `RawPose.advanced(dx, dy, dyaw)` from `omni_drive.processing.models` does the same
-step, and `RawPose.increment_to(target)` recovers \((\Delta x, \Delta y, \Delta\psi)\) from two
+step in the internal frame, and `RawPose.increment_to(target)` recovers \((\Delta x, \Delta y, \Delta\psi)\) from two
 poses.
 
 Each step only adds to the previous pose. The pose is never checked against the room.
@@ -49,7 +51,8 @@ robot does not drift.
 
 The gyroscope (`robot.imu_yaw`) measures rotation without contact with the floor, so slip does
 not affect it. Instead, its reading drifts slowly over time, also when the robot stands still.
-`robot.pose.yaw` does not use the gyroscope; it comes from the wheels only.
+`robot.pose.yaw` does not use the gyroscope; it comes from the wheels only. `robot.heading`
+switches to the drift-corrected gyroscope after `await robot.calibrate_imu()`.
 
 ## See it
 
