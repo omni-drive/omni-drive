@@ -4,7 +4,7 @@ import math
 from collections import deque
 from collections.abc import Callable
 
-from omni_drive import Clock, PoseRecorder, SensorRecorder
+from omni_drive import PoseRecorder, SensorRecorder
 
 from .context import (
     Q,
@@ -85,12 +85,26 @@ def _kalman_us():
     return step
 
 
+
+def _odom_x() -> float:
+    return robot.pose.x
+
+
+def _odom_xy() -> tuple[float, float]:
+    return robot.pose.x, robot.pose.y
+
+
+def _lidar_xy() -> tuple[float, float]:
+    return lidar_get_x(), lidar_get_y()
+
+
 RECORDERS = {
-    TASK_3: lambda: PoseRecorder(
+    TASK_3: lambda clock=None: PoseRecorder(
+        clock,
         labels=DEFAULT_LABELS,
         styles={"lidar": "dashed"},
-        odometry=delayed(lambda: (robot.pose.x, robot.pose.y)),
-        lidar=lambda: (lidar_get_x(), lidar_get_y()),
+        odometry=delayed(_odom_xy),
+        lidar=_lidar_xy,
         title="Odometria vs LiDAR",
     ),
     TASK_4: lambda clock: SensorRecorder(
@@ -108,10 +122,10 @@ RECORDERS = {
         y_label="Pozycja x [m]",
         labels=DEFAULT_LABELS,
         styles={"ultrasonic": "line+scatter", "kalman": "line", "odometry": "line", "lidar": "dashed"},
-        odometry=delayed(lambda: robot.pose.x),
+        odometry=delayed(_odom_x),
         ultrasonic=delayed(lambda: z),
         kalman=delayed(lambda: x),
-        lidar=lambda: lidar_get_x(),
+        lidar=lidar_get_x,
     ),
     TASK_5_3: lambda clock: SensorRecorder(
         clock,
@@ -125,28 +139,29 @@ RECORDERS = {
             "odometry": "line",
             "lidar": "dashed",
         },
-        odometry=delayed(lambda: robot.pose.x),
+        odometry=delayed(_odom_x),
         infrared=delayed(lambda: z_ir),
         kalman_us=delayed(_kalman_us()),
         kalman_fusion=delayed(lambda: x),
-        lidar=lambda: lidar_get_x(),
+        lidar=lidar_get_x,
     ),
     TASK_6: lambda clock: PoseRecorder(
         clock,
         labels=DEFAULT_LABELS,
         styles={"lidar": "dashed"},
-        odometry=delayed(lambda: (robot.pose.x, robot.pose.y)),
+        odometry=delayed(_odom_xy),
         kalman=delayed(lambda: kalman.state),
-        lidar=lambda: (lidar_get_x(), lidar_get_y()),
+        lidar=_lidar_xy,
         title="Odometria, Filtr Kalmana, LiDAR",
     ),
-    TASK_6_TUNING: lambda: PoseRecorder(
+    TASK_6_TUNING: lambda clock=None: PoseRecorder(
+        clock,
         labels=DEFAULT_LABELS,
         styles={"lidar": "dashed"},
         optimal=delayed(lambda: kf_optimal.state),
         trust_odom=delayed(lambda: kf_trust_odom.state),
         trust_sensor=delayed(lambda: kf_trust_sensor.state),
-        lidar=lambda: (lidar_get_x(), lidar_get_y()),
+        lidar=_lidar_xy,
         title="Wpływ strojenia Q i R w 2D",
     ),
 }
@@ -173,7 +188,7 @@ def GET_ERROR_RECORDER(pose_rec, clock=None, reference: str = "lidar"):
 
     names = [n for n in pose_rec.channels if n != reference]
     return SensorRecorder(
-        clock if clock is not None else Clock(duration=40),
+        clock if clock is not None else pose_rec.clock,
         title="Błąd położenia względem LiDAR-u",
         y_label="błąd [mm]",
         labels=DEFAULT_LABELS,
