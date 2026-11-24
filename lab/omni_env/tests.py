@@ -107,19 +107,18 @@ async def test_burst(burst):
     ns = burst.__globals__
     fake = _FakeDriveRobot()
     with _patched(ns, robot=fake):
-        await burst(90, reps=2, leg=0.10, velocity=0.8)
+        await burst(90, reps=2, duration_s=0.2)
     calls = fake.calls
-    d = 0.10 / (0.8 * ns["V_MAX"])
-    expected = [(d, 90.0, 0.8), (d, 270.0, 0.8)] * 2
+    expected = [(0.2, 90.0, 1.0), (0.2, 270.0, 1.0)] * 2
     same_len = len(calls) == len(expected)
     got = str([(round(c[0], 3), round(c[1]), c[2]) for c in calls])
     return _report([
         ("liczba przejazdów (2 × tam i z powrotem)", same_len, f"otrzymano {len(calls)} przejazdy"),
-        ("czas przejazdu odcinka = leg / (velocity * V_MAX)",
+        ("czas przejazdu odcinka = duration_s",
          same_len and all(abs(c[0] - e[0]) < 1e-6 for c, e in zip(calls, expected)), got),
         ("kierunki: 90°, 270°, 90°, 270°",
          same_len and all(abs(c[1] - e[1]) < 1e-6 for c, e in zip(calls, expected)), got),
-        ("prędkość = velocity", same_len and all(abs(c[2] - e[2]) < 1e-9 for c, e in zip(calls, expected)), got),
+        ("prędkość = 1", same_len and all(abs(c[2] - e[2]) < 1e-9 for c, e in zip(calls, expected)), got),
     ])
 
 
