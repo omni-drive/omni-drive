@@ -38,14 +38,15 @@ Q = _Var("Q")
 
 # Task 4 – Measurement noise
 R_ir = _Var("R_ir")
+R_us = _Var("R_us")
 
-# Task 5.2 – Kalman 1D (IR)
+# Task 5.2 – Kalman 1D (US)
 x = _Var("x")
 z = _Var("z")
-d0_ir = _Var("d0_ir")
-
-# Task 5.3 – Kalman 1D fusion (IR + US)
 d0_us = _Var("d0_us")
+
+# Task 5.3 – Kalman 1D fusion (US + IR)
+d0_ir = _Var("d0_ir")
 
 # Task 6 – Kalman 2D
 d0_ir_f = _Var("d0_ir_f")
