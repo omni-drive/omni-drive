@@ -1,6 +1,8 @@
-"""Helper functions for robot distance baseline calibration and setup."""
+"""Sensor baselines and trajectory error helpers for the lab notebook."""
 
 import time
+
+import math
 
 import numpy as np
 
@@ -18,52 +20,40 @@ from .context import (
 )
 
 
-def _median(vals: list[float]) -> float:
-    valid = [v for v in vals if v is not None and np.isfinite(v)]
-    return float(np.median(valid)) if valid else float("nan")
-
-
-def lidar_reset() -> tuple[float, float, float]:
-    """Reset baseline lidar distance measurements from a single scan."""
-    scan = robot.lidar
-    return (
-        f0.set(scan.beam_front),
-        l0.set(scan.beam_left),
-        r0.set(scan.beam_right),
-    )
-
-
-def median_distance(sensor, samples: int = 25, delay: float = 0.02) -> float:
-    """Collect baseline distance measurements from a single sensor at rest and return their median."""
-    readings = []
+def _medians(reads, samples: int, delay: float) -> list[float]:
+    """Median of `samples` readings of each function in `reads`, ignoring missing readings."""
+    rows = []
     for _ in range(samples):
-        readings.append(sensor.distance)
+        rows.append([float(read()) for read in reads])
         time.sleep(delay)
-    return _median(readings)
+    result = []
+    for column in np.array(rows, dtype=float).T:
+        finite = column[np.isfinite(column)]
+        result.append(float(np.median(finite)) if finite.size else math.inf)
+    return result
 
 
-def sensors_reset(samples: int = 25, delay: float = 0.02) -> tuple[float, float, float, float, float, float]:
-    """Collect baseline distance measurements at rest and store their median."""
-    ir_f, ir_l, ir_r = [], [], []
-    us_f, us_l, us_r = [], [], []
-
-    for _ in range(samples):
-        ir_f.append(robot.ir_front.distance)
-        ir_l.append(robot.ir_left.distance)
-        ir_r.append(robot.ir_right.distance)
-        us_f.append(robot.us_front.distance)
-        us_l.append(robot.us_left.distance)
-        us_r.append(robot.us_right.distance)
-        time.sleep(delay)
-
-    return (
-        d0_ir_f.set(_median(ir_f)),
-        d0_ir_l.set(_median(ir_l)),
-        d0_ir_r.set(_median(ir_r)),
-        d0_us_f.set(_median(us_f)),
-        d0_us_l.set(_median(us_l)),
-        d0_us_r.set(_median(us_r)),
+def lidar_reset(samples: int = 25, delay: float = 0.04) -> tuple[float, float, float]:
+    """Store the median front, left and right LiDAR distances at rest as f0, l0, r0."""
+    front, left, right = _medians(
+        [lambda: robot.lidar.beam_front, lambda: robot.lidar.beam_left, lambda: robot.lidar.beam_right],
+        samples,
+        delay,
     )
+    return f0.set(front), l0.set(left), r0.set(right)
+
+
+def median_distance(sensor, samples: int = 25, delay: float = 0.04) -> float:
+    """Median distance of one sensor at rest."""
+    return _medians([lambda: sensor.distance], samples, delay)[0]
+
+
+def sensors_reset(samples: int = 25, delay: float = 0.04) -> tuple[float, ...]:
+    """Store the median distances of all six sensors at rest as d0_ir_f ... d0_us_r."""
+    sensors = [robot.ir_front, robot.ir_left, robot.ir_right, robot.us_front, robot.us_left, robot.us_right]
+    values = _medians([lambda s=s: s.distance for s in sensors], samples, delay)
+    names = (d0_ir_f, d0_ir_l, d0_ir_r, d0_us_f, d0_us_l, d0_us_r)
+    return tuple(name.set(value) for name, value in zip(names, values, strict=True))
 
 
 def rmse_2d(path, reference) -> float:

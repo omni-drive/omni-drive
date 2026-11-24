@@ -169,6 +169,27 @@ Makes the current odometry pose the new origin of `pose` and the current gyrosco
 new IMU baseline, and resets the heading held by the motion controller. Before the first
 telemetry message, it clears both, so they are set again from the first message that arrives.
 
+#### calibrate_imu
+
+```python
+await robot.calibrate_imu(seconds: float = 1.5) -> float
+```
+
+Stops the robot and measures the gyroscope drift (bias) while it stands still, then returns it in
+rad/s. Afterwards `heading` subtracts this drift, and the motion controller holds the heading from
+the last `reset_pose()` instead of the heading at the start of each translation. The robot must
+not move during the measurement. Call `reset_pose()` after it to start from heading 0.
+
+#### heading
+
+```python
+robot.heading: float
+```
+
+Heading in radians since the last `reset_pose()`: the drift-corrected gyroscope after
+`calibrate_imu()`, `imu_yaw` before it. Field-centric driving, the heading hold, `LidarScan.yaw`
+and the IR sensor correction all use this value.
+
 ### Sensors
 
 #### lidar

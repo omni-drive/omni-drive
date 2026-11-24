@@ -4,7 +4,7 @@ import sys
 
 
 class _Var:
-    """Dynamic proxy resolving attributes and calls lazily from the notebook's __main__ scope."""
+    """Dynamic proxy resolving attributes, calls and arithmetic lazily from the notebook's __main__ scope."""
 
     def __init__(self, name: str):
         self._name = name
@@ -21,6 +21,33 @@ class _Var:
 
     def __call__(self, *args, **kwargs):
         return self.get()(*args, **kwargs)
+
+    def __float__(self) -> float:
+        return float(self.get())
+
+    def __add__(self, other):
+        return self.get() + other
+
+    def __radd__(self, other):
+        return other + self.get()
+
+    def __sub__(self, other):
+        return self.get() - other
+
+    def __rsub__(self, other):
+        return other - self.get()
+
+    def __mul__(self, other):
+        return self.get() * other
+
+    def __rmul__(self, other):
+        return other * self.get()
+
+    def __truediv__(self, other):
+        return self.get() / other
+
+    def __rtruediv__(self, other):
+        return other / self.get()
 
 
 # Notebook scope proxies (in order of appearance in notebook.ipynb)
@@ -47,6 +74,7 @@ d0_us = _Var("d0_us")
 
 # Task 5.3 – Kalman 1D fusion (US + IR)
 d0_ir = _Var("d0_ir")
+z_ir = _Var("z_ir")
 
 # Task 6 – Kalman 2D
 d0_ir_f = _Var("d0_ir_f")
