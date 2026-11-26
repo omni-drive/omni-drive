@@ -7,11 +7,13 @@ import math
 import numpy as np
 
 from .context import (
+    d0_ir,
     d0_ir_f,
     d0_ir_l,
     d0_ir_r,
     d0_us_f,
     d0_us_l,
+    d0_us,
     d0_us_r,
     f0,
     l0,
@@ -43,9 +45,10 @@ def lidar_reset(samples: int = 25, delay: float = 0.04) -> tuple[float, float, f
     return f0.set(front), l0.set(left), r0.set(right)
 
 
-def median_distance(sensor, samples: int = 25, delay: float = 0.04) -> float:
-    """Median distance of one sensor at rest."""
-    return _medians([lambda: sensor.distance], samples, delay)[0]
+def front_reset(samples: int = 25, delay: float = 0.04) -> tuple[float, float]:
+    """Store the median front US and IR distances at rest as d0_us, d0_ir."""
+    us, ir = _medians([lambda: robot.us_front.distance, lambda: robot.ir_front.distance], samples, delay)
+    return d0_us.set(us), d0_ir.set(ir)
 
 
 def sensors_reset(samples: int = 25, delay: float = 0.04) -> tuple[float, ...]:

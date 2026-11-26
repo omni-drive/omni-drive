@@ -21,6 +21,7 @@ from .context import (
     x,
     z,
     z_ir,
+    z_us,
 )
 
 
@@ -133,6 +134,7 @@ RECORDERS = {
         y_label="Pozycja x [m]",
         labels=DEFAULT_LABELS,
         styles={
+            "ultrasonic": "line+scatter",
             "infrared": "line+scatter",
             "kalman_us": "dashed",
             "kalman_fusion": "line",
@@ -140,6 +142,7 @@ RECORDERS = {
             "lidar": "dashed",
         },
         odometry=delayed(_odom_x),
+        ultrasonic=delayed(lambda: z_us),
         infrared=delayed(lambda: z_ir),
         kalman_us=delayed(_kalman_us()),
         kalman_fusion=delayed(lambda: x),

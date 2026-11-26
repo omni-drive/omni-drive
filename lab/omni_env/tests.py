@@ -93,21 +93,46 @@ async def test_drive_raw(drive_raw, wheel_speeds):
 
 
 class _FakeDriveRobot:
+    """Zastępczy robot dla test_burst: zapisuje wywołania drive_for, resztę API przyjmuje bez ruchu."""
+
     def __init__(self):
         self.calls = []
 
     async def drive_for(self, duration, vector):
         self.calls.append((duration, math.degrees(vector.heading) % 360, vector.velocity))
 
-    async def pause_for(self, duration):
+    async def pause_for(self, *args, **kwargs):
+        pass
+
+    async def rotate_for(self, *args, **kwargs):
+        pass
+
+    def set_vector(self, vector):
+        pass
+
+    def stop(self):
+        pass
+
+    def reset_pose(self):
+        pass
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, *exc):
         pass
 
 
 async def test_burst(burst):
     ns = burst.__globals__
     fake = _FakeDriveRobot()
-    with _patched(ns, robot=fake):
-        await burst(90, reps=2, duration_s=0.2)
+    try:
+        with _patched(ns, robot=fake):
+            await burst(90, reps=2, duration_s=0.2)
+    except Exception as e:
+        return _report([("burst(90, reps=2, duration_s=0.2) wykonuje się bez błędu", False,
+                         f"{type(e).__name__}: {e}. Jedź tylko przez "
+                         "await robot.drive_for(duration_s, DriveVector(velocity=1, heading=...)).")])
     calls = fake.calls
     expected = [(0.2, 90.0, 1.0), (0.2, 270.0, 1.0)] * 2
     same_len = len(calls) == len(expected)
@@ -192,6 +217,8 @@ def test_task_5_3(df, rmse):
     return _report([
         ("fuzja dokładniejsza od odometrii", r_fu < r_odo),
         ("fuzja nie gorsza od samego US (tolerancja 2 mm)", r_fu <= r_us + 0.002),
+        ("pomiar US użyty w pętli (z_us ma wartości)",
+         df["ultrasonic"].notna().sum() > 10 and df["ultrasonic"].abs().sum() > 0),
         ("pomiar IR użyty w pętli (z_ir ma wartości)",
          df["infrared"].notna().sum() > 10 and df["infrared"].abs().sum() > 0),
     ])

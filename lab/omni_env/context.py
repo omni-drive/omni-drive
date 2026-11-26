@@ -74,6 +74,7 @@ d0_us = _Var("d0_us")
 
 # Task 5.3 – Kalman 1D fusion (US + IR)
 d0_ir = _Var("d0_ir")
+z_us = _Var("z_us")
 z_ir = _Var("z_ir")
 
 # Task 6 – Kalman 2D
