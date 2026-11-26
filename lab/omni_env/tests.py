@@ -223,7 +223,7 @@ def test_task_5_3(df, rmse):
     r_odo, r_us, r_fu = (rmse(df[n], df["lidar"]) for n in ("odometry", "kalman_us", "kalman_fusion"))
     return _report([
         ("fuzja dokładniejsza od odometrii", r_fu < r_odo),
-        ("fuzja nie gorsza od samego US (tolerancja 2 mm)", r_fu <= r_us + 0.002),
+        ("fuzja lepsza od samego US", r_fu < r_us),
         ("pomiar US użyty w pętli (z_us ma wartości)",
          df["ultrasonic"].notna().sum() > 10 and df["ultrasonic"].abs().sum() > 0),
         ("pomiar IR użyty w pętli (z_ir ma wartości)",
